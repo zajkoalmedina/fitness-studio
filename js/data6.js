@@ -139,4 +139,26 @@
         { naziv: 'Faza 3 · Dan C (slobodno)', vj: [x('goblet', 3, '10', 'Teži teret'), x('potisakb', 3, '10'), x('veslanje', 3, '10 po strani'), x('rdl', 3, '10', 'Teži teret'), x('bugarski', 2, '8 po nozi', 'Bez tereta'), x('planka', 3, '30 s')] }]
     });
   }
+
+  /* ----- Gore i dolje: prilagođeno početnicama, od sprava prema slobodnim težinama ----- */
+  { const ul = FS.GOTOVI.find((g) => g.id === 'upperlower4');
+    if (ul) Object.assign(ul, {
+      naziv: 'Gore i dolje · 4 dana', nivo: 'početni', sedmica: 9, dana: 4, per: { tip: 'nema', deload: 0 },
+      opis: 'Devet sedmica podjele gornji/donji dio tijela, četiri puta sedmično. Prve tri sedmice na spravama zbog kontrole, zatim bučice, a na kraju slobodne težine.',
+      bilj: ['Tri faze po tri sedmice: sedmice 1–3 = Faza 1 (sprave), 4–6 = Faza 2 (bučice), 7–9 = Faza 3 (slobodne težine).', 'Raspored: gornji, donji, odmor, gornji, donji (npr. pon, uto, čet, pet).', 'Počni lakim teretom i nauči pokret. Zadnja dva ponavljanja trebaju biti teža, ali čista.', 'U sljedeću fazu prelazi kad su ti vježbe iz trenutne faze sigurne.', 'Pauze između serija su napisane uz svaku vježbu (90 do 120 s).'],
+      dani: [
+        { naziv: 'Faza 1 · Gornji A (sprave)', vj: [x('chestpress', 3, '12'), x('veslanjekabl', 3, '12'), x('ramenaspr', 3, '12'), x('lat', 3, '12', 'Široki hvat'), x('tricepskabl', 2, '12')] },
+        { naziv: 'Faza 1 · Donji A (sprave)', vj: [x('legpress', 3, '12'), x('legcurl', 3, '12'), x('bridge', 3, '15'), x('abdukcija', 3, '15'), x('tva', 2, '8 × 5 s')] },
+        { naziv: 'Faza 1 · Gornji B (sprave)', vj: [x('lat', 3, '12', 'Uski obrnuti hvat'), x('chestpress', 3, '12'), x('veslanjekabl', 3, '12'), x('ramenaspr', 2, '12'), x('biceps', 2, '12', 'Lagane bučice')] },
+        { naziv: 'Faza 1 · Donji B (sprave)', vj: [x('legext', 3, '12'), x('legcurl', 3, '12'), x('backext', 3, '12', 'Bez tereta'), x('legpress', 3, '12', 'Uski stav'), x('deadbug', 2, '6 po strani')] },
+        { naziv: 'Faza 2 · Gornji A (bučice)', vj: [x('potisakb', 3, '10'), x('veslanje', 3, '10 po strani'), x('ramena', 3, '10'), x('lat', 3, '10'), x('bocno', 2, '12')] },
+        { naziv: 'Faza 2 · Donji A (bučice)', vj: [x('goblet', 3, '10'), x('rdl', 3, '10'), x('stepup', 3, '10 po nozi', 'Niska klupa'), x('hipthrust', 3, '12'), x('listovi', 3, '15')] },
+        { naziv: 'Faza 2 · Gornji B (bučice)', vj: [x('kosibucice', 3, '10'), x('veslanjekabl', 3, '12'), x('reversepec', 3, '15'), x('biceps', 2, '12'), x('tricepskabl', 2, '12')] },
+        { naziv: 'Faza 2 · Donji B (bučice)', vj: [x('iskorak', 3, '8 po nozi', 'Uz oslonac'), x('rdl', 3, '10'), x('legcurl', 3, '12'), x('abdgumom', 3, '15', 'Lateralni hod'), x('planka', 2, '20 s', 'Na koljenima ako treba')] },
+        { naziv: 'Faza 3 · Gornji A (slobodno)', vj: [x('bench', 3, '8', 'Uz pomoć za šipku'), x('veslanjesipka', 3, '8'), x('ramena', 3, '10'), x('lat', 3, '10'), x('bocno', 3, '12')] },
+        { naziv: 'Faza 3 · Donji A (slobodno)', vj: [x('cucanjsipka', 3, '8', 'Prazna ili lagana šipka, uz kontrolu trenerice'), x('rdlsipka', 3, '8'), x('iskorak', 3, '8 po nozi'), x('listovi', 3, '15'), x('planka', 3, '30 s')] },
+        { naziv: 'Faza 3 · Gornji B (slobodno)', vj: [x('potisakb', 3, '10'), x('veslanje', 3, '10 po strani'), x('kosibucice', 3, '10'), x('lat', 3, '10', 'Uski hvat'), x('biceps', 2, '12'), x('tricepskabl', 2, '12')] },
+        { naziv: 'Faza 3 · Donji B (slobodno)', vj: [x('hipthrust', 3, '10', 'Sa šipkom'), x('legpress', 3, '10'), x('bugarski', 3, '8 po nozi', 'Bez tereta'), x('legcurl', 3, '12'), x('abdgumom', 3, '15')] }]
+    });
+  }
 })();
