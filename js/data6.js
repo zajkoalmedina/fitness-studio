@@ -100,6 +100,7 @@
   /* ----- obogati ostale programe pokretima koji nedostaju ----- */
   const find = (id) => FS.GOTOVI.find((g) => g.id === id);
   const fb = FS.GOTOVI.find((g) => g.id === 'fullbody'); if (fb) fb.uShopu = false;   // preklapa se sa programom Snažni temelji
+  const gl = FS.GOTOVI.find((g) => g.id === 'gluteus'); if (gl) gl.uShopu = false;   // spojen u Glute fokus
   const add = (pid, di, list) => { const p = find(pid); if (p && p.dani[di]) p.dani[di].vj.push(...list); };
   add('fullbody', 0, [x('veslanjeguma', 2, '12', 'Horizontalno veslanje gumom')]);
   add('fullbody', 2, [x('ramena', 2, '10', 'Vertikalno guranje, lagani teret')]);
@@ -115,5 +116,8 @@
   add('glutefb4', 0, [T('planka', 3, '30 s')]);
   add('glutefb4', 2, [T('deadbug', 3, '8 po strani')]);
   add('glutefb4', 1, [x('singlebridge', 3, '12 po nozi')]);
+  add('glutefb4', 0, [x('frogpump', 2, '20', 'Završna aktivacija gluteusa')]);
+  add('glutefb4', 2, [x('firehydrant', 2, '15 po strani'), x('abdukcija', 3, '15–20')]);
+  { const g4 = FS.GOTOVI.find((g) => g.id === 'glutefb4'); if (g4) { g4.opis = 'Osam sedmica, četiri treninga sedmično: gluteusi se treniraju svaki dan uz puni balans cijelog tijela (guranje, veslanje, hip hinge, koljeno). Objedinjuje programe Glute balans i Glute fokus.'; g4.naziv = 'Glute fokus · 4 dana'; } }
   add('glutefb4', 3, [x('curtsy', 3, '10 po nozi')]);
 })();
