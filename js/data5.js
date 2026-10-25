@@ -1,4 +1,4 @@
-/* Nove vježbe (Glow Up ciklusi, kućne s bocama/jastukom, HIIT, dijastaza) + pauze između vježbi */
+/* Nove vježbe (teretana, kućne s bocama/jastukom, HIIT, dijastaza) + pauze između vježbi */
 (function () {
   const FS = (window.FS = window.FS || {});
   const LY = { t: -90, th: 135, sh: 25, ua: 90, fa: 90 }, QD = { t: 92, th: 0, sh: -90, ua: 0, fa: 0 }, ST = { t: 180, th: 0, sh: 0 };

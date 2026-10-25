@@ -1,4 +1,4 @@
-/* Glow Up programi (ciklus 2 i 3), obogaćeni kućni program, dijastaza, balans pokreta */
+/* Program Oblikuj i ojačaj (2 ciklusa), obogaćeni kućni program, dijastaza, balans pokreta */
 (function () {
   const FS = (window.FS = window.FS || {});
   /* x(id, serije, ponavljanja, napomena, pauza s, superserija) */
@@ -11,26 +11,25 @@
     'Oznaka „jednostrano“ znači da zadani broj ponavljanja radiš za svaku nogu/stranu posebno.',
     'Vježbe označene „superserija“ radiš jednu za drugom bez pauze, pa tek onda pauza.',
     'Pauza između serija je ispisana kod svake vježbe (obično 60 s, kod teških složenih 90 s).',
-    'Plan je dvosedmični: sedmice 1–2 i 3–4 ponavljaju isti raspored. Tokom sedmice: pon–uto–srijeda trening, četvrtak aktivni odmor, petak trening, subota HIIT, nedjelja odmor.',
+    'Raspored u sedmici: pon–uto–srijeda trening, četvrtak aktivni odmor, petak trening, subota HIIT, nedjelja odmor.',
     'Ako je neka vježba pretežka, smanji težinu ili broj ponavljanja; tehnika je važnija od težine.'
   ];
   const HIIT_NOTE = 'Cirkuit: svaku vježbu radiš 30 s, pauza 15 s, pa sljedeća. Kad završiš sve, odmor 90–120 s i ponovi krug (ukupno 4–6 krugova).';
 
   FS.GOTOVI.push(
-    { id: 'glowup2', naziv: 'Glow Up · ciklus 2 (teretana)', opis: 'Dvije sedmice puta dvije: noge, gornji dio tijela, gluteusi, hibrid i HIIT. Superserije, jednostrane vježbe i booty finisher.', nivo: 'srednji', sedmica: 4, dana: 5, cijena: 49, tip: 'gotov', uShopu: true, per: { tip: 'nema', deload: 0 }, bilj: BILJ_GLOW,
+    { id: 'oblikuj', naziv: 'Oblikuj i ojačaj · teretana', opis: 'Osam sedmica u teretani u dva ciklusa po četiri sedmice: noge, gornji dio tijela, gluteusi, hibrid i HIIT. Superserije, jednostrane vježbe i booty finisher.', nivo: 'srednji', sedmica: 8, dana: 5, cijena: 59, tip: 'gotov', uShopu: true, per: { tip: 'nema', deload: 0 }, bilj: BILJ_GLOW.concat(['Sedmice 1–4 radiš treninge A1–A5, a sedmice 5–8 treninge B1–B5 (teži ciklus).']),
       dani: [
-        { naziv: 'Trening 1 · Swole Legs', vj: [A('iskorak', 4, '12 po nozi', 'Iskorak unazad'), x('squatjacks', 4, '12'), x('jednorodl', 4, '12 po nozi'), x('sumocucanj', 4, '12'), x('lungejump', 4, '8 po nozi', 'Zamijeni običnim iskorakom ako je pretežak'), x('frogpump', 4, '15'), A('lateralnilunge', 4, '15 po strani'), x('singlebridge', 4, '15 po nozi'), T('flutter', 3, '30 s'), T('skarice', 3, '30 s')] },
-        { naziv: 'Trening 2 · Upper Body Sculptor', vj: [A('bench', 4, '12'), x('veslanje', 4, '12 po strani'), x('arnold', 4, '12'), x('lat', 4, '12', 'Podhvat (dlanovi prema tebi)'), A('ytw', 4, '15'), x('plankwalk', 4, '15 po strani'), x('farmer', 4, '1 min'), T('hollow', 3, '30 s'), T('mountainclimb', 3, '30 s')] },
-        { naziv: 'Trening 3 · Butt Lifter', vj: [x('stepup', 4, '12 po nozi', 'Atletski nakorak s podizanjem koljena'), x('hipthrust1', 4, '12 po nozi', 'Staggered stance'), x('rdlsipka', 4, '12', 'Konvencionalno mrtvo dizanje, lagano'), x('singlebridge', 4, '15 po nozi', 'Stopalo na povišenju'), x('firehydrant', 4, '15 po strani'), x('abdgumom', 1, '30-25-20-15-10-5', 'Booty finisher: piramida bez odmora', 0, true), x('cucanj', 1, '30-25-20-15-10-5', 'Booty finisher: nastavi bez odmora', 0, true), x('hipthrust1', 1, '30-25-20-15-10-5', 'Booty finisher: marching hip thrust', 60), T('bocnaplanka', 3, '30 s po strani')] },
-        { naziv: 'Trening 4 · Superwoman Hybrid', vj: [x('hipthrust', 4, '12'), x('kangsquat', 4, '12'), x('zpotisak', 4, '12'), x('iskorak', 4, '12 po nozi', 'Iskorak s ekstenzijom'), x('birddog', 4, '12 po strani', 'Bird dog s veslanjem'), x('kickback', 4, '15 po nozi', 'Do kraja raspona'), x('woodchop', 4, '15 po strani')] },
-        { naziv: 'Trening 5 · Sweatmeister HIIT', vj: [H('mountainclimb', 4, '30 s', HIIT_NOTE), H('lakatkoljeno', 4), H('skokpovisenje', 4), H('plankhops', 4), H('nevidljiva', 4), H('planksavijanje', 4), H('hollow', 4), H('squatjacks', 4)] }] },
-    { id: 'glowup3', naziv: 'Glow Up · ciklus 3 (teretana)', opis: 'Nastavak Glow Up izazova: teže varijante, sumo i bočni pokreti, vertikalno i horizontalno veslanje, kettlebell i Sweatmeister HIIT.', nivo: 'srednji', sedmica: 4, dana: 5, cijena: 49, tip: 'gotov', uShopu: true, per: { tip: 'nema', deload: 0 }, bilj: BILJ_GLOW,
-      dani: [
-        { naziv: 'Trening 1 · Swole Legs', vj: [A('rdlsipka', 4, '12', 'Sumo stav (široke noge)'), x('squatjacks', 4, '12'), x('legpress', 4, '12'), x('lateralnilunge', 4, '12 po strani'), x('backext', 4, '12', 'GHD ili hiperekstenzija'), x('bocnaplanka', 4, '15 po strani', 'Bočna planka s podizanjem noge'), x('goblet', 1, '10 min', 'Čučanj s gumom bez pauze', 0), T('twist', 3, '30 s'), T('skarice', 3, '30 s')] },
-        { naziv: 'Trening 2 · Upper Body Sculptor', vj: [A('sklek', 4, '12'), x('lat', 4, '12', 'Kleknuta varijanta'), A('zpotisak', 4, '12'), x('veslanjesipka', 4, '12', 'Veslanje u pretklonu'), x('renegade', 4, '12 po strani'), x('reversepec', 4, '15', 'Stražnje razvlačenje'), x('farmer', 6, '1 min', 'Waiter walk: jedna ruka iznad glave'), T('mountainclimb', 3, '30 s', 'Leg kick through'), T('abwheel', 3, '30 s'), T('planka', 3, '30 s')] },
-        { naziv: 'Trening 3 · Butt Lifter', vj: [A('hipthrust', 4, '12', 'Banded skorcher'), x('skokpovisenje', 4, '12'), A('sumocucanj', 4, '12'), x('kbswing', 4, '12'), x('abdukcija', 4, '20'), x('reversehyper', 4, '15'), x('pullthrough', 4, '20'), x('clamshell', 4, '20 po strani'), T('bocnaplanka', 3, '30 s po strani'), T('crunch', 3, '30 s')] },
-        { naziv: 'Trening 4 · Superwoman Hybrid', vj: [x('rdlsipka', 4, '12'), x('ramena', 4, '12', 'Potisak iznad glave'), x('curtsy', 4, '12 po nozi'), x('veslanjekabl', 4, '12', 'Veslanje uz potporu prsa'), x('kickback', 4, '20 po nozi', 'Ekstenzija kuka u polučučnju'), x('swimmers', 4, '15'), x('singlebridge', 4, '20 po nozi')] },
-        { naziv: 'Trening 5 · Sweatmeister HIIT', vj: [H('skaterhop', 4, '30 s', HIIT_NOTE), H('burpee', 4), H('nevidljiva', 4), H('mountainclimb', 4), H('squatjacks', 4), H('sklopke', 4), H('plankhops', 4), H('pistol', 4, '30 s', 'Jedna strana pa druga, uz oslonac')] }] }
+        { naziv: 'A1 · Noge', vj: [A('iskorak', 4, '12 po nozi', 'Iskorak unazad'), x('squatjacks', 4, '12'), x('jednorodl', 4, '12 po nozi'), x('sumocucanj', 4, '12'), x('lungejump', 4, '8 po nozi', 'Zamijeni običnim iskorakom ako je pretežak'), x('frogpump', 4, '15'), A('lateralnilunge', 4, '15 po strani'), x('singlebridge', 4, '15 po nozi'), T('flutter', 3, '30 s'), T('skarice', 3, '30 s')] },
+        { naziv: 'A2 · Gornji dio tijela', vj: [A('bench', 4, '12'), x('veslanje', 4, '12 po strani'), x('arnold', 4, '12'), x('lat', 4, '12', 'Podhvat (dlanovi prema tebi)'), A('ytw', 4, '15'), x('plankwalk', 4, '15 po strani'), x('farmer', 4, '1 min'), T('hollow', 3, '30 s'), T('mountainclimb', 3, '30 s')] },
+        { naziv: 'A3 · Gluteusi', vj: [x('stepup', 4, '12 po nozi', 'Atletski nakorak s podizanjem koljena'), x('hipthrust1', 4, '12 po nozi', 'Staggered stance'), x('rdlsipka', 4, '12', 'Konvencionalno mrtvo dizanje, lagano'), x('singlebridge', 4, '15 po nozi', 'Stopalo na povišenju'), x('firehydrant', 4, '15 po strani'), x('abdgumom', 1, '30-25-20-15-10-5', 'Booty finisher: piramida bez odmora', 0, true), x('cucanj', 1, '30-25-20-15-10-5', 'Booty finisher: nastavi bez odmora', 0, true), x('hipthrust1', 1, '30-25-20-15-10-5', 'Booty finisher: marching hip thrust', 60), T('bocnaplanka', 3, '30 s po strani')] },
+        { naziv: 'A4 · Hibrid snaga', vj: [x('hipthrust', 4, '12'), x('kangsquat', 4, '12'), x('zpotisak', 4, '12'), x('iskorak', 4, '12 po nozi', 'Iskorak s ekstenzijom'), x('birddog', 4, '12 po strani', 'Bird dog s veslanjem'), x('kickback', 4, '15 po nozi', 'Do kraja raspona'), x('woodchop', 4, '15 po strani'), x('kosibucice', 3, '12', 'Horizontalno guranje za balans')] },
+        { naziv: 'A5 · HIIT', vj: [H('mountainclimb', 4, '30 s', HIIT_NOTE), H('lakatkoljeno', 4), H('skokpovisenje', 4), H('plankhops', 4), H('nevidljiva', 4), H('planksavijanje', 4), H('hollow', 4), H('squatjacks', 4)] },
+
+        { naziv: 'B1 · Noge', vj: [A('rdlsipka', 4, '12', 'Sumo stav (široke noge)'), x('squatjacks', 4, '12'), x('legpress', 4, '12'), x('lateralnilunge', 4, '12 po strani'), x('backext', 4, '12', 'GHD ili hiperekstenzija'), x('bocnaplanka', 4, '15 po strani', 'Bočna planka s podizanjem noge'), x('goblet', 1, '10 min', 'Čučanj s gumom bez pauze', 0), T('twist', 3, '30 s'), T('skarice', 3, '30 s')] },
+        { naziv: 'B2 · Gornji dio tijela', vj: [A('sklek', 4, '12'), x('lat', 4, '12', 'Kleknuta varijanta'), A('zpotisak', 4, '12'), x('veslanjesipka', 4, '12', 'Veslanje u pretklonu'), x('renegade', 4, '12 po strani'), x('reversepec', 4, '15', 'Stražnje razvlačenje'), x('farmer', 6, '1 min', 'Waiter walk: jedna ruka iznad glave'), T('mountainclimb', 3, '30 s', 'Leg kick through'), T('abwheel', 3, '30 s'), T('planka', 3, '30 s')] },
+        { naziv: 'B3 · Gluteusi', vj: [A('hipthrust', 4, '12', 'Banded skorcher'), x('skokpovisenje', 4, '12'), A('sumocucanj', 4, '12'), x('kbswing', 4, '12'), x('abdukcija', 4, '20'), x('reversehyper', 4, '15'), x('pullthrough', 4, '20'), x('clamshell', 4, '20 po strani'), T('bocnaplanka', 3, '30 s po strani'), T('crunch', 3, '30 s')] },
+        { naziv: 'B4 · Hibrid snaga', vj: [x('rdlsipka', 4, '12'), x('ramena', 4, '12', 'Potisak iznad glave'), x('curtsy', 4, '12 po nozi'), x('veslanjekabl', 4, '12', 'Veslanje uz potporu prsa'), x('kickback', 4, '20 po nozi', 'Ekstenzija kuka u polučučnju'), x('swimmers', 4, '15'), x('singlebridge', 4, '20 po nozi'), x('sklek', 3, '10', 'Na koljenima ako treba; horizontalno guranje za balans')] },
+        { naziv: 'B5 · HIIT', vj: [H('skaterhop', 4, '30 s', HIIT_NOTE), H('burpee', 4), H('nevidljiva', 4), H('mountainclimb', 4), H('squatjacks', 4), H('sklopke', 4), H('plankhops', 4), H('pistol', 4, '30 s', 'Jedna strana pa druga, uz oslonac')] }] }
   );
 
   /* ----- obogaćeni kućni program ----- */
@@ -100,6 +99,7 @@
 
   /* ----- obogati ostale programe pokretima koji nedostaju ----- */
   const find = (id) => FS.GOTOVI.find((g) => g.id === id);
+  const fb = FS.GOTOVI.find((g) => g.id === 'fullbody'); if (fb) fb.uShopu = false;   // preklapa se sa programom Snažni temelji
   const add = (pid, di, list) => { const p = find(pid); if (p && p.dani[di]) p.dani[di].vj.push(...list); };
   add('fullbody', 0, [x('veslanjeguma', 2, '12', 'Horizontalno veslanje gumom')]);
   add('fullbody', 2, [x('ramena', 2, '10', 'Vertikalno guranje, lagani teret')]);

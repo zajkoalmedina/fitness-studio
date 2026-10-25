@@ -42,7 +42,7 @@
   FS.TRK_OPSTE = [
     'Prije početka konsultuj ljekara ako imaš zdravstvene probleme, bolove u koljenima ili si dugo bila neaktivna.',
     'Svaki trening počni zagrijavanjem (5 min hodanja) i završi laganim hodanjem i istezanjem.',
-    'Dva puta sedmično dodaj trening snage za noge i trup (npr. Kućna snaga dan A i D ili Glow Up noge). Jaka muskulatura štiti koljena i leđa.',
+    'Dva puta sedmično dodaj trening snage za noge i trup (npr. Kućna snaga dan A i D ili Oblikuj i ojačaj noge). Jaka muskulatura štiti koljena i leđa.',
     'Ako osjetiš oštru bol (ne samo umor), prekini i odmori nekoliko dana. Ne povećavaj tempo i kilometre istovremeno.',
     'Ako propustiš trening, ne nadoknađuj ga; nastavi dalje ili ponovi prošlu sedmicu.'
   ];
