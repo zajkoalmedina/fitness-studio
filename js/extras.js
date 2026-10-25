@@ -279,6 +279,36 @@
           ${done(e.datum) && e.tip !== 'odmor' ? h`<span class="badge ok">urađeno</span>` : (e.tip === 'dij' ? h`<a class="btn sm primary" href="#/trening/novi?p=dijastaza&f=${e.faza}">Započni</a>` : can ? h`<a class="btn sm primary" href="#/trening/novi?p=${pr.id}&d=${e.dan}&w=${FS.currentWeek(u, pr)}">Započni</a>` : '')}</div>`; })}</div>`;
   };
 
+  /* ================= ZABORAVLJENA LOZINKA: zahtjev stiže treneru ================= */
+  const genPw = () => { const c = 'abcdefghjkmnpqrstuvwxyz23456789', r = (n) => Array.from({ length: n }, () => c[Math.floor(Math.random() * c.length)]).join(''); return 'Fs' + r(5) + '7' + r(2); };
+  FS.pwRequests = () => {
+    const l = (Store.db.prijave || []).filter((r) => r.tip === 'lozinka' && r.status === 'novo');
+    if (!l.length) return '';
+    return h`<h3>Zaboravljene lozinke</h3>${l.slice().reverse().map((r) => { const u = Store.db.users.find((x) => String(x.email).toLowerCase() === String(r.kontakt).toLowerCase());
+      return h`<div class="card flat"><div class="row between"><b>${u ? u.ime : r.kontakt}</b><span class="badge warn">novo</span></div><div class="small">${fmtDate(r.datum)} · ${r.kontakt}${u ? '' : ' · nema računa s ovim e-mailom'}</div>
+        <div class="row mt-s">${u ? h`<button class="btn sm primary grow" data-pwreq="${r.id}">Postavi novu lozinku</button>` : ''}<button class="btn sm danger" data-pwdel="${r.id}" aria-label="Obriši">${icon('trash')}</button></div></div>`; })}`;
+  };
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest && e.target.closest('[data-pwreq]'), d = e.target.closest && e.target.closest('[data-pwdel]');
+    if (d) { Store.db.prijave = Store.db.prijave.filter((x) => x.id !== d.dataset.pwdel); Store.save(); FS.rerender(); return; }
+    if (!b) return;
+    const r = Store.db.prijave.find((x) => x.id === b.dataset.pwreq), u = r && Store.db.users.find((x) => String(x.email).toLowerCase() === String(r.kontakt).toLowerCase());
+    if (!u) { toast('Nema računa s ovim e-mailom.'); return; }
+    const pw = genPw();
+    FS.openSheet(h`<h2>Nova lozinka: ${u.ime}</h2><p class="small muted">Predložena je privremena lozinka. Možeš je promijeniti. Pri prvoj prijavi klijent bira svoju.</p>
+      <form data-act="pwset" novalidate><label class="field"><span>Privremena lozinka</span><input name="p" autocomplete="off" value="${pw}"></label><p class="err" id="pwerr" hidden></p><button class="btn primary block" type="submit">Postavi lozinku</button></form>`, (s) => bind(s, {
+      'submit:pwset': async (f) => {
+        const p = String(formData(f).p || '').trim(), er = $('#pwerr', s);
+        try { await Auth.setPassword(u.id, p); } catch (x) { er.textContent = x.message; er.hidden = false; return; }
+        u.mora_promijeniti = true; r.status = 'obradjeno'; Store.save(); FS.closeSheet();
+        const msg = 'Zdravo ' + String(u.ime).split(' ')[0] + '! Tvoja nova privremena lozinka za FITNESS STUDIO je: ' + p + '\nPrijavi se s e-mailom ' + u.email + ', pa ćeš odmah izabrati svoju lozinku.';
+        FS.openSheet(h`<h2>Lozinka je postavljena</h2><p class="small muted">Pošalji klijentu ovu poruku (WhatsApp, Viber, Instagram).</p><textarea id="pwmsg" rows="6" readonly>${msg}</textarea>
+          <div class="row mt-s"><button class="btn primary grow" data-act="cp">Kopiraj poruku</button><button class="btn grow" data-act="ok">Gotovo</button></div>`, (s2) => bind(s2, {
+          'click:cp': () => copyText(msg, $('#pwmsg', s2)), 'click:ok': () => { FS.closeSheet(); FS.rerender(); } }));
+      }
+    }));
+  });
+
   /* ================= POSTAVKE: e-mail za upitnike ================= */
   FS.postavkeCard = () => h`<form class="card" data-act="postavke" novalidate><h3>E-mail za upitnike</h3>
     <p class="small muted">Kad klijent popuni upitnik, ponudit će mu se slanje na ovu adresu. Upitnik uvijek vidiš i u aplikaciji.</p>

@@ -48,10 +48,10 @@
     if (tab === 'narudzbe') {
       const zq = (Store.db.zahtjevi || []).filter((z) => z.status === 'novo').sort((a, b) => b.ts - a.ts);
       const zh = FS.cloud ? h`<h3>Zahtjevi za kupovinu</h3>${zq.length ? zq.map((z) => { const pr = Store.program(z.programId); return h`<div class="card flat"><div class="row between"><b>${nameOf(z.userId)}</b><span class="badge warn">čeka uplatu</span></div><div class="small">${fmtDate(z.datum)} · ${pr ? pr.naziv : z.programId} · ${z.iznos} ${config.valuta}</div><div class="row mt-s"><button class="btn sm primary grow" data-act="zok" data-id="${z.id}">Uplata stigla – otključaj</button><button class="btn sm danger" data-act="zno" data-id="${z.id}" aria-label="Odbij">${icon('trash')}</button></div></div>`; }) : h`<div class="empty">Nema novih zahtjeva.</div>`}` : '';
-      body = h`${zh}<h3 class="mt">Kupovine programa</h3>${config.demo ? h`<div class="demo-bar">Demo kupovine – bez stvarnih uplata</div>` : ''}
+      body = h`${FS.pwRequests ? FS.pwRequests() : ''}${zh}<h3 class="mt">Kupovine programa</h3>${config.demo ? h`<div class="demo-bar">Demo kupovine – bez stvarnih uplata</div>` : ''}
         ${Store.db.kupovine.length ? Store.db.kupovine.slice().reverse().map((k) => { const pr = Store.program(k.programId); return h`<div class="kv"><span>${fmtDate(k.datum)} · ${nameOf(k.userId)}<br><span class="small">${pr ? pr.naziv : k.programId}</span></span><b>${k.iznos} ${config.valuta}</b></div>`; }) : h`<div class="empty">Nema kupovina.</div>`}
         <h3 class="mt">Prijave na pakete</h3>
-        ${Store.db.prijave.length ? Store.db.prijave.slice().reverse().map((r) => h`<div class="card flat"><div class="row between"><b>${r.ime}</b><span class="badge ${r.status === 'novo' ? 'warn' : 'ok'}">${r.status === 'novo' ? 'novo' : 'obrađeno'}</span></div><div class="small">${fmtDate(r.datum)} · ${r.paket || 'bez paketa'}</div><div>${r.kontakt}</div>${r.tekst ? h`<p class="muted mt-s" style="margin-bottom:8px">${r.tekst}</p>` : ''}
+        ${Store.db.prijave.filter((r) => r.tip !== 'lozinka').length ? Store.db.prijave.filter((r) => r.tip !== 'lozinka').slice().reverse().map((r) => h`<div class="card flat"><div class="row between"><b>${r.ime}</b><span class="badge ${r.status === 'novo' ? 'warn' : 'ok'}">${r.status === 'novo' ? 'novo' : 'obrađeno'}</span></div><div class="small">${fmtDate(r.datum)} · ${r.paket || 'bez paketa'}</div><div>${r.kontakt}</div>${r.tekst ? h`<p class="muted mt-s" style="margin-bottom:8px">${r.tekst}</p>` : ''}
           <div class="row mt-s">${r.status === 'novo' ? h`<button class="btn sm grow" data-act="lead-done" data-id="${r.id}">Označi obrađeno</button>` : ''}<button class="btn sm danger" data-act="lead-del" data-id="${r.id}" aria-label="Obriši">${icon('trash')}</button></div></div>`) : h`<div class="empty">Nema prijava.</div>`}`;
     }
 
@@ -170,7 +170,7 @@
       ${msgs.map((m) => h`<div class="card flat"><div class="small">${fmtDate(m.datum)} · ${m.tip === 'dijastaza' ? 'dijastaza' : 'upit'} · ${m.status === 'novo' ? 'čeka odgovor' : 'odgovoreno'}</div><p style="margin:6px 0">${m.tekst}</p>${m.odgovor ? h`<div class="card cream" style="margin:0 0 8px">${m.odgovor}</div>` : ''}
         <form data-act="reply" data-id="${m.id}" novalidate><textarea name="t" placeholder="Odgovor…" maxlength="1500"></textarea><button class="btn sm primary mt-s" type="submit">Pošalji odgovor</button></form></div>`)}${msgs.length ? '' : h`<p class="muted">Nema poruka.</p>`}
       <div class="divider"></div>
-      <button class="btn sm block mb" data-act="resetpw">${FS.cloud ? 'Pošalji link za novu lozinku' : 'Postavi novu privremenu lozinku'}</button>
+      <button class="btn sm block mb" data-act="resetpw">Postavi novu privremenu lozinku</button>
       <button class="btn sm danger block" data-act="deluser">Obriši račun i sve podatke</button>`;
     const rr = () => FS.rerender();
     FS.chatThread($('#chatbox', el), { userId: u.id, me: 'trener', title: '' });
@@ -182,7 +182,7 @@
       'click:unassign': (b) => { u.programi = u.programi.filter((x) => x !== b.dataset.id); Store.save(); rr(); },
       'click:savenote': () => { u.biljeska = $('[data-act=note]', el).value.slice(0, 1500); Store.save(); toast('Bilješka sačuvana.'); },
       'submit:reply': (f) => { const t = String(formData(f).t || '').trim(); if (t.length < 2) { toast('Napiši odgovor.'); return; } const m = Store.db.poruke.find((x) => x.id === f.dataset.id); m.odgovor = t.slice(0, 1500); m.status = 'obradjeno'; Store.save(); toast('Odgovor poslan.'); rr(); },
-      'click:resetpw': () => FS.cloud ? (async () => { try { await Auth.sendReset(u.email); toast('Link za novu lozinku poslan na ' + u.email); } catch (e) { toast(e.message); } })() : openSheet(h`<h2>Nova privremena lozinka</h2><form data-act="rp" novalidate><label class="field"><span>Lozinka (min. 8 znakova, slovo i broj)</span><input name="p" autocomplete="off"></label><p class="err" id="rerr" hidden></p><button class="btn primary block" type="submit">Postavi</button></form>`, (s) => bind(s, {
+      'click:resetpw': () => openSheet(h`<h2>Nova privremena lozinka</h2><form data-act="rp" novalidate><label class="field"><span>Lozinka (min. 8 znakova, slovo i broj)</span><input name="p" autocomplete="off"></label><p class="err" id="rerr" hidden></p><button class="btn primary block" type="submit">Postavi</button></form>`, (s) => bind(s, {
         'submit:rp': async (f) => { try { await Auth.setPassword(u.id, formData(f).p); u.mora_promijeniti = true; Store.save(); closeSheet(); toast('Lozinka postavljena. Klijentica će je promijeniti pri prvoj prijavi.'); } catch (e) { const er = $('#rerr', s); er.textContent = e.message; er.hidden = false; } }
       })),
       'click:deluser': async () => {

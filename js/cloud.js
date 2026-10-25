@@ -278,14 +278,26 @@
   };
   Auth.setPassword = async (userId, pass) => {
     if (!Auth.passOk(pass)) throw new Error('Lozinka mora imati najmanje 8 znakova, slova i broj.');
-    if (!sess || userId !== sess.user.id) throw new Error('Tuđu lozinku ne možeš postaviti. Pošalji link za novu lozinku.');
-    try { await api('/auth/v1/user', { method: 'PUT', body: { password: pass } }); } catch (e) { throw new Error(nice(e)); }
+    if (!sess) throw new Error('Nisi prijavljena.');
+    try {
+      if (userId !== sess.user.id) await api('/rest/v1/rpc/postavi_lozinku', { method: 'POST', body: { p_id: userId, p_lozinka: pass } });
+      else await api('/auth/v1/user', { method: 'PUT', body: { password: pass } });
+    } catch (e) { throw new Error(nice(e)); }
   };
   Auth.sendReset = async (email) => {
     email = String(email || '').trim().toLowerCase();
     if (!EMAIL.test(email)) throw new Error('Unesi ispravnu e-mail adresu.');
     const back = encodeURIComponent(location.origin + location.pathname);
     try { await api('/auth/v1/recover?redirect_to=' + back, { method: 'POST', body: { email }, auth: false }); } catch (e) { throw new Error(nice(e)); }
+  };
+  /* zaboravljena lozinka: zahtjev stiže treneru, koji postavlja novu lozinku */
+  Auth.requestReset = async (email) => {
+    email = String(email || '').trim().toLowerCase();
+    if (!EMAIL.test(email)) throw new Error('Unesi ispravnu e-mail adresu.');
+    Store.db.prijave.push({ id: uid(), tip: 'lozinka', ime: '', kontakt: email, paket: '', tekst: 'Zaboravljena lozinka', datum: today(), status: 'novo' });
+    Store.save();
+    Auth.sendReset(email).catch(() => {});   // za svaki slučaj i e-mail s linkom (ako stigne)
+    return 'Zahtjev je poslan treneru. Trener će ti javiti novu lozinku.';
   };
   Auth.createClient = async ({ ime, email, pass, paket }) => {
     email = String(email || '').trim().toLowerCase();

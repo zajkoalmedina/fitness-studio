@@ -32,3 +32,14 @@ begin
   delete from auth.users where id = p_id;
 end $$;
 grant execute on function public.obrisi_klijenta(uuid) to authenticated;
+
+-- trenerica postavlja novu privremenu lozinku klijentu
+create or replace function public.postavi_lozinku(p_id uuid, p_lozinka text) returns void
+language plpgsql security definer set search_path = public, extensions as $$
+begin
+  if not public.is_trener() then raise exception 'Nije dozvoljeno.'; end if;
+  if exists (select 1 from public.profiles where id = p_id and role = 'trener') then raise exception 'Nije dozvoljeno.'; end if;
+  if length(p_lozinka) < 8 then raise exception 'Lozinka je prekratka.'; end if;
+  update auth.users set encrypted_password = crypt(p_lozinka, gen_salt('bf')), updated_at = now() where id = p_id;
+end $$;
+grant execute on function public.postavi_lozinku(uuid, text) to authenticated;

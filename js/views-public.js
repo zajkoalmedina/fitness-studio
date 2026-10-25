@@ -404,7 +404,7 @@
       'change:dob': (s) => { $('#cons', el).hidden = s.value !== '16-17'; },
       'click:forgot': async () => {
         const em = $('[name=email]', el).value;
-        try { await Auth.sendReset(em); toast('Poslali smo link za novu lozinku na tvoj e-mail.'); } catch (e) { showErr(e.message); }
+        try { toast(await Auth.requestReset(em)); } catch (e) { showErr(e.message); }
       },
       'submit:login': async (f) => {
         const d = formData(f), btn = $('button[type=submit]', f); btn.disabled = true;
