@@ -73,6 +73,8 @@
     const f = V[k]; if (!f) return;
     V[k] = (el, p, q) => { const r = f(el, p, q); const u = FS.Auth.user(); if (u) { const h1 = el.querySelector('h1'); if (h1 && h1.parentNode === el) { const nx = h1.nextElementSibling; (nx || h1).insertAdjacentHTML('afterend', hint); } } return r; };
   });
+  const prog0 = V.programi;
+  if (prog0) V.programi = (el, p, q) => { const r = prog0(el, p, q); const h1 = el.querySelector('h1'); if (h1 && h1.parentNode === el) h1.insertAdjacentHTML('afterend', hint); return r; };
   const alati2 = V.alati;
   V.alati = (el, p, q) => { alati2(el, p, q); el.insertAdjacentHTML('beforeend', h`<a class="card" href="#/zagrijavanje" style="display:block"><b>Zagrijavanje</b><div class="small muted">Rutine s tajmerom za noge, gornji dio, kondiciju i snagu</div></a>`.s); };
 })();
