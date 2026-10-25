@@ -149,8 +149,7 @@
         }
         const gone = [...profSnap.keys()].filter((id) => !Store.db.users.some((u) => u.id === id));
         for (const id of gone) {
-          await api(`/rest/v1/docs?user_id=eq.${id}`, { method: 'DELETE' });
-          await api(`/rest/v1/profiles?id=eq.${id}`, { method: 'DELETE' });
+          await api('/rest/v1/rpc/obrisi_klijenta', { method: 'POST', body: { p_id: id } });
           profSnap.delete(id);
         }
       }

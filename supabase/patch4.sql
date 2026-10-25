@@ -22,3 +22,13 @@ begin
   end if;
   return new;
 end $$;
+
+-- brisanje računa klijenta (potpuno, uključujući prijavu)
+create or replace function public.obrisi_klijenta(p_id uuid) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_trener() then raise exception 'Nije dozvoljeno.'; end if;
+  if exists (select 1 from public.profiles where id = p_id and role = 'trener') then raise exception 'Nije dozvoljeno.'; end if;
+  delete from auth.users where id = p_id;
+end $$;
+grant execute on function public.obrisi_klijenta(uuid) to authenticated;
