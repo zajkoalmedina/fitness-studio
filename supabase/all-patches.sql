@@ -1,9 +1,7 @@
-
 alter table public.profiles add column if not exists aktivan boolean not null default true;
 alter table public.profiles add column if not exists mora_promijeniti boolean not null default false;
 alter table public.profiles add column if not exists dob text not null default '18+';
 alter table public.profiles add column if not exists saglasnost boolean not null default false;
-
 create or replace function public.guard_profile() returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
@@ -13,11 +11,9 @@ begin
   end if;
   return new;
 end $$;
-
 drop policy if exists docs_select_shop on public.docs;
 create policy docs_select_shop on public.docs for select to anon, authenticated
   using (coll = 'programi' and coalesce(data ->> 'tip', '') <> 'individualni');
-
 drop policy if exists docs_client_update on public.docs;
 create policy docs_client_update on public.docs for update to authenticated
   using (user_id = auth.uid() and coll in ('logs', 'mjere', 'poruke', 'chat', 'zahtjevi'))
@@ -59,3 +55,11 @@ begin
   end if;
   return new;
 end $$;
+create or replace function public.obrisi_klijenta(p_id uuid) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_trener() then raise exception 'Nije dozvoljeno.'; end if;
+  if exists (select 1 from public.profiles where id = p_id and role = 'trener') then raise exception 'Nije dozvoljeno.'; end if;
+  delete from auth.users where id = p_id;
+end $$;
+grant execute on function public.obrisi_klijenta(uuid) to authenticated;
