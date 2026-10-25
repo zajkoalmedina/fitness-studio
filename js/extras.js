@@ -374,6 +374,8 @@
     const have = new Set(Store.db.users.map((u) => String(u.email || '').toLowerCase())), l = pozList().filter((p) => !have.has(String(p.id).toLowerCase()));
     if (!l.length) return '';
     return h`<h3>Poslane pozivnice</h3>${l.map((p) => h`<div class="card flat"><b>${p.ime || p.id}</b><div class="small">${p.id}${p.paket ? ' · ' + p.paket : ''} · čeka aktivaciju računa</div>
+      <div class="mt-s">${(p.programi || []).map((pid) => { const pr = Store.program(pid); return h`<div class="row between small" style="padding:4px 0"><span>${pr ? pr.naziv : pid}</span><button class="btn sm danger" data-invrm="${p.id}" data-pid="${pid}" aria-label="Ukloni program">×</button></div>`; })}
+        <div class="row"><select class="grow" data-invsel="${p.id}"><option value="">Dodijeli program unaprijed…</option>${Store.allPrograms().filter((x) => !(p.programi || []).includes(x.id)).map((x) => h`<option value="${x.id}">${x.naziv}</option>`)}</select><button class="btn sm" data-invadd="${p.id}">Dodaj</button></div></div>
       <div class="row mt-s"><button class="btn sm grow" data-invcopy="${p.id}">Kopiraj poruku</button><button class="btn sm danger" data-invdel="${p.id}" aria-label="Obriši pozivnicu">${icon('trash')}</button></div></div>`)}<h3>Klijenti</h3>`;
   };
   const copyText = async (t, ta) => {
@@ -409,6 +411,9 @@
   document.addEventListener('click', async (e) => {
     const c = e.target.closest && e.target.closest('[data-invcopy]'), d = e.target.closest && e.target.closest('[data-invdel]');
     if (c) { const p = pozList().find((x) => x.id === c.dataset.invcopy); if (p) copyText(FS.invMsg(p)); }
+    const ad = e.target.closest && e.target.closest('[data-invadd]'), rm = e.target.closest && e.target.closest('[data-invrm]');
+    if (ad) { const p = pozList().find((x) => x.id === ad.dataset.invadd), sel = document.querySelector('[data-invsel="' + CSS.escape(ad.dataset.invadd) + '"]'); if (p && sel && sel.value) { p.programi = (p.programi || []).concat(sel.value); Store.save(); toast('Program je dodijeljen. Klijent ga ima čim napravi račun.'); FS.rerender(); } }
+    if (rm) { const p = pozList().find((x) => x.id === rm.dataset.invrm); if (p) { p.programi = (p.programi || []).filter((x) => x !== rm.dataset.pid); Store.save(); FS.rerender(); } }
     if (d) {
       if (!await FS.confirmSheet({ title: 'Obrisati pozivnicu?', text: 'Osoba se više neće moći registrovati s tim e-mailom.', ok: 'Obriši', danger: true })) return;
       Store.db.pozivnice = pozList().filter((x) => x.id !== d.dataset.invdel); Store.save(); FS.rerender();
@@ -607,7 +612,7 @@
       <a class="btn block mb" href="#/programi">Svi programi →</a><div class="eyebrow mt">Prije početka</div>
       <a class="card" href="#/upitnik" style="display:block"><b>Upitnik za nove klijente</b><div class="small muted">Preuzmi ili popuni online prije početka coachinga.</div></a>`;
     anchor.insertAdjacentHTML('beforebegin', sec.s);
-    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 36</p>');
+    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 37</p>');
   };
 
   /* Kalkulatori: veza na suplemente */
