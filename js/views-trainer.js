@@ -67,7 +67,7 @@
 
     if (tab === 'vjezbe') {
       body = h`<button class="btn primary block mb" data-act="newex">${icon('plus')} Nova vježba</button>
-        <p class="small">Dodaj video link (YouTube, Vimeo ili direktni .mp4, mora počinjati s https://).</p>
+        <p class="small">Klikni vježbu pa učitaj video s računara (MP4, MOV, WebM do 50 MB) ili zalijepi link.</p>
         ${Store.exercises().map((e) => h`<button class="ex" style="width:100%;text-align:left;font:inherit" data-act="editex" data-id="${e.id}"><div class="ph">${icon(e.video ? 'play' : 'dumbbell')}</div><div class="grow"><b>${e.naziv}</b><div class="small">${e.grupa} · ${e.video ? 'video dodan' : 'bez videa'}</div></div>${icon('edit')}</button>`)}`;
     }
 
@@ -107,14 +107,28 @@
         <label class="field"><span>Dijastaza</span><select name="dij">${opts([['da', FS.DIJ_LABEL.da], ['kasnije', FS.DIJ_LABEL.kasnije], ['ne', FS.DIJ_LABEL.ne]], e ? e.dij : 'kasnije')}</select></label>
         <label class="field"><span>Koraci (jedan po redu)</span><textarea name="koraci">${e ? e.koraci.join('\n') : ''}</textarea></label>
         <label class="field"><span>Savjeti (jedan po redu)</span><textarea name="savjeti">${e ? e.savjeti.join('\n') : ''}</textarea></label>` : h`<p class="muted">${e.naziv}</p>`}
-      <label class="field"><span>Video link (https://…)</span><input name="video" inputmode="url" autocapitalize="off" value="${e ? e.video || '' : ''}" placeholder="https://www.youtube.com/watch?v=…"></label>
+      <div class="card flat"><b>Video s računara</b>${e && /^fs:/.test(e.video || '') ? h`<div class="small mt-s">Video je već postavljen.</div><label class="check"><input type="checkbox" name="rmvid" value="1"><span>Ukloni video</span></label>` : ''}
+        <p class="small muted mt-s">Izaberi snimak (MP4, MOV ili WebM, najviše 50 MB). Za duže snimke prvo ih smanji.</p><input type="file" name="vfile" accept="video/mp4,video/quicktime,video/webm,.mp4,.mov,.webm"></div>
+      <label class="field"><span>Ili video link (https://…)</span><input name="video" inputmode="url" autocapitalize="off" value="${e && !/^fs:/.test(e.video || '') ? e.video || '' : ''}" placeholder="https://www.youtube.com/watch?v=…"></label>
       <p class="err" id="xerr" hidden></p><button class="btn primary block" type="submit">Sačuvaj</button>
       ${e && custom ? h`<button class="btn danger block mt-s" type="button" data-act="dx">Obriši vježbu</button>` : ''}</form>`, (s) => bind(s, {
       'click:dx': async () => { if (await confirmSheet({ title: 'Obrisati vježbu?', text: 'Vježba će nestati iz biblioteke.', ok: 'Obriši', danger: true })) { Store.db.vjezbeNove = Store.db.vjezbeNove.filter((x) => x.id !== e.id); Store.save(); closeSheet(); done(); } },
-      'submit:sx': (f) => {
+      'submit:sx': async (f) => {
         const d = formData(f), er = $('#xerr', s), bad = (m) => { er.textContent = m; er.hidden = false; };
-        const video = String(d.video || '').trim();
+        let video = String(d.video || '').trim();
         if (!isUrl(video)) return bad('Link mora počinjati s https://');
+        const file = f.querySelector('input[name=vfile]') && f.querySelector('input[name=vfile]').files[0];
+        const oldFs = e && /^fs:/.test(e.video || '') ? e.video : '';
+        if (file) {
+          if (!/^video\//.test(file.type) && !/\.(mp4|mov|webm)$/i.test(file.name)) return bad('Izaberi video fajl (MP4, MOV ili WebM).');
+          if (file.size > 50 * 1048576) return bad('Video je prevelik (najviše 50 MB). Smanji ga pa pokušaj opet.');
+          const btn = f.querySelector('button[type=submit]'); btn.disabled = true; btn.textContent = 'Šaljem video…';
+          const ext = (file.name.match(/\.(mp4|mov|webm)$/i) || ['', 'mp4'])[1] ? '.' + (file.name.match(/\.(mp4|mov|webm)$/i) || ['', 'mp4'])[1].toLowerCase() : '.mp4';
+          const pth = 'vid/' + (e ? e.id : 'n' + Date.now()) + '_' + Date.now() + ext;
+          try { await FS.fileStore.put(pth, file); } catch (x) { btn.disabled = false; btn.textContent = 'Sačuvaj'; return bad('Video nije poslan. Provjeri internet.'); }
+          video = 'fs:' + pth;
+        } else if (!video && oldFs && !d.rmvid) video = oldFs;
+        if (oldFs && video !== oldFs) FS.fileStore.del(oldFs.slice(3));
         if (custom) {
           if (String(d.naziv).trim().length < 2) return bad('Unesi naziv vježbe.');
           const lines = (t) => String(t || '').split('\n').map((x) => x.trim()).filter(Boolean);

@@ -191,6 +191,7 @@
 
   /* ================= VJEŽBE ================= */
   function videoEmbed(url) {
+    if (url && /^fs:vid\//.test(url)) return h`<video data-fsvid="${url.slice(3)}" controls playsinline preload="metadata" style="width:100%;border-radius:12px"></video><div class="small muted" data-fsmsg="1">Učitavam video…</div>`;
     if (!url || !/^https:\/\//i.test(url)) return '';
     let m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/);
     if (m) return h`<iframe src="https://www.youtube-nocookie.com/embed/${m[1]}" title="Video uputa" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
@@ -226,7 +227,12 @@
     });
   };
 
-  V.vjezba = (el, p) => {
+  /* video postavljen s računara: učitaj iz skladišta */
+  const loadFsVideos = (el) => el.querySelectorAll('[data-fsvid]').forEach(async (v) => {
+    const msg = v.nextElementSibling, blob = await FS.fileStore.get(v.dataset.fsvid);
+    if (blob) { v.src = URL.createObjectURL(blob); if (msg) msg.remove(); } else if (msg) msg.textContent = 'Video trenutno nije dostupan.';
+  });
+  const vjezba0 = (el, p) => {
     const e = Store.ex(p.id);
     if (!e) { el.innerHTML = h`<div class="empty">Vježba nije pronađena.</div><a class="btn block" href="#/vjezbe">Sve vježbe</a>`; return; }
     el.innerHTML = h`<div class="eyebrow">${e.grupa} · ${e.nivo}</div><h1>${e.naziv}</h1>
@@ -242,6 +248,7 @@
       <div class="card"><h3>Savjeti</h3><ul class="dots">${e.savjeti.map((k) => h`<li>${k}</li>`)}</ul><h3>Česte greške</h3><ul class="dots">${(e.greske || []).map((k) => h`<li>${k}</li>`)}</ul></div>
       <p class="small center">Ako osjetiš bol (a ne samo napor), prekini vježbu i javi se trenerici.</p>`;
   };
+  V.vjezba = (el, p) => { vjezba0(el, p); loadFsVideos(el); };
 
   /* ================= PROGRAMI (prodaja) ================= */
   const lvl = (p) => p.tip === 'vodic' ? 'e-vodič · 42 recepta · dnevni jelovnik' : `${p.nivo} · ${p.sedmica} sedmica · ${p.dana}× sedmično`;

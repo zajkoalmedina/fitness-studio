@@ -72,3 +72,7 @@ begin
   update auth.users set encrypted_password = crypt(p_lozinka, gen_salt('bf')), updated_at = now() where id = p_id;
 end $$;
 grant execute on function public.postavi_lozinku(uuid, text) to authenticated;
+-- Video vježbi postavljen s računara: prijavljene klijentice smiju gledati fajlove iz mape vid/
+drop policy if exists chat_vid_read on storage.objects;
+create policy chat_vid_read on storage.objects for select to authenticated
+  using (bucket_id = 'chat' and (storage.foldername(name))[1] = 'vid');
