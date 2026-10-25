@@ -284,12 +284,12 @@
     const draw = () => {
       el.innerHTML = h`<h1>Programi</h1>${demoBar()}
         <a class="card cream" href="#/dijastaza" style="display:block;color:var(--navy)"><div class="eyebrow" style="color:var(--beige-2)">Kućni program</div><h2>Dijastaza – siguran početak</h2><p class="muted" style="margin:0">Četiri faze, sigurnosne napomene i individualna prilagodba. Besplatno za klijente.</p></a>
-        <a class="card" href="#/trcanje" style="display:block"><div class="eyebrow">Trčanje</div><h3 style="margin:0">Od 0 do 5 km i od 5 do 10 km</h3><p class="muted" style="margin:6px 0 0">Planovi za početnice po sedmicama i kalkulator tempa.</p></a>
         <a class="card" href="#/kondicija" style="display:block"><div class="eyebrow">Kondicija</div><h3 style="margin:0">EMOM, HIIT, AMRAP i Tabata</h3><p class="muted" style="margin:6px 0 0">Intenzivni treninzi s tajmerom koji te vodi kroz vježbe.</p></a>
         <div class="eyebrow mt">Gotovi programi</div>
         ${Store.shop().map((p) => h`<div class="card"><div class="row between"><h3 style="margin:0">${p.naziv}</h3><span class="price-tag" style="font-size:16px;padding:7px 11px">${p.cijena} ${config.valuta}</span></div>
           <div class="small mt-s">${lvl(p)}</div><p class="muted mt-s">${p.opis}</p>
           <div class="row"><a class="btn sm grow" href="${p.tip === 'vodic' ? '#/ishrana?tab=recepti' : '#/program/' + p.id}">${owned(u, p) ? 'Otvori' : 'Pregled'}</a>${owned(u, p) ? '<span class="badge ok">Tvoj program</span>' : h`<button class="btn primary sm grow" data-act="buy" data-id="${p.id}">Kupi</button>`}</div></div>`)}
+        ${[['5k', 'Trčanje: od 0 do 5 km', 'početni · 8 sedmica · 3× sedmično', 'Izmjena trčanja i hodanja, korak po korak do 30 minuta trčanja ili 5 km.'], ['10k', 'Trčanje: od 5 do 10 km', 'početni+ · 10 sedmica · 3× sedmično', 'Lagana trčanja, brže dionice i dugo trčanje do 10 km, uz sedmice rasterećenja.']].map(([k, n, l2, o]) => h`<div class="card"><div class="row between"><h3 style="margin:0">${n}</h3><span class="badge ok">Besplatno za klijentice</span></div><div class="small mt-s">${l2}</div><p class="muted mt-s">${o}</p><div class="row"><a class="btn sm grow" href="#/trcanje?tab=${k}">Otvori plan</a><a class="btn sm grow" href="#/trcanje?tab=kalk">Kalkulator tempa</a></div></div>`)}
         <div class="card flat center"><p class="muted" style="margin:0 0 8px">Želiš program samo za sebe?</p><a class="btn sm" href="#/paketi">Online coaching paketi</a></div>`;
     };
     draw();
