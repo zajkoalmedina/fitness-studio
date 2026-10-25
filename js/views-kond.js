@@ -46,7 +46,26 @@
       lista: [['Thruster s bučicama', '40'], ['Girja zamah (swing)', '40'], ['Penjanje na klupu (step up), bučice', '40'], ['Burpee', '30'], ['Veslanje u pretklonu', '20 po strani']],
       savjet: 'Rastavi velike serije na manje prije nego ti popusti hvat ili tehnika.' }
   ];
+
+  /* kružni treninzi, samo za trenericu */
+  const KR = (id, naziv, rad, odmor, krugova, nivo, oprema, opis, stanice, savjet) => ({ id, naziv, tip: 'INTERVALI', rad, odmor, krugova, nivo, oprema, opis, stanice, savjet, samoTrener: true });
+  FS.KOND.push(
+    KR('krug-8-tijelo', 'Kružni 8 stanica · cijelo tijelo, bez opreme', 40, 20, 3, 'početni', 'Bez opreme', 'Osam stanica, 3 kruga, 40 s rada i 20 s prelaza. Oko 25 minuta. Odmor 2 min između krugova (dodaj ga sama po potrebi).',
+      ['Čučanj', 'Sklek (na koljenima ako treba)', 'Glute bridge', 'Iskoraci unazad', 'Planka na laktovima', 'Jumping jacks', 'Dead bug', 'Bočna planka (naizmjenično)'], 'Redoslijed je napravljen da se naizmjenično opterećuju noge, gornji dio tijela i trup.'),
+    KR('krug-10-bucice', 'Kružni 10 stanica · bučice', 45, 15, 3, 'srednji', 'Bučice, klupa', 'Deset stanica, 3 kruga, 45 s rada i 15 s prelaza. Oko 33 minute.',
+      ['Goblet čučanj', 'Potisak bučicama (klupa ili pod)', 'Rumunsko mrtvo dizanje', 'Veslanje jednom bučicom (lijevo)', 'Iskorak u mjestu (lijeva noga)', 'Potisak iznad glave', 'Veslanje jednom bučicom (desno)', 'Iskorak u mjestu (desna noga)', 'Hip thrust s bučicom', 'Mrtva buba (dead bug)'], 'Balans: noge, potisak, veslanje, hip hinge i trup. Teret biraj tako da zadnjih 5 s svake stanice bude teško.'),
+    KR('krug-12-teretana', 'Kružni 12 stanica · teretana', 40, 20, 2, 'srednji', 'Sprave, bučice, uže', 'Dvanaest stanica, 2 kruga, 40 s rada i 20 s prelaza. Oko 26 minuta. Stanice postavi po teretani da nema čekanja.',
+      ['Leg press', 'Potisak s grudi na spravi', 'Veslanje na spravi', 'Čučanj s bučicom', 'Lat sprava', 'Hip thrust ili most', 'Potisak za ramena bučicama', 'Leg curl', 'Biceps s bučicama', 'Triceps na kablu', 'Planka', 'Veslački ergometar ili bicikl'], 'Prvi krug radi s malo rezerve, u drugom krugu možeš dodati težinu.'),
+    KR('krug-10-kardio', 'Kružni 10 stanica · kondicija', 30, 30, 4, 'srednji', 'Bez opreme ili girja', 'Deset stanica, 4 kruga, 30 s rada i 30 s odmora. Oko 40 minuta, za dane kad hoćeš kondiciju.',
+      ['Skok iz čučnja', 'Alpinisti', 'Burpee (bez skoka ako treba)', 'Skakanje vijače', 'Girja zamah', 'Visoka koljena', 'Sklek', 'Skater skokovi', 'Plank jacks', 'Penjanje na klupu'], 'Ravnomjeran tempo. Ako je prejako, skrati na 3 kruga ili prelazi na lakše varijante bez skoka.'),
+    KR('krug-9-donji', 'Kružni 9 stanica · noge i gluteusi', 45, 15, 3, 'srednji', 'Bučice, guma, klupa', 'Devet stanica, 3 kruga, 45 s rada i 15 s prelaza. Oko 27 minuta.',
+      ['Goblet čučanj', 'Hip thrust', 'Bugarski čučanj (lijeva)', 'Bugarski čučanj (desna)', 'Rumunsko mrtvo dizanje', 'Bočni koraci s gumom', 'Abdukcija s gumom', 'Wall sit', 'Skokovi na klupu'], 'Odmor između krugova 90 s. Ovo je volumen za noge i gluteuse.'),
+    KR('krug-8-gornji', 'Kružni 8 stanica · gornji dio i trup', 40, 20, 3, 'početni', 'Bučice, guma', 'Osam stanica, 3 kruga, 40 s rada i 20 s prelaza. Oko 24 minute.',
+      ['Sklek', 'Veslanje s gumom', 'Potisak za ramena bučicama', 'Face pull s gumom', 'Biceps s bučicama', 'Triceps iza glave', 'Planka s dodirom ramena', 'Superman'], 'Balans potiska i povlačenja: 3 potiska i 3 povlačenja, uz trup.')
+  );
   FS.kond = (id) => FS.KOND.find((k) => k.id === id);
+  const jeTrener = () => { const u = FS.Auth.user(); return !!u && u.role === 'trener'; };
+  const vid = () => FS.KOND.filter((k) => !k.samoTrener || jeTrener());
 
   /* pretvara trening u listu segmenata za tajmer */
   function segments(k) {
@@ -94,13 +113,13 @@
     el.innerHTML = h`<div class="eyebrow">Kondicija</div><h1>Intenzivni treninzi</h1>
       <p class="muted">EMOM, HIIT, AMRAP, Tabata i chipper. Svaki trening ima tajmer koji te vodi kroz vježbe, a rezultat možeš sačuvati.</p>
       ${canKond() ? h`<div class="card note">${SIGURNOST}</div>` : lockCard()}
-      ${FS.KOND.map((k) => h`<a class="card" href="${canKond() ? '#/kond/' + k.id : '#/prijava'}" style="display:block"><div class="row between"><h3 style="margin:0">${k.naziv}</h3><span class="badge">${k.tip}</span></div><div class="small mt-s">${k.nivo} · ${k.oprema}</div><p class="muted mt-s" style="margin-bottom:0">${canKond() ? k.opis : ''}</p></a>`)}`;
+      ${vid().map((k) => h`<a class="card" href="${canKond() ? '#/kond/' + k.id : '#/prijava'}" style="display:block"><div class="row between"><h3 style="margin:0">${k.naziv}</h3><span class="badge">${k.tip}${k.samoTrener ? ' · samo ti' : ''}</span></div><div class="small mt-s">${k.nivo} · ${k.oprema}</div><p class="muted mt-s" style="margin-bottom:0">${canKond() ? k.opis : ''}</p></a>`)}`;
   };
 
   V.kond = (el, p) => {
     if (!canKond()) { el.innerHTML = h`<h1>Kondicija</h1>${lockCard()}`; return; }
     const k = FS.kond(p.id);
-    if (!k) { el.innerHTML = h`<div class="empty">Trening nije pronađen.</div><a class="btn block" href="#/kondicija">Kondicija</a>`; return; }
+    if (!k || (k.samoTrener && !jeTrener())) { el.innerHTML = h`<div class="empty">Trening nije pronađen.</div><a class="btn block" href="#/kondicija">Kondicija</a>`; return; }
     const S = segments(k), u = Auth.user();
     const lista = k.min_lista || k.lista || (k.stanice || []).map((x) => [x, '']);
     const pir = k.tip === 'PIRAMIDA';
