@@ -48,7 +48,7 @@
   ];
 
   /* kružni treninzi, samo za trenericu */
-  const KR = (id, naziv, rad, odmor, krugova, nivo, oprema, opis, stanice, savjet) => ({ id, naziv, tip: 'INTERVALI', rad, odmor, krugova, nivo, oprema, opis, stanice, savjet, samoTrener: true });
+  const KR = (id, naziv, rad, odmor, krugova, nivo, oprema, opis, stanice, savjet) => ({ id, naziv, tip: 'INTERVALI', rad, odmor, krugova, nivo, oprema, opis, stanice, savjet });
   FS.KOND.push(
     KR('krug-8-tijelo', 'Kružni 8 stanica · cijelo tijelo, bez opreme', 40, 20, 3, 'početni', 'Bez opreme', 'Osam stanica, 3 kruga, 40 s rada i 20 s prelaza. Oko 25 minuta. Odmor 2 min između krugova (dodaj ga sama po potrebi).',
       ['Čučanj', 'Sklek (na koljenima ako treba)', 'Glute bridge', 'Iskoraci unazad', 'Planka na laktovima', 'Jumping jacks', 'Dead bug', 'Bočna planka (naizmjenično)'], 'Redoslijed je napravljen da se naizmjenično opterećuju noge, gornji dio tijela i trup.'),
