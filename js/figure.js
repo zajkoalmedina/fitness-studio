@@ -133,7 +133,7 @@
   const W = 260, H = 190, FLOOR = 168;
   const f1 = (n) => n.toFixed(1);
   const line = (a, b, w, c, o) => `<path d="M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${b[0].toFixed(1)} ${b[1].toFixed(1)}" stroke="${c}" stroke-width="${w}" stroke-linecap="round" fill="none"${o ? ` opacity="${o}"` : ''}/>`;
-  const BODY = '#ecdcc6', FAR = '#a99b84', PROP = '#7f93b8';
+  const BODY = '#1b2742', FAR = '#6d7b9c', PROP = '#8ea0c6', PANEL = '#efe7d8';
 
   function frame(id, u, cx, box) {
     const [A, B] = P[id]; const p = solve(mix(A, B, u));
@@ -141,20 +141,33 @@
     const T = (pt) => [pt[0] + dx, pt[1] + dy];
     const hip = T(p.hip), sho = T(p.sho), neck = T(p.neck), head = T(p.head);
     const k1 = T(p.l1.knee), a1 = T(p.l1.ank), t1 = T(p.l1.toe), e1 = T(p.a1.el), w1 = T(p.a1.wr);
-    let s = `<line x1="${(box[0] + 4).toFixed(1)}" y1="${FLOOR + 4}" x2="${(box[0] + box[2] - 4).toFixed(1)}" y2="${FLOOR + 4}" stroke="${PROP}" stroke-width="2" opacity=".55"/>`;
-    const sup = (x0, x1, yTop, r) => `<rect x="${(x0).toFixed(1)}" y="${yTop.toFixed(1)}" width="${(x1 - x0).toFixed(1)}" height="${(FLOOR + 4 - yTop).toFixed(1)}" rx="${r || 3}" fill="${PROP}" opacity=".45"/>`;
+    let s = `<rect x="${box[0].toFixed(1)}" y="${box[1].toFixed(1)}" width="${box[2].toFixed(1)}" height="${box[3].toFixed(1)}" rx="10" fill="${PANEL}"/><line x1="${(box[0] + 6).toFixed(1)}" y1="${FLOOR + 4}" x2="${(box[0] + box[2] - 6).toFixed(1)}" y2="${FLOOR + 4}" stroke="#9aa3b8" stroke-width="2"/>`;
+    const sup = (x0, x1, yTop, r) => `<rect x="${(x0).toFixed(1)}" y="${yTop.toFixed(1)}" width="${(x1 - x0).toFixed(1)}" height="${(FLOOR + 4 - yTop).toFixed(1)}" rx="${r || 3}" fill="${PROP}" opacity=".7"/>`;
     if (p.under === 'bench') s += sup(sho[0] - 20, hip[0] + 16, hip[1] + 7);
     if (p.under === 'shoulder') s += sup(sho[0] - 20, sho[0] + 18, sho[1] + 8);
     if (p.under === 'ankle') s += sup(a1[0] - 20, a1[0] + 22, a1[1] + 5);
     if (p.under === 'ankle2' && p.l2) { const a2 = T(p.l2.ank); s += sup(a2[0] - 18, a2[0] + 18, a2[1] + 5); }
-    // dalji ekstremiteti
-    if (p.a2) { const e2 = T(p.a2.el), w2 = T(p.a2.wr); s += line(sho, e2, 9, FAR) + line(e2, w2, 7.5, FAR); }
-    if (p.l2) { const k2 = T(p.l2.knee), a2 = T(p.l2.ank), t2 = T(p.l2.toe); s += line(hip, k2, 16, FAR) + line(k2, a2, 12.5, FAR) + line(a2, t2, 8, FAR); }
-    
-    // tijelo
-    s += line(hip, k1, 16, BODY) + line(k1, a1, 12.5, BODY) + line(a1, t1, 8, BODY);
-    s += line(hip, sho, 20, BODY) + line(sho, neck, 8, BODY) + `<circle cx="${head[0].toFixed(1)}" cy="${head[1].toFixed(1)}" r="10.5" fill="${BODY}"/>`;
-    s += line(sho, e1, 10, BODY) + line(e1, w1, 8.5, BODY);
+    // oblik tijela: konusni udovi, ženstven torzo, rep
+    const V = (a2, b2) => [b2[0] - a2[0], b2[1] - a2[1]];
+    const tap = (a2, b2, r1, r2, c) => {
+      const d2 = V(a2, b2), L2 = Math.hypot(d2[0], d2[1]) || 1, q = [-d2[1] / L2, d2[0] / L2];
+      const P4 = [[a2[0] + q[0] * r1, a2[1] + q[1] * r1], [b2[0] + q[0] * r2, b2[1] + q[1] * r2], [b2[0] - q[0] * r2, b2[1] - q[1] * r2], [a2[0] - q[0] * r1, a2[1] - q[1] * r1]];
+      return `<path d="M${P4.map((z) => z[0].toFixed(1) + ' ' + z[1].toFixed(1)).join('L')}Z" fill="${c}"/><circle cx="${a2[0].toFixed(1)}" cy="${a2[1].toFixed(1)}" r="${r1}" fill="${c}"/><circle cx="${b2[0].toFixed(1)}" cy="${b2[1].toFixed(1)}" r="${r2}" fill="${c}"/>`;
+    };
+    const lerp2 = (a2, b2, t) => [a2[0] + (b2[0] - a2[0]) * t, a2[1] + (b2[1] - a2[1]) * t];
+    const leg = (kn, an, to, c) => { const m = lerp2(kn, an, 0.32); return tap(hip, kn, 10.5, 6.2, c) + tap(kn, m, 6.2, 6.9, c) + tap(m, an, 6.9, 3.6, c) + tap(an, to, 3.8, 2.4, c) + `<circle cx="${(an[0]).toFixed(1)}" cy="${(an[1]).toFixed(1)}" r="4.2" fill="${c}"/>`; };
+    const arm = (el, wr, c) => tap(sho, el, 5.4, 4.2, c) + tap(el, wr, 4.2, 3.1, c) + `<circle cx="${wr[0].toFixed(1)}" cy="${wr[1].toFixed(1)}" r="3.6" fill="${c}"/>`;
+    const sd = V(hip, sho), sl = Math.hypot(sd[0], sd[1]) || 1, ud = [sd[0] / sl, sd[1] / sl], nf = [-ud[1], ud[0]];
+    const KEY = [[0, 11, 15], [0.1, 13, 19], [0.3, 10.5, 12], [0.5, 11, 10.5], [0.68, 16, 11.5], [0.88, 12, 11], [1, 7.5, 8]];
+    const prof = (f) => { for (let i = 1; i < KEY.length; i++) if (f <= KEY[i][0]) { const k0 = KEY[i - 1], k1 = KEY[i], t = (f - k0[0]) / (k1[0] - k0[0]), m = t * t * (3 - 2 * t); return [k0[1] + (k1[1] - k0[1]) * m, k0[2] + (k1[2] - k0[2]) * m]; } return [KEY[6][1], KEY[6][2]]; };
+    const fr = [], bk = [];
+    for (let i = 0; i <= 24; i++) { const f = i / 24, sp = lerp2(hip, sho, f), pr = prof(f); fr.push([sp[0] + nf[0] * pr[0], sp[1] + nf[1] * pr[0]]); bk.push([sp[0] - nf[0] * pr[1], sp[1] - nf[1] * pr[1]]); }
+    const torso = `<path d="M${fr.concat(bk.reverse()).map((z) => z[0].toFixed(1) + ' ' + z[1].toFixed(1)).join('L')}Z" fill="${BODY}" stroke="${BODY}" stroke-width="2" stroke-linejoin="round"/>`;
+    const hc = head, base = [hc[0] - nf[0] * 7 + ud[0] * 3, hc[1] - nf[1] * 7 + ud[1] * 3], tail = [base[0] - nf[0] * 8, base[1] - nf[1] * 8 + 13];
+    const headS = tap(sho, neck, 5.2, 3.8, BODY) + tap(neck, [hc[0] - ud[0] * 3, hc[1] - ud[1] * 3], 3.8, 3.8, BODY) + `<circle cx="${hc[0].toFixed(1)}" cy="${hc[1].toFixed(1)}" r="9.3" fill="${BODY}"/><circle cx="${(hc[0] + nf[0] * 8.6).toFixed(1)}" cy="${(hc[1] + nf[1] * 8.6).toFixed(1)}" r="2.2" fill="${BODY}"/>` + tap(base, tail, 4.2, 1.6, BODY);
+    if (p.a2) { s += arm(T(p.a2.el), T(p.a2.wr), FAR); }
+    if (p.l2) { s += leg(T(p.l2.knee), T(p.l2.ank), T(p.l2.toe), FAR); }
+    s += leg(k1, a1, t1, BODY) + torso + headS + arm(e1, w1, BODY);
     // oprema
     const wp = (pt) => {
       if (p.w === 'db') return `<rect x="${(pt[0] - 8).toFixed(1)}" y="${(pt[1] - 3.5).toFixed(1)}" width="16" height="7" rx="2.5" fill="#f3b36b"/>`;
@@ -190,7 +203,8 @@
     return (BOXC[id] = [bx, by, w, hh]);
   }
   FS.figureSVG = (id, u, label) => { const b = boxOf(id); return `<svg viewBox="${b.map(f1).join(' ')}" class="fig" role="img" aria-label="${label || 'Prikaz vježbe i mišića'}" xmlns="http://www.w3.org/2000/svg">${frame(id, u, centerX(id), b)}</svg>`; };
-  FS.hasFigure = (id) => !!P[id];
+  /* siluete su isključene dok trenerica ne snimi vlastite videe; za povratak postavi FS.config.siluete = true */
+  FS.hasFigure = (id) => !!P[id] && !!(FS.config && FS.config.siluete);
 
   /* animacija: poziva se nakon prikaza stranice */
   FS.mountFigure = (host, id) => {
