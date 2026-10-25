@@ -65,15 +65,18 @@
   const SHORT = new Set(['Core', 'Mobilnost', 'Disanje']);
   FS.pauza = (x) => {
     if (x == null) return 0;
-    if (x.p != null) return x.p;
+    if (x.p === 0) return 0;                       // superserija ili kontinuirano
+    if (x.p != null && x.p <= 20) return x.p;      // HIIT intervali (npr. 15 s)
     const r = String(x.r || '');
     const e = FS.byEx ? FS.byEx(x.id) : null;
     const g = e ? e.grupa : '';
     if (/min/.test(r) && g === 'Kardio') return 0;
-    if (x.id === 'hodanje' || /^trk/.test(x.id)) return 0;
-    if (HEAVY.has(x.id)) return 90;
-    if (SHORT.has(g) || /\bs\b|sek/.test(r)) return 30;
-    return 60;
+    if (x.id === 'hodanje') return 0;
+    if (g === 'Disanje' || g === 'Mobilnost') return 45;
+    if (SHORT.has(g) || /\bs\b|sek/.test(r) || g === 'Kardio') return 60;   // core i vremenske vježbe
+    const reps = parseInt(r, 10) || 10;
+    if (HEAVY.has(x.id) || reps <= 8) return 120;  // teške složene vježbe ili malo ponavljanja
+    return 90;                                     // ostale vježbe sa opterećenjem
   };
   FS.pauzaTag = (x) => {
     const p = FS.pauza(x);
