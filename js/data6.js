@@ -81,12 +81,12 @@
 
   /* ----- balans pokreta ----- */
   const PAT = {
-    'Horizontalno guranje': ['sklek', 'bench', 'potisakb', 'kosibucice', 'sklekzid', 'stolicasklek'],
+    'Horizontalno guranje': ['floorpress', 'closegrip', 'boardpress', 'sklek', 'bench', 'potisakb', 'kosibucice', 'sklekzid', 'stolicasklek'],
     'Vertikalno guranje': ['ramena', 'potisaksipka', 'arnold', 'zpotisak', 'bocapotisak'],
     'Horizontalno veslanje': ['veslanje', 'veslanjesipka', 'veslanjekabl', 'renegade', 'bocaveslanje', 'veslanjeguma', 'reversepec', 'ytw', 'swimmers'],
     'Vertikalno povlačenje': ['lat'],
-    'Hip hinge': ['rdl', 'rdlsipka', 'jednorodl', 'kbswing', 'kangsquat', 'bocarodl', 'backext', 'reversehyper', 'pullthrough'],
-    'Dominacija koljena': ['cucanj', 'goblet', 'cucanjsipka', 'frontcucanj', 'iskorak', 'iskorakhod', 'bugarski', 'stepup', 'legpress', 'legext', 'sumocucanj', 'lateralnilunge', 'curtsy', 'klizniiskorak', 'zidsjed', 'bocacucanj', 'pistol'],
+    'Hip hinge': ['deadlift', 'blockpull', 'goodmorning', 'ghdraise', 'rdl', 'rdlsipka', 'jednorodl', 'kbswing', 'kangsquat', 'bocarodl', 'backext', 'reversehyper', 'pullthrough'],
+    'Dominacija koljena': ['boxsquat', 'bandknee', 'cucanjskok', 'cucanj', 'goblet', 'cucanjsipka', 'frontcucanj', 'iskorak', 'iskorakhod', 'bugarski', 'stepup', 'legpress', 'legext', 'sumocucanj', 'lateralnilunge', 'curtsy', 'klizniiskorak', 'zidsjed', 'bocacucanj', 'pistol'],
     'Gluteusi': ['hipthrust', 'hipthrust1', 'bridge', 'frogpump', 'singlebridge', 'kickback', 'abdukcija', 'abdgumom', 'sidelift', 'clamshell', 'jastukmost', 'firehydrant'],
     'Core': ['planka', 'deadbug', 'birddog', 'hollow', 'abwheel', 'woodchop', 'bocnaplanka', 'tva', 'flutter', 'skarice', 'crunch', 'twist', 'sklopke', 'planksavijanje', 'mountainclimb']
   };
@@ -161,4 +161,56 @@
         { naziv: 'Faza 3 · Donji B (slobodno)', vj: [x('hipthrust', 3, '10', 'Sa šipkom'), x('legpress', 3, '10'), x('bugarski', 3, '8 po nozi', 'Bez tereta'), x('legcurl', 3, '12'), x('abdgumom', 3, '15')] }]
     });
   }
+
+  /* ----- samo za trenericu: Conjugate (Westside) i pliometrija; dodjeljuješ ih pojedinačno klijentima ----- */
+  const F = (id, s2, r, n, p2) => ({ id, s: s2, r, n: n || '', p: p2, fix: true });
+  const ME = (id, n) => F(id, 1, 'do 1RM', 'Rampa 3–5 serija (1–5 ponavljanja), do maksimuma dana (85–100 % 1RM). ' + (n || ''), 240);
+  const ACC = (id, s2, r, n) => F(id, s2, r, n, 90);
+  const ABS = () => F('abs100', 1, '100', 'Ukupno 100 ponavljanja, biraj 2–3 vježbe za trbuh', 60);
+  const DESQ = (pct) => F('boxsquat', 12, '2', 'Dinamični dan: ' + pct + ' 1RM + 25 % reaktivno opterećenje (lanci ili gume). Maksimalna brzina.', 45);
+  const DEDL = (n, pct) => F('deadlift', n, '1', 'Dinamični dan: ' + pct + ' 1RM + 25 % reaktivno opterećenje. Maksimalna brzina.', 30);
+  const DEBP = (pct) => F('bench', 9, '3', 'Dinamični dan: ' + pct + ' 1RM + reaktivno opterećenje (lanci ili gume). Pauza 60 s nakon svake serije od 3.', 60);
+  FS.GOTOVI.push(
+    { id: 'conjugate', naziv: 'Conjugate · maksimalna i dinamička snaga', opis: 'SAMO ZA TRENERICU: napredni program po Westside (conjugate) sistemu: maksimalni napor, dinamični napor i ponavljani napor, četiri treninga sedmično. Dodjeljuj ga iskusnim klijenticama.', nivo: 'napredni', sedmica: 6, dana: 4, cijena: 0, tip: 'gotov', uShopu: false, samoTrener: true, per: { tip: 'nema', deload: 0 },
+      bilj: [
+        'Samo za iskusne klijentice i uz spotera ili sigurnosne stalke. Nije za početnice.',
+        'Metoda maksimalnog napora: 85–100 % od 1RM, 3–5 serija, 1–5 ponavljanja, pauza 3–5 minuta.',
+        'Dinamična metoda: submaksimalan teret (75–85 % uključujući reaktivno opterećenje), podiže se maksimalnom brzinom. Glavne vježbe se rade 2× sedmično, a između treninga je 72 h oporavka.',
+        'Reaktivno opterećenje (lanci ili gume): teret se mijenja kroz pokret, usporavanje šipke je manje, a ubrzavanje veće. Za gume i lance „25 %“ je okvirni dodatak.',
+        '1RM računaj formulom: težina × (1 + ponavljanja / 30), npr. 50 × (1 + 5/30) = 58,3 kg. U Alatima imaš kalkulator 1RM.',
+        'Sedmice 1–3 su talas (promjena vježbe maksimalnog dana, rast postotaka na dinamičnim danima). Sedmice 4–6 ponavljaju talas: iste vježbe, ali promijeni samo reaktivno opterećenje i pokušaj teže serije.',
+        'Dinamični dani: pauza čučanj oko 45 s, mrtvo dizanje oko 30 s, bench 60 s. Maksimalni dani: 3–5 minuta.',
+        'Skraćenice: RH = hiperekstenzija, GM = good morning, Str leg DL = mrtvo dizanje na ravnim nogama, OA rows = jednoručno veslanje, DB shrugs = podizanje ramena s bučicama, ABS 100 = 100 ponavljanja trbušnih vježbi.',
+        'Pliometrija je u zasebnom programu i radi se na početku treninga, ne na danima maksimuma bez dogovora.'
+      ],
+      dani: [
+        { naziv: 'S1 · Pon · Max effort donji', vj: [ME('boxsquat', 'Kutija 40 cm.'), ACC('backext', 5, '8'), ACC('ghdraise', 5, '8'), F('bandknee', 5, '20', '', 60), ABS()] },
+        { naziv: 'S1 · Sri · Max effort gornji', vj: [ME('floorpress', 'S lancima.'), ACC('potisaksipka', 4, '6', 'Potisak za ramena'), ACC('tricepsrb', 5, '10'), ACC('veslanjesipka', 5, '6'), F('hammer', 3, '15', '', 60)] },
+        { naziv: 'S1 · Pet · Dinamični donji', vj: [DESQ('50 %'), DEDL(8, '60 %'), ACC('backext', 5, '10'), ACC('ghdraise', 5, '8'), F('bandknee', 5, '20', '', 60), ABS()] },
+        { naziv: 'S1 · Sub · Dinamični gornji', vj: [DEBP('35 %'), ACC('potisaksipka', 4, '6', 'Potisak za ramena'), ACC('tricepsrb', 5, '8'), ACC('veslanjesipka', 6, '6'), F('hammer', 3, '15', '', 60)] },
+        { naziv: 'S2 · Pon · Max effort donji', vj: [ME('blockpull', 'Povišenje 10 cm.'), ACC('backext', 5, '12'), ACC('ghdraise', 5, '8'), F('bandknee', 5, '20', '', 60), ABS()] },
+        { naziv: 'S2 · Sri · Max effort gornji', vj: [ME('closegrip', 'Uski hvat, s gumama.'), ACC('potisaksipka', 4, '6', 'Potisak za ramena'), ACC('tricepsrb', 5, '6'), ACC('veslanjesipka', 8, '6'), F('hammer', 3, '15', '', 60)] },
+        { naziv: 'S2 · Pet · Dinamični donji', vj: [DESQ('55 %'), DEDL(10, '55 %'), ACC('backext', 5, '15'), ACC('ghdraise', 5, '8'), F('bandknee', 5, '20', '', 60), ABS()] },
+        { naziv: 'S2 · Sub · Dinamični gornji', vj: [DEBP('40 %'), ACC('potisaksipka', 4, '6', 'Potisak za ramena'), ACC('tricepsrb', 6, '6'), ACC('veslanjesipka', 5, '6'), F('hammer', 3, '15', '', 60)] },
+        { naziv: 'S3 · Pon · Max effort donji', vj: [ME('frontcucanj', 'Uz crvene gume.'), ACC('goodmorning', 5, '6'), ACC('rdlsipka', 5, '8', 'Mrtvo dizanje na ravnim nogama'), ACC('iskorak', 5, '5 po nozi'), ABS()] },
+        { naziv: 'S3 · Sri · Max effort gornji', vj: [ME('boardpress', 'Tri daske.'), ACC('uprightrow', 5, '10'), ACC('tricepskabl', 5, '10'), ACC('veslanje', 3, '10 po strani'), F('shrugs', 3, '10', '', 60)] },
+        { naziv: 'S3 · Pet · Dinamični donji', vj: [DESQ('60 %'), DEDL(10, '50 %'), ACC('goodmorning', 5, '6'), ACC('rdlsipka', 5, '8', 'Mrtvo dizanje na ravnim nogama'), ACC('iskorak', 5, '5 po nozi'), ABS()] },
+        { naziv: 'S3 · Sub · Dinamični gornji', vj: [DEBP('45 %'), ACC('uprightrow', 5, '10'), ACC('tricepskabl', 5, '10'), ACC('veslanje', 3, '10 po strani'), F('shrugs', 3, '10', '', 60)] }]
+    },
+    { id: 'pliometrija', naziv: 'Pliometrija · eksplozivna snaga', opis: 'SAMO ZA TRENERICU: kratki pliometrijski treninzi (oko 40 doskoka). Dodjeljuj ih klijenticama ili ubaci na početak treninga snage.', nivo: 'napredni', sedmica: 4, dana: 3, cijena: 0, tip: 'gotov', uShopu: false, samoTrener: true, per: { tip: 'nema', deload: 0 },
+      bilj: [
+        'Raspored treninga: 10–15 min zagrijavanje, 15 min pliometrija, glavni dio treninga (snaga), pa izdržljivost i istezanje.',
+        'Pliometrija je rezervirana za početak treninga, kad si svježa. Nakon nje radiš glavne ili pomoćne vježbe.',
+        'Optimalno je oko 40 doskoka po treningu. Za početnike je 3×8, za napredne 4×10. Pauza između serija 2 minute.',
+        'Skokovi u dubinu: kutija 60–100 cm; što je kutija viša, stavi 1–2 strunjače da opterećenje bude manje. Kontakt s tlom oko 0,2 s.',
+        'Ko ima povrede koljena (npr. prekinuti ligamenti) ne smije odmah raditi ovo; tek nakon rehabilitacije i oporavka, i prvo lakše varijante, najranije nakon oko 3 mjeseca treninga (jačanje zadnje lože i nogu).',
+        'Mijenjaj visinu, vježbe i broj skokova. Kvalitet je važniji od količine.'
+      ],
+      dani: [
+        { naziv: 'Dan 1 · Početnik', vj: [F('cucanjskok', 3, '8', 'Ukupno oko 40 doskoka s idućom vježbom', 120), F('skokpovisenje', 2, '8', 'Niska kutija', 120)] },
+        { naziv: 'Dan 2 · Srednji', vj: [F('skokudalj', 4, '5', '', 120), F('skaterhop', 4, '5', 'Po strani', 120)] },
+        { naziv: 'Dan 3 · Napredni', vj: [F('dubinskok', 4, '10', 'Kutija 40–100 cm. Oko 40 doskoka. Uz strunjače.', 120)] },
+        { naziv: 'Dan 4 · Napredni B', vj: [F('tuckjump', 4, '5', '', 120), F('lungejump', 4, '5', 'Po nozi', 120)] }]
+    }
+  );
 })();

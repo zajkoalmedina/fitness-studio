@@ -109,4 +109,31 @@
       }
     });
   };
+
+  /* 1RM kalkulator (samo trenerica) */
+  V.rm = (el) => {
+    const u = Auth.user();
+    if (!u || u.role !== 'trener') { el.innerHTML = h`<h1>1RM kalkulator</h1><p class="muted">Dostupno samo trenerici.</p>`; return; }
+    const pcts = [100, 95, 90, 85, 80, 75, 70, 65, 60, 55, 50, 45, 40, 35];
+    el.innerHTML = h`<div class="eyebrow">Alati za trenericu</div><h1>1RM kalkulator</h1>
+      <p class="muted">Formula: težina × (1 + ponavljanja / 30). Npr. 50 kg × 5 = 58,3 kg.</p>
+      <form class="card" data-act="rm"><label>Težina (kg)<input name="w" inputmode="decimal" placeholder="50"></label><label>Ponavljanja<input name="r" inputmode="numeric" placeholder="5"></label><button class="btn block mt-s" type="submit">Izračunaj</button></form>
+      <div id="rmout"></div>`;
+    bind(el, {
+      'submit:rm': (f) => {
+        const x = FS.formData(f), w = parseFloat(String(x.w).replace(',', '.')), r = parseInt(x.r, 10), o = $('#rmout', el);
+        if (!(w > 0) || !(r >= 1)) { o.innerHTML = h`<p class="err">Upiši težinu i broj ponavljanja.</p>`.s; return; }
+        const rm = w * (1 + r / 30), f1 = (v) => (Math.round(v * 10) / 10).toString().replace('.', ',');
+        o.innerHTML = h`<div class="card"><h3>Procijenjeni 1RM: ${f1(rm)} kg</h3>
+          ${pcts.map((q) => h`<div class="row between" style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,.1)"><span>${q} %</span><b>${f1(rm * q / 100)} kg</b></div>`)}
+          <p class="small mt-s">Dinamični dani: postotak glavne šipke + oko 25 % reaktivnog opterećenja (gume ili lanci). Npr. 50 % + 25 % = ${f1(rm * 0.5)} kg + ${f1(rm * 0.25)} kg.</p></div>`.s;
+      }
+    });
+  };
+  const alati1 = V.alati;
+  V.alati = (el, p, q) => {
+    alati1(el, p, q);
+    const u = Auth.user();
+    if (u && u.role === 'trener') el.insertAdjacentHTML('beforeend', h`<a class="card" href="#/rm" style="display:block"><b>1RM kalkulator</b><div class="small muted">Za Conjugate i trening snage</div></a>`.s);
+  };
 })();
