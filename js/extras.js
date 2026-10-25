@@ -130,7 +130,7 @@
     ['11. Opcionalno', [['ciklus', 'Postoje li promjene tokom menstrualnog ciklusa koje primjetno utiču na tvoju energiju, trening ili oporavak?', 'single', ['Ne', 'Da', 'Ne želim odgovoriti']], ['ciklusO', 'Ako želiš, opiši', 'area']]]
   ];
   FS.UPITNIK = U;
-  const myUp = (userId) => (Store.db.upitnici || []).find((x) => x.userId === userId);
+  const myUp = (userId) => (Store.db.upitnici || []).find((x) => x.userId === userId && !x.tip);
 
   const qHtml = ([k, t, tip, o], a) => {
     const v = a[k];
@@ -144,6 +144,7 @@
     return '';
   };
 
+  FS.ODGOVORNOST = 'Na treninge i program pristupam na vlastitu odgovornost. Trener nije zamjena za ljekara, a program ne predstavlja medicinski savjet. Ako imam bol, povredu ili zdravstveni problem, prije treninga se javljam ljekaru ili fizioterapeutu.';
   FS.IZJAVA = 'Potvrđujem da sam navedene podatke dao/la tačno prema svom trenutnom znanju i da ću treneru prijaviti promjene koje mogu biti relevantne za sigurno provođenje treninga. Razumijem da treniram na vlastitu odgovornost i da trener ne zamjenjuje ljekara.';
 
   V.upitnik = (el) => {
@@ -157,6 +158,7 @@
           ${U.map(([naslov, qs, napomena]) => h`<div class="card"><h3>${naslov}</h3>${qs.map((q) => qHtml(q, a))}${napomena ? h`<p class="small">${napomena}</p>` : ''}</div>`)}
           <div class="card cream"><h3>Izjava klijenta / klijentice</h3><p class="small">${FS.IZJAVA}</p>
             <label class="check"><input type="checkbox" name="izjava" ${cur && cur.izjava ? 'checked' : ''}><span>Slažem se s izjavom</span></label></div>
+          <div class="card alert"><b>Važna napomena:</b> ${FS.ODGOVORNOST}</div>
           <p class="err" id="uerr" hidden></p><button class="btn primary block" type="submit">Sačuvaj upitnik</button></form>`
     : h`<div class="card flat center"><p class="muted" style="margin:0 0 8px">Za online popunjavanje prijavi se (račun dobijaš uz pozivnicu trenera).</p><a class="btn primary sm" href="#/prijava">Prijava</a></div>`}`;
     bind(el, {
@@ -170,15 +172,32 @@
         Store.db.upitnici = Store.db.upitnici || [];
         let x = myUp(u.id);
         if (x) { x.odg = odg; x.datum = today(); x.izjava = true; x.ts = Date.now(); } else Store.db.upitnici.push({ id: uid(), userId: u.id, datum: today(), ts: Date.now(), izjava: true, odg });
-        Store.save(); toast('Upitnik je sačuvan.'); location.hash = '#/moj';
+        Store.save(); x = myUp(u.id);
+        const em = (Store.db.postavke || {}).trenerEmail, body = FS.upitnikText(x, u.ime);
+        if (em) {
+          FS.openSheet(h`<h2>Upitnik je sačuvan</h2><p class="muted">Trenerica ga vidi u aplikaciji. Ako želiš, pošalji joj ga i e-mailom.</p>
+            <a class="btn primary block" href="${'mailto:' + em + '?subject=' + encodeURIComponent('Upitnik: ' + u.ime) + '&body=' + encodeURIComponent(body.slice(0, 1800))}">Pošalji e-mailom</a>
+            <button class="btn block mt-s" data-act="cl">Zatvori</button>`, (s) => bind(s, { 'click:cl': () => { FS.closeSheet(); location.hash = '#/moj'; } }));
+        } else { toast('Upitnik je sačuvan.'); location.hash = '#/moj'; }
       }
     });
   };
 
+  FS.upitnikText = (x, ime) => {
+    const a = x.odg || {}, out = ['UPITNIK ZA NOVOG KLIJENTA', 'Klijent / klijentica: ' + (ime || ''), 'Datum: ' + x.datum, ''];
+    U.forEach(([naslov, qs]) => {
+      const L = [];
+      qs.forEach(([k, t, tip]) => { let v = a[k]; if (Array.isArray(v)) v = v.join(', '); if (tip === 'yn' && a[k + '_o']) v = (v || '') + ' – ' + a[k + '_o']; if (v) L.push('- ' + t + ' ' + v); });
+      if (L.length) out.push(naslov, ...L, '');
+    });
+    out.push('IZJAVA: ' + FS.IZJAVA, '', 'NAPOMENA: ' + FS.ODGOVORNOST);
+    return out.join('\n');
+  };
   FS.upitnikBanner = (u) => (myUp(u.id) ? '' : h`<div class="card note"><b>Popuni upitnik</b><div class="small">Kratak upitnik za nove klijente, da ti mogu prilagoditi program.</div><a class="btn sm primary mt-s" href="#/upitnik">Popuni upitnik</a></div>`);
 
   FS.upitnikCard = (u) => {
     const x = myUp(u.id);
+    if (x && !x.vid) { x.vid = true; Store.save(); }
     if (!x) return h`<div class="card"><h3>Upitnik</h3><p class="muted" style="margin:0">Klijent / klijentica još nije popunio/la upitnik.</p></div>`;
     const a = x.odg || {};
     const rows = U.map(([naslov, qs]) => {
@@ -201,12 +220,14 @@
     if (e.tip === 'odmor') return 'Odmor';
     if (e.tip === 'kond') return 'Kondicija (EMOM / HIIT / AMRAP)';
     if (e.tip === 'kardio') return 'Kardio / hodanje';
+    if (e.tip === 'dij') return 'Dijastaza: ' + ((FS.DIJASTAZA.faze[e.faza] || {}).naziv || 'program');
     const pr = Store.program(e.programId), dn = pr && pr.dani[e.dan];
     return pr ? pr.naziv + (dn ? ': ' + dn.naziv : '') : 'Trening';
   };
   const planOptions = (u) => {
     const o = [['', '— nije određeno —'], ['odmor', 'Odmor']];
     Store.userPrograms(u).filter((pr) => FS.access(u, pr).on).forEach((pr) => pr.dani.forEach((dn, i) => o.push(['p|' + pr.id + '|' + i, pr.naziv + ': ' + dn.naziv])));
+    if (FS.DIJASTAZA) FS.DIJASTAZA.faze.forEach((f, i) => o.push(['dij|' + i, 'Dijastaza: ' + f.naziv]));
     o.push(['kond', 'Kondicija (EMOM / HIIT / AMRAP)'], ['kardio', 'Kardio / hodanje']);
     return o;
   };
@@ -214,7 +235,7 @@
     const start = planStart[u.id] || FS.weekStart(today()), o = planOptions(u);
     const days = Array.from({ length: 7 }, (_, i) => addDays(start, i));
     const cur = (iso) => rasp().find((e) => e.userId === u.id && e.datum === iso);
-    const val = (e) => (!e ? '' : e.tip === 'dan' ? 'p|' + e.programId + '|' + e.dan : e.tip);
+    const val = (e) => (!e ? '' : e.tip === 'dan' ? 'p|' + e.programId + '|' + e.dan : e.tip === 'dij' ? 'dij|' + e.faza : e.tip);
     return h`<div class="card"><h3>Raspored treninga</h3>
       <p class="small muted">Za svaki dan izaberi šta klijent / klijentica radi. To se prikazuje u njegovom / njenom prostoru, s dugmetom „Započni“. Najprije dodijeli program iznad.</p>
       <div class="row between mb"><button class="btn sm" data-planshift="-7" data-uid="${u.id}">← Ranije</button><b>${dl(days[0])} – ${dl(days[6])}</b><button class="btn sm" data-planshift="7" data-uid="${u.id}">Dalje →</button></div>
@@ -238,7 +259,7 @@
         Store.db.raspored = rasp().filter((x) => !(x.userId === uidv && x.datum === iso));
         if (!v) continue;
         const en = { id: uid(), userId: uidv, datum: iso, nota, ts: Date.now() };
-        if (v.startsWith('p|')) { const [, pid, di] = v.split('|'); Object.assign(en, { tip: 'dan', programId: pid, dan: +di }); } else en.tip = v;
+        if (v.startsWith('dij|')) Object.assign(en, { tip: 'dij', faza: +v.split('|')[1] }); else if (v.startsWith('p|')) { const [, pid, di] = v.split('|'); Object.assign(en, { tip: 'dan', programId: pid, dan: +di }); } else en.tip = v;
         Store.db.raspored.push(en);
       }
       Store.save(); toast('Raspored sačuvan.'); FS.rerender();
@@ -255,8 +276,20 @@
     return h`<div class="card cream"><div class="eyebrow" style="color:var(--beige-2)">Moj raspored</div>
       ${list.map((e) => { const pr = e.tip === 'dan' ? Store.program(e.programId) : null; const can = pr && FS.access(u, pr).on;
         return h`<div class="row between" style="padding:8px 0;border-bottom:1px solid rgba(10,22,48,.12)"><div><b>${dl(e.datum)}${e.datum === t ? ' · danas' : ''}</b><div class="small">${entryLabel(e)}${e.nota ? ' · ' + e.nota : ''}</div></div>
-          ${done(e.datum) && e.tip !== 'odmor' ? h`<span class="badge ok">urađeno</span>` : (can ? h`<a class="btn sm primary" href="#/trening/novi?p=${pr.id}&d=${e.dan}&w=${FS.currentWeek(u, pr)}">Započni</a>` : '')}</div>`; })}</div>`;
+          ${done(e.datum) && e.tip !== 'odmor' ? h`<span class="badge ok">urađeno</span>` : (e.tip === 'dij' ? h`<a class="btn sm primary" href="#/trening/novi?p=dijastaza&f=${e.faza}">Započni</a>` : can ? h`<a class="btn sm primary" href="#/trening/novi?p=${pr.id}&d=${e.dan}&w=${FS.currentWeek(u, pr)}">Započni</a>` : '')}</div>`; })}</div>`;
   };
+
+  /* ================= POSTAVKE: e-mail za upitnike ================= */
+  FS.postavkeCard = () => h`<form class="card" data-act="postavke" novalidate><h3>E-mail za upitnike</h3>
+    <p class="small muted">Kad klijent popuni upitnik, ponudit će mu se slanje na ovu adresu. Upitnik uvijek vidiš i u aplikaciji.</p>
+    <label class="field"><span>Tvoj e-mail</span><input name="em" type="email" autocapitalize="off" value="${(Store.db.postavke || {}).trenerEmail || ''}" placeholder="npr. ime@gmail.com"></label>
+    <button class="btn sm primary" type="submit">Sačuvaj</button></form>`;
+  document.addEventListener('submit', (e) => {
+    const f = e.target; if (!(f.matches && f.matches('form[data-act=postavke]'))) return;
+    e.preventDefault(); const em = String(new FormData(f).get('em') || '').trim().toLowerCase();
+    if (em && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) { toast('Unesi ispravnu e-mail adresu.'); return; }
+    Store.db.postavke = Object.assign({}, Store.db.postavke, { trenerEmail: em }); Store.save(); toast('Sačuvano.');
+  });
 
   /* ================= PDF VODIČ ZA ISHRANU ================= */
   const pdfInfo = () => (Store.db && Store.db.pdfVodic && Store.db.pdfVodic.path ? Store.db.pdfVodic : null);
@@ -409,7 +442,7 @@
     if (u && u.role === 'trener') return Store.exercises();
     const ids = new Set();
     Store.allPrograms().filter((p) => FS.access(u, p).on).forEach((p) => (p.dani || []).forEach((d) => (d.vj || []).forEach((x) => ids.add(x.id))));
-    if (FS.DIJASTAZA) FS.DIJASTAZA.faze.forEach((f) => f.dani.forEach((d) => d.vj.forEach((x) => ids.add(x.id))));
+    if (FS.DIJASTAZA && u) FS.DIJASTAZA.faze.forEach((f) => f.dani.forEach((d) => d.vj.forEach((x) => ids.add(x.id))));
     return Store.exercises().filter((e) => ids.has(e.id));
   };
   const vjezbe0 = V.vjezbe, vjezba0 = V.vjezba;
@@ -471,6 +504,64 @@
       FS.onLeave(() => { io.disconnect(); doc.destroy(); });
       host.addEventListener('dblclick', (ev) => { const b = ev.target.closest('.pdfpg'); if (b) b.classList.toggle('zoom'); });
     } catch (e) { host.innerHTML = '<div class="card alert">Vodič se trenutno ne može prikazati. Provjeri internet i pokušaj ponovo.</div>'; console.warn(e); }
+  };
+
+
+  /* ================= DIJASTAZA: zatvoren program, besplatan za klijente ================= */
+  const dijDoc = (u) => { const L = (Store.db.upitnici = Store.db.upitnici || []); return L.find((x) => x.userId === u.id && x.tip === 'dijack'); };
+  V.dijastaza = (el) => {
+    const D = FS.DIJASTAZA, u = Auth.user();
+    if (!u) {
+      el.innerHTML = h`<div class="eyebrow">Kućni program</div><h1>Dijastaza recti</h1>
+        <div class="card cream"><div class="row"><span style="width:26px">${icon('lock')}</span><div class="grow" style="color:var(--navy)"><b>Besplatno za klijente</b><div class="small">Program od 8 sedmica u 4 faze za sigurno vraćanje treningu nakon trudnoće. Otključava se kad dobiješ račun od trenera.</div></div></div></div>
+        <a class="btn primary block mb" href="#/prijava">Prijava</a><a class="btn block" href="#/paketi?tab=personalni">Kontakt i paketi</a>`;
+      return;
+    }
+    const isK = u.role === 'klijentica';
+    const draw = () => {
+      const d = isK ? dijDoc(u) : { faza: 0 }, ack = !isK || !!d, cur = d ? Math.min(d.faza || 0, 4) : 0;
+      const odgovori = Store.db.poruke.filter((m) => m.userId === u.id && m.tip === 'dijastaza');
+      const phase = (f, i) => {
+        const state = i < cur ? 'urađena' : i === cur ? 'trenutna' : 'sljedeća';
+        return h`<details class="card" ${i === cur || !isK ? 'open' : ''}><summary style="cursor:pointer"><div class="row between"><b style="font-family:var(--serif);font-size:18px">${f.naziv}</b><span class="badge ${i < cur ? 'ok' : i === cur ? 'warn' : ''}">${state}</span></div><div class="small">${f.sedmice} · ${f.dana}</div></summary>
+          <p class="muted mt-s">${f.cilj}</p>
+          <ul class="clean">${f.dani[0].vj.map((x) => { const e = Store.ex(x.id); if (!e) return ''; return h`<li>${FS.hasFigure(e.id) ? h`<a href="#/vjezba/${e.id}" class="ph figph" aria-hidden="true" tabindex="-1">${FS.raw(FS.figureSVG(e.id, 1, ''))}</a>` : ''}<div class="grow"><a href="#/vjezba/${e.id}"><b style="color:var(--cream)">${e.naziv}</b></a>${x.n ? h`<div class="small">${x.n}</div>` : ''}</div><b>${x.s} × ${x.r}</b></li>`; })}</ul>
+          ${isK ? h`<a class="btn primary block mt-s" href="#/trening/novi?p=dijastaza&f=${i}">Započni trening</a>` : ''}
+          ${isK && i === cur ? h`<button class="btn block mt-s" data-act="next" data-i="${i}">Završila sam ovu fazu</button>` : ''}</details>`;
+      };
+      el.innerHTML = h`<div class="eyebrow">Kućni program · besplatno za klijente</div><h1>Dijastaza recti</h1>
+        <p class="muted">Razdvojenost ravnih trbušnih mišića (najčešće nakon trudnoće). Program je blag i postepen: disanje, dubinska stabilnost i kontrola, pa tek onda snaga.</p>
+        <div class="stats"><div class="stat"><b>8</b><span>sedmica</span></div><div class="stat"><b>4</b><span>faze</span></div><div class="stat"><b>3–4×</b><span>sedmično</span></div></div>
+        <div class="card alert"><h3>Prije nego počneš</h3><ul class="dots">${D.prijeStarta.map((t) => h`<li>${t}</li>`)}</ul></div>
+        <div class="card"><h3>Prekini vježbanje i javi se ljekaru ili fizioterapeutu ako:</h3><ul class="clean">${D.stop.map((t) => h`<li><span class="tick no">!</span><span>${t}</span></li>`)}</ul></div>
+        ${ack ? '' : h`<div class="card cream"><h3>Potvrda</h3><label class="check" style="color:var(--navy)"><input type="checkbox" data-act="ackbox"><span>Razumijem da ovo nije medicinski savjet te da sam se konsultovala (ili ću se konsultovati) s ljekarom ili fizioterapeutom prije vježbanja.</span></label><button class="btn primary block mt-s" data-act="ack" disabled>Otključaj program</button></div>`}
+        ${ack ? h`<h2 class="mt">Program po fazama</h2>
+          ${isK ? h`<div class="progress mb" role="progressbar" aria-valuenow="${cur}" aria-valuemax="4"><i style="width:${Math.min(100, (cur / 4) * 100)}%"></i></div><div class="small mb">${cur >= 4 ? 'Završila si sve četiri faze. Svaka čast!' : 'Faza ' + (cur + 1) + ' od 4'}</div>` : ''}
+          ${D.faze.map(phase)}
+          <div class="card note"><b>Kada preći na sljedeću fazu?</b><p class="muted mt-s" style="margin:0">${D.napredovanje}</p></div>
+          <div class="card"><h3>Izbjegavaj u početku</h3><ul class="clean">${D.izbjegavaj.map((t) => h`<li><span class="tick no">✕</span><span>${t}</span></li>`)}</ul></div>
+          <details class="card"><summary style="cursor:pointer;font-weight:600">Orijentaciona samoprovjera razmaka</summary><ol class="steps mt-s">${D.samotest.map((t) => h`<li><span>${t}</span></li>`)}</ol></details>` : ''}
+        <div class="card"><h2>Individualna prilagodba</h2>
+          <p class="muted">Opiši svoju situaciju (koliko je prošlo od porođaja, šta je rekao ljekar ili fizioterapeut, bolovi, ograničenja). Trener ti prilagođava program.</p>
+          ${odgovori.map((m) => h`<div class="card flat"><div class="small">${fmtDate(m.datum)} · ${m.status === 'obradjeno' ? 'odgovoreno' : 'čeka odgovor'}</div><p style="margin:6px 0">${m.tekst}</p>${m.odgovor ? h`<div class="card cream" style="margin:0"><b>Odgovor trenera:</b><br>${m.odgovor}</div>` : ''}</div>`)}
+          ${isK ? h`<form data-act="adapt" novalidate><label class="field"><span>Tvoja poruka</span><textarea name="t" maxlength="1200" placeholder="Opiši situaciju…"></textarea></label><p class="err" id="aerr" hidden></p><button class="btn primary block" type="submit">Pošalji treneru</button></form>` : ''}
+        </div>`;
+    };
+    draw();
+    bind(el, {
+      'change:ackbox': (c) => { $('[data-act=ack]', el).disabled = !c.checked; },
+      'click:ack': () => { Store.db.upitnici.push({ id: 'dij_' + u.id, userId: u.id, tip: 'dijack', datum: today(), faza: 0 }); Store.save(); draw(); window.scrollTo(0, 0); },
+      'click:next': async () => {
+        if (!await FS.confirmSheet({ title: 'Završena faza?', text: D.napredovanje, ok: 'Da, idem dalje' })) return;
+        const d = dijDoc(u); d.faza = Math.min(4, (d.faza || 0) + 1); Store.save(); draw();
+      },
+      'submit:adapt': (f) => {
+        const t = String(formData(f).t || '').trim(), e = $('#aerr', el);
+        if (t.length < 10) { e.textContent = 'Napiši malo više detalja (najmanje 10 znakova).'; e.hidden = false; return; }
+        Store.db.poruke.push({ id: uid(), userId: u.id, tip: 'dijastaza', tekst: t.slice(0, 1200), datum: today(), status: 'novo', odgovor: '' });
+        Store.save(); toast('Poruka poslana treneru.'); draw();
+      }
+    });
   };
 
   /* ================= POČETNA: programi i vodič vidljivi prije registracije ================= */

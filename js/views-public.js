@@ -284,7 +284,7 @@
     const u = Auth.user();
     const draw = () => {
       el.innerHTML = h`<h1>Programi</h1>${demoBar()}
-        <a class="card cream" href="#/dijastaza" style="display:block;color:var(--navy)"><div class="eyebrow" style="color:var(--beige-2)">Kućni program</div><h2>Dijastaza – siguran početak</h2><p class="muted" style="margin:0">Četiri faze, sigurnosne napomene i mogućnost individualne prilagodbe. Besplatno.</p></a>
+        <a class="card cream" href="#/dijastaza" style="display:block;color:var(--navy)"><div class="eyebrow" style="color:var(--beige-2)">Kućni program</div><h2>Dijastaza – siguran početak</h2><p class="muted" style="margin:0">Četiri faze, sigurnosne napomene i individualna prilagodba. Besplatno za klijente.</p></a>
         <a class="card" href="#/kondicija" style="display:block"><div class="eyebrow">Kondicija</div><h3 style="margin:0">EMOM, HIIT, AMRAP i Tabata</h3><p class="muted" style="margin:6px 0 0">Intenzivni treninzi s tajmerom koji te vodi kroz vježbe.</p></a>
         <div class="eyebrow mt">Gotovi programi</div>
         ${Store.shop().map((p) => h`<div class="card"><div class="row between"><h3 style="margin:0">${p.naziv}</h3><span class="price-tag" style="font-size:16px;padding:7px 11px">${p.cijena} ${config.valuta}</span></div>
