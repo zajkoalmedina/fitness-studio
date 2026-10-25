@@ -143,7 +143,7 @@
   /* ----- Gore i dolje: prilagođeno početnicama, od sprava prema slobodnim težinama ----- */
   { const ul = FS.GOTOVI.find((g) => g.id === 'upperlower4');
     if (ul) Object.assign(ul, {
-      naziv: 'Gore i dolje · 4 dana', nivo: 'početni', sedmica: 9, dana: 4, per: { tip: 'nema', deload: 0 },
+      naziv: 'Cijelo tijelo · 4 dana', nivo: 'početni', sedmica: 9, dana: 4, per: { tip: 'nema', deload: 0 },
       opis: 'Devet sedmica podjele gornji/donji dio tijela, četiri puta sedmično. Prve tri sedmice na spravama zbog kontrole, zatim bučice, a na kraju slobodne težine.',
       bilj: ['Tri faze po tri sedmice: sedmice 1–3 = Faza 1 (sprave), 4–6 = Faza 2 (bučice), 7–9 = Faza 3 (slobodne težine).', 'Raspored: gornji, donji, odmor, gornji, donji (npr. pon, uto, čet, pet).', 'Počni lakim teretom i nauči pokret. Zadnja dva ponavljanja trebaju biti teža, ali čista.', 'U sljedeću fazu prelazi kad su ti vježbe iz trenutne faze sigurne.', 'Pauze između serija su napisane uz svaku vježbu (90 do 120 s).'],
       dani: [

@@ -165,7 +165,7 @@
   /* bolji nazivi i nešto niže cijene gotovih programa (trenerica ih može mijenjati u panelu) */
   const NOVI = {
     fullbody: ['Prvi koraci · full body', 39], kuca: ['Kućna snaga · bez opreme', 29], pocetnice3: ['Snažni temelji · 3 dana', 39],
-    upperlower4: ['Gore i dolje · 4 dana', 49], gluteus: ['Glute balans · 8 sedmica', 49], glutefb4: ['Glute fokus · 4 dana', 59], napredni5: ['Glute Pro · 5 dana', 69]
+    upperlower4: ['Cijelo tijelo · 4 dana', 49], gluteus: ['Glute balans · 8 sedmica', 49], glutefb4: ['Glute fokus · 4 dana', 59], napredni5: ['Glute Pro · 5 dana', 69]
   };
   FS.GOTOVI.forEach((g) => { if (NOVI[g.id]) { g.naziv = NOVI[g.id][0]; g.cijena = NOVI[g.id][1]; } });
   /* cijene paketa mogu se promijeniti u trenerskom panelu */
