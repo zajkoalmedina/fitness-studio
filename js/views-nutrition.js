@@ -29,6 +29,7 @@
         ${tab === 'vodic' ? (has() ? FS.pdfTab() : lockBox()) : ''}${tab === 'principi' ? principi() : ''}${tab === 'recepti' ? recepti() : ''}${tab === 'jelovnik' ? jelovnik() : ''}${tab === 'pitanja' ? pitanja() : ''}
         <div class="card alert mt"><b>Važno:</b> ovaj vodič je opšta edukacija i ne zamjenjuje savjet ljekara ili nutricioniste. Ako imaš zdravstvene tegobe, poremećaj ishrane, trudnoća ili dojenje, ili ti je ishrana izvor straha ili brige, javi se stručnoj osobi.</div>`;
       if (tab === 'vodic' && has() && FS.pdfMount) FS.pdfMount(el);
+      if (FS.recFotoLoad) FS.recFotoLoad(el);
     };
 
     const principi = () => h`
@@ -53,6 +54,7 @@
     const lockBox = () => h`<div class="card note"><div class="row"><span style="width:26px">${icon('lock')}</span><div class="grow"><b>${prod().naziv}</b><div class="small">42 recepta sa sastojcima i pripremom + Moj dnevni jelovnik. Cijena ${prod().cijena} ${FS.config.valuta}.</div></div></div><button class="btn primary block mt-s" data-act="buy">Kupi vodič</button></div>`;
     const kartica = (r, open) => h`<details class="card" ${open ? 'open' : ''}><summary style="cursor:pointer"><div class="row between"><b>${r.naziv}</b><span class="badge">${r.obrok}</span></div>
       <div class="small">${r.kcal} kcal · P ${fx(r.p)} · UH ${fx(r.uh)} · M ${fx(r.m)}${r.cilj ? ' · ' + r.cilj : ''}</div></summary>
+      ${FS.recFoto ? FS.recFoto(r.id) : ''}
       <h3 class="mt-s">Sastojci (1 porcija)</h3><ul class="dots">${r.sast.map((x) => h`<li>${x}</li>`)}</ul>
       <h3>Priprema</h3><p style="margin:0">${r.priprema || 'Pripremi prema popisu sastojaka.'}</p>
       ${r.okvir ? h`<p class="small mt-s">Makroi su okvirna procjena za pretpostavljenu porciju.</p>` : ''}${r.jogurt100 ? h`<p class="small mt-s">Podaci po 100 g proizvoda, provjeri etiketu pakovanja.</p>` : ''}</details>`;

@@ -10,7 +10,7 @@
   const BASE = cfg.url.replace(/\/$/, ''), KEY = cfg.key;
   const SK = 'fs_sb_session';
   const COLLS = ['logs', 'mjere', 'poruke', 'chat', 'kupovine', 'prijave', 'programi', 'zahtjevi', 'upitnici', 'raspored', 'uplate', 'pozivnice'];
-  const CONFIGS = ['vjezbeMod', 'vjezbeNove', 'programMod', 'cijene', 'pdfVodic', 'postavke'];
+  const CONFIGS = ['vjezbeMod', 'vjezbeNove', 'programMod', 'cijene', 'pdfVodic', 'postavke', 'recFoto'];
   const PROF = ['ime', 'telefon', 'programi', 'pstart', 'paket', 'jelovnik', 'aktivan', 'mora_promijeniti', 'dob', 'saglasnost'];
   const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
