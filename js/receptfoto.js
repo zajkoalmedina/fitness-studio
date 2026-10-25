@@ -4,12 +4,13 @@
   const { h, toast, Store } = FS;
   const cache = new Map();
   const jeT = () => { const u = FS.Auth.user(); return !!u && u.role === 'trener'; };
+  FS.RECEPT_FOTO = new Set(['r01', 'r03', 'r04', 'r05', 'r08', 'r09', 'r10', 'r11', 'r12', 'r13', 'r14', 'r17', 'r19', 'r22', 'r24', 'r26', 'r27', 'r31', 'r32', 'r33', 'r34', 'r36', 'r37', 'r39', 'r40']);
   const path = (id) => ((Store.db && Store.db.recFoto) || {})[id] || '';
 
   FS.recFoto = (id) => {
-    const p = path(id);
-    return h`${p ? h`<div class="recimg" style="margin:10px 0;border-radius:14px;overflow:hidden;background:rgba(255,255,255,.05);aspect-ratio:16/10"><img data-recimg="${p}" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>` : ''}
-      ${jeT() ? h`<label class="btn sm" style="display:inline-block;margin:6px 0;cursor:pointer">${p ? 'Zamijeni sliku' : 'Dodaj sliku jela'}<input type="file" accept="image/*" data-recup="${id}" style="display:none"></label>${p ? h` <button class="btn sm danger" data-recrm="${id}">Ukloni sliku</button>` : ''}` : ''}`;
+    const p = path(id), st = FS.RECEPT_FOTO.has(id) ? 'images/recepti/' + id + '.jpg' : '';
+    return h`${p ? h`<div class="recimg" style="margin:10px 0;border-radius:14px;overflow:hidden;background:rgba(255,255,255,.05);aspect-ratio:16/10"><img data-recimg="${p}" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>` : st ? h`<div class="recimg" style="margin:10px 0;border-radius:14px;overflow:hidden;background:rgba(255,255,255,.05);aspect-ratio:16/10"><img src="${st}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block"></div>` : ''}
+      ${jeT() ? h`<label class="btn sm" style="display:inline-block;margin:6px 0;cursor:pointer">${p || st ? 'Zamijeni sliku' : 'Dodaj sliku jela'}<input type="file" accept="image/*" data-recup="${id}" style="display:none"></label>${p ? h` <button class="btn sm danger" data-recrm="${id}">Ukloni sliku</button>` : ''}` : ''}`;
   };
   FS.recFotoLoad = (el) => el.querySelectorAll('img[data-recimg]').forEach(async (im) => {
     const p = im.dataset.recimg; let u = cache.get(p);
