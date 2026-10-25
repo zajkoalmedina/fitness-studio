@@ -202,7 +202,7 @@
     const builtin = !!src && FS.GOTOVI.some((x) => x.id === src.id);
     const za = q.za && Store.user(q.za) ? q.za : null;
     const P = src ? JSON.parse(JSON.stringify(src)) : { id: 'p_' + uid(), naziv: za ? 'Individualni program – ' + Store.user(za).ime : '', opis: '', nivo: 'početni', sedmica: 4, dana: 3, cijena: 0, tip: za ? 'individualni' : 'gotov', uShopu: false, dani: [{ naziv: 'Dan 1', vj: [] }] };
-    const exOpts = () => Store.exercises().map((e) => [e.id, `${e.naziv} (${e.grupa})`]);
+    const exOpts = () => Store.exercises().map((e) => [e.id, `${e.grupa} · ${e.nivo} · ${e.naziv}`]);
 
     const draw = () => {
       el.innerHTML = h`<a href="#/trener?tab=programi" class="small">← Programi</a><h1 class="mt-s">${isNew ? 'Novi program' : 'Uredi program'}</h1>

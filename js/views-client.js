@@ -185,7 +185,7 @@
       'click:addset': (t) => { const v = d.vjezbe[t.dataset.vi], l = v.serije[v.serije.length - 1] || { kg: '', rep: '' }; v.serije.push({ kg: l.kg, rep: l.rep, ok: false }); save(); draw(); },
       'click:rmex': (t) => { d.vjezbe.splice(+t.dataset.vi, 1); save(); draw(); },
       'click:addex': () => {
-        const draw2 = (qs) => { const r = (FS.allowedExercises ? FS.allowedExercises(u) : Store.exercises()).filter((e) => !qs || e.naziv.toLowerCase().includes(qs.toLowerCase())); return h`${r.map((e) => h`<button class="ex" style="width:100%;text-align:left;font:inherit" data-act="pick" data-id="${e.id}"><div class="grow"><b>${e.naziv}</b><div class="small">${e.grupa}</div></div></button>`)}`.s; };
+        const draw2 = (qs) => { const r = (FS.allowedExercises ? FS.allowedExercises(u) : Store.exercises()).filter((e) => !qs || e.naziv.toLowerCase().includes(qs.toLowerCase())); return h`${r.map((e) => h`<button class="ex" style="width:100%;text-align:left;font:inherit" data-act="pick" data-id="${e.id}"><div class="grow"><b>${e.naziv}</b><div class="small">${e.grupa} · ${e.nivo}</div></div></button>`)}`.s; };
         openSheet(h`<h2>Dodaj vježbu</h2><label class="field"><input type="search" data-act="sq" placeholder="Pretraži…"></label><div id="pl">${FS.raw(draw2(''))}</div>`, (s) => bind(s, {
           'input:sq': (i) => { $('#pl', s).innerHTML = draw2(i.value); },
           'click:pick': (b) => { const last = Store.lastSets(u.id, b.dataset.id); d.vjezbe.push({ id: b.dataset.id, cilj: '', serije: Array.from({ length: 3 }, (_, i) => ({ kg: last && last[i] && last[i].kg ? String(last[i].kg) : '', rep: last && last[i] ? String(last[i].rep) : '10', ok: false })) }); save(); closeSheet(); draw(); }

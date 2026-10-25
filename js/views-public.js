@@ -208,7 +208,7 @@
     const list = () => {
       const qq = S.q.trim().toLowerCase();
       const r = Store.exercises().filter((e) => (S.g === 'Sve' || e.grupa === S.g) && (S.n === 'Sve' || e.nivo === S.n) && (!S.d || e.dij === 'da') && (!qq || (e.naziv + ' ' + e.grupa + ' ' + e.oprema).toLowerCase().includes(qq)));
-      $('#list', el).innerHTML = r.length ? h`${r.map(exRow)}`.s : '<div class="empty">Nema vježbi za zadane filtere.</div>';
+      $('#list', el).innerHTML = r.length ? h`${r.map((e, i) => h`${S.g === 'Sve' && (i === 0 || r[i - 1].grupa !== e.grupa) ? h`<h3 style="margin:18px 0 6px">${e.grupa}</h3>` : ''}${exRow(e)}`)}`.s : '<div class="empty">Nema vježbi za zadane filtere.</div>';
       $('#cnt', el).textContent = r.length + ' vježbi';
     };
     el.innerHTML = h`<h1>Biblioteka vježbi</h1>

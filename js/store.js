@@ -90,7 +90,9 @@
     klijentice() { return Store.db.users.filter((u) => u.role === 'klijentica'); },
     exercises() {
       const mod = Store.db.vjezbeMod || {};
-      return FS.EXERCISES.map((e) => (mod[e.id] ? { ...e, ...mod[e.id] } : e)).concat(Store.db.vjezbeNove || []);
+      const gi = (e) => { const i = FS.GRUPE.indexOf(e.grupa); return i < 0 ? 99 : i; }, ni = (e) => { const i = FS.NIVOI.indexOf(e.nivo); return i < 0 ? 9 : i; };
+      return FS.EXERCISES.map((e) => (mod[e.id] ? { ...e, ...mod[e.id] } : e)).concat(Store.db.vjezbeNove || [])
+        .sort((a, b) => gi(a) - gi(b) || ni(a) - ni(b) || String(a.naziv).localeCompare(String(b.naziv), 'bs'));
     },
     ex(id) { return Store.exercises().find((e) => e.id === id); },
     allPrograms() { return FS.GOTOVI.map((p) => ({ ...p, ...((Store.db.programMod || {})[p.id] || {}) })).concat(Store.db.programi); },
