@@ -21,14 +21,14 @@
     const u = Auth.user();
     const has = () => !!u && (u.role === 'trener' || (u.programi || []).includes(VID));
     const prod = () => Store.program(VID) || { id: VID, naziv: 'Vodič za ishranu', cijena: 25 };
-    let tab = ['principi', 'recepti', 'jelovnik', 'pitanja'].includes(q.tab) ? q.tab : 'principi';
+    let tab = ['vodic', 'principi', 'recepti', 'jelovnik', 'pitanja'].includes(q.tab) ? q.tab : (has() && FS.pdfReady && FS.pdfReady() ? 'vodic' : 'principi');
     let datum = today();
     const draw = () => {
       el.innerHTML = h`<div class="eyebrow">Vodič</div><h1>Ishrana</h1>
-        ${FS.pdfBox ? FS.pdfBox(has()) : ''}
-        <div class="seg"><button data-act="tab" data-t="principi" class="${tab === 'principi' ? 'on' : ''}">Principi</button><button data-act="tab" data-t="recepti" class="${tab === 'recepti' ? 'on' : ''}">Recepti</button><button data-act="tab" data-t="jelovnik" class="${tab === 'jelovnik' ? 'on' : ''}">Jelovnik</button><button data-act="tab" data-t="pitanja" class="${tab === 'pitanja' ? 'on' : ''}">Pitanja</button></div>
-        ${tab === 'principi' ? principi() : ''}${tab === 'recepti' ? recepti() : ''}${tab === 'jelovnik' ? jelovnik() : ''}${tab === 'pitanja' ? pitanja() : ''}
+         <div class="seg"><button data-act="tab" data-t="vodic" class="${tab === 'vodic' ? 'on' : ''}">Vodič</button><button data-act="tab" data-t="principi" class="${tab === 'principi' ? 'on' : ''}">Principi</button><button data-act="tab" data-t="recepti" class="${tab === 'recepti' ? 'on' : ''}">Recepti</button><button data-act="tab" data-t="jelovnik" class="${tab === 'jelovnik' ? 'on' : ''}">Jelovnik</button><button data-act="tab" data-t="pitanja" class="${tab === 'pitanja' ? 'on' : ''}">Pitanja</button></div>
+        ${tab === 'vodic' ? (has() ? FS.pdfTab() : lockBox()) : ''}${tab === 'principi' ? principi() : ''}${tab === 'recepti' ? recepti() : ''}${tab === 'jelovnik' ? jelovnik() : ''}${tab === 'pitanja' ? pitanja() : ''}
         <div class="card alert mt"><b>Važno:</b> ovaj vodič je opšta edukacija i ne zamjenjuje savjet ljekara ili nutricioniste. Ako imaš zdravstvene tegobe, poremećaj ishrane, trudnoća ili dojenje, ili ti je ishrana izvor straha ili brige, javi se stručnoj osobi.</div>`;
+      if (tab === 'vodic' && has() && FS.pdfMount) FS.pdfMount(el);
     };
 
     const principi = () => h`

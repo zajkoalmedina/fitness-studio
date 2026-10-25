@@ -32,7 +32,7 @@
   const TACKE = [['', 'Redovno mjerenje'], ['0', 'Početak'], ['4', '4. sedmica'], ['8', '8. sedmica'], ['12', '12. sedmica']];
   const tackaL = (t) => (TACKE.find((x) => x[0] === String(t || '')) || [0, ''])[1];
 
-  FS.mjForm = () => h`<form data-act="mj" novalidate>
+  FS.mjForm = (act, forUid) => h`<form data-act="${act || 'mj'}" ${forUid ? raw('data-uid="' + forUid + '"') : ''} novalidate>
     <div class="grid2"><label class="field"><span>Datum</span><input type="date" name="d" value="${today()}" max="${today()}"></label>
     <label class="field"><span>Točka praćenja</span><select name="tacka">${opts(TACKE, '')}</select></label></div>
     <div class="grid2">${FS.MJERE_POLJA.map(([k, l, un]) => h`<label class="field"><span>${l} (${un})</span><input name="${k}" inputmode="decimal" placeholder="${un}"></label>`)}</div>
@@ -108,14 +108,14 @@
     ['2. Tvoj glavni cilj', [['cilj', 'Koji je tvoj primarni cilj?', 'single', ['Oblikovanje tijela', 'Povećanje mišićne mase', 'Gluteus i noge', 'Smanjenje tjelesne mase / masnog tkiva', 'Povećanje snage', 'Poboljšanje kondicije', 'Mobilnost i postura', 'Povratak redovnom treningu', 'Drugo']],
       ['cilj_drugo', 'Ako si izabrala „Drugo“, napiši koji', 'text'], ['dijelovi', 'Koje dijelove tijela želiš posebno unaprijediti?', 'area'], ['rezultat', 'Šta bi za tebe bio uspješan rezultat nakon 12 sedmica?', 'area'], ['vaznost', 'Koliko ti je trenutno važno ostvariti ovaj cilj, od 1 do 10?', 'scale', 10]]],
     ['3. Iskustvo sa treningom', [['trenira', 'Da li trenutno treniraš?', 'single', YN.slice().reverse()], ['puta', 'Ako da, koliko puta sedmično?', 'text'], ['staz', 'Koliko dugo treniraš sa opterećenjem?', 'single', ['Nikada', '< 6 mjeseci', '6–12 mjeseci', '1–3 godine', '> 3 godine']],
-      ['trener', 'Da li si ranije radila sa trenerom?', 'single', ['Da', 'Ne']], ['ranije', 'Koje vrste aktivnosti ili treninga si ranije radila?', 'area'], ['voli', 'Postoje li vježbe koje posebno voliš?', 'area'], ['neVoli', 'Postoje li vježbe koje ne voliš ili ne želiš raditi?', 'area']]],
-    ['4. Zdravlje i sigurnost', [['bol', 'Da li trenutno imaš bol, povredu ili ograničenje koje može uticati na trening?', 'yn'], ['povreda', 'Da li si ranije imala ozbiljniju povredu ili operaciju?', 'yn'],
+      ['trener', 'Da li si ranije radio/la sa trenerom?', 'single', ['Da', 'Ne']], ['ranije', 'Koje vrste aktivnosti ili treninga si ranije radio/la?', 'area'], ['voli', 'Postoje li vježbe koje posebno voliš?', 'area'], ['neVoli', 'Postoje li vježbe koje ne voliš ili ne želiš raditi?', 'area']]],
+    ['4. Zdravlje i sigurnost', [['bol', 'Da li trenutno imaš bol, povredu ili ograničenje koje može uticati na trening?', 'yn'], ['povreda', 'Da li si ranije imao/la ozbiljniju povredu ili operaciju?', 'yn'],
       ['ogranic', 'Da li ti je ljekar ili fizioterapeut ograničio određene fizičke aktivnosti ili vježbe?', 'yn'], ['terapija', 'Da li trenutno koristiš terapiju/lijekove koji mogu biti relevantni za fizičku aktivnost?', 'yn'],
       ['stanje', 'Postoji li zdravstveno stanje za koje smatraš da trener treba znati prije početka treninga?', 'yn']],
       'Ako postoji zdravstveni problem, bol ili stanje koje nije u domenu trenera, prije uključivanja ili nastavka određenih aktivnosti može biti potrebna procjena odgovarajućeg zdravstvenog stručnjaka.'],
     ['5. Organizacija treninga', [['sedm', 'Koliko puta sedmično realno možeš trenirati?', 'single', ['2', '3', '4', '5']], ['vrijeme', 'Koliko vremena imaš za jedan trening?', 'single', ['30–45 min', '45–60 min', '60–75 min', '75+ min']],
       ['gdje', 'Gdje ćeš trenirati?', 'single', ['Teretana', 'Kuća', 'Kombinovano']], ['oprema', 'Ako treniraš kod kuće, koju opremu imaš?', 'area'], ['dani', 'Koji dani ti najviše odgovaraju za trening?', 'area']]],
-    ['6. Kretanje i kardio', [['aktivnost', 'Koliko si aktivna tokom prosječnog dana?', 'single', ['Vrlo malo', 'Malo', 'Umjereno', 'Veoma aktivno']], ['koraci', 'Ako pratiš korake, približan dnevni prosjek', 'text'],
+    ['6. Kretanje i kardio', [['aktivnost', 'Koliko si aktivan/na tokom prosječnog dana?', 'single', ['Vrlo malo', 'Malo', 'Umjereno', 'Veoma aktivno']], ['koraci', 'Ako pratiš korake, približan dnevni prosjek', 'text'],
       ['kardio', 'Da li trenutno radiš kardio? (ako da, napiši vrstu, učestalost i trajanje)', 'yn'], ['oblik', 'Koji oblik kardija ti najviše odgovara?', 'single', ['Hodanje', 'Traka', 'Bicikl', 'Trčanje', 'Steper', 'Drugo']]]],
     ['7. San, stres i oporavak', [['san', 'Koliko prosječno spavaš (sati)?', 'text'], ['sanK', 'Kvalitet sna (1 = loš, 5 = odličan)', 'scale', 5], ['stres', 'Trenutni nivo stresa (1 = nizak, 5 = visok)', 'scale', 5],
       ['osjecaj', 'Kako se generalno osjećaš tokom dana?', 'single', ['Umorno', 'Promjenjivo', 'Dobro', 'Veoma energično']], ['raspored', 'Postoji li nešto u tvom rasporedu što bi moglo otežati redovno treniranje?', 'area']]],
@@ -126,7 +126,7 @@
     ['9. Mjerenja i praćenje napretka', [['pTezina', 'Da li pristaješ na praćenje tjelesne mase?', 'single', ['Da', 'Ne']], ['pObimi', 'Da li pristaješ na mjerenje obima tijela?', 'single', ['Da', 'Ne']],
       ['pFoto', 'Da li želiš koristiti fotografije napretka za privatno praćenje vlastitog rezultata?', 'single', ['Da', 'Ne']], ['pokaz', 'Šta ti je najvažniji pokazatelj napretka?', 'single', ['Izgled', 'Obimi', 'Tjelesna masa', 'Snaga', 'Kondicija', 'Kako se osjećam', 'Kombinacija']]]],
     ['10. Online coaching', [['oKg', 'Da li možeš redovno unositi kg, ponavljanja i RIR nakon treninga?', 'single', ['Da', 'Ne']], ['oVideo', 'Da li možeš po potrebi poslati video izvođenja vježbe radi provjere tehnike?', 'single', ['Da', 'Ne']],
-      ['oCheck', 'Da li si spremna jednom sedmično ispuniti kratki check-in o treningu, oporavku i napretku?', 'single', ['Da', 'Ne']], ['jos', 'Postoji li još nešto što smatraš važnim da znam prije nego napravim tvoj program?', 'area']]],
+      ['oCheck', 'Da li si spreman/na jednom sedmično ispuniti kratki check-in o treningu, oporavku i napretku?', 'single', ['Da', 'Ne']], ['jos', 'Postoji li još nešto što smatraš važnim da znam prije nego napravim tvoj program?', 'area']]],
     ['11. Opcionalno', [['ciklus', 'Postoje li promjene tokom menstrualnog ciklusa koje primjetno utiču na tvoju energiju, trening ili oporavak?', 'single', ['Ne', 'Da', 'Ne želim odgovoriti']], ['ciklusO', 'Ako želiš, opiši', 'area']]]
   ];
   FS.UPITNIK = U;
@@ -144,21 +144,21 @@
     return '';
   };
 
-  FS.IZJAVA = 'Potvrđujem da sam navedene podatke dala tačno prema svom trenutnom znanju i da ću trenerici prijaviti promjene koje mogu biti relevantne za sigurno provođenje treninga. Razumijem da treniram na vlastitu odgovornost i da trener ne zamjenjuje ljekara.';
+  FS.IZJAVA = 'Potvrđujem da sam navedene podatke dao/la tačno prema svom trenutnom znanju i da ću treneru prijaviti promjene koje mogu biti relevantne za sigurno provođenje treninga. Razumijem da treniram na vlastitu odgovornost i da trener ne zamjenjuje ljekara.';
 
   V.upitnik = (el) => {
     const u = Auth.user(), cur = u && u.role === 'klijentica' ? myUp(u.id) : null, a = (cur && cur.odg) || {};
-    el.innerHTML = h`<div class="eyebrow">Nova klijentica</div><h1>Upitnik</h1>
+    el.innerHTML = h`<div class="eyebrow">Novi klijent / klijentica</div><h1>Upitnik</h1>
       <p class="muted">Upitnik za personalni / online coaching. Popuni ga prije početka programa da bih ti mogla prilagoditi trening.</p>
       <a class="btn block mb" href="${FILE}" download>Preuzmi upitnik (Word), za ispis ili slanje</a>
       ${u && u.role === 'klijentica' ? h`
         <div class="card note small">Odgovore vidi samo trenerica. ${cur ? 'Upitnik si već popunila ' + fmtDate(cur.datum) + '. Možeš ga urediti i ponovo sačuvati.' : ''}</div>
         <form data-act="upit" novalidate>
           ${U.map(([naslov, qs, napomena]) => h`<div class="card"><h3>${naslov}</h3>${qs.map((q) => qHtml(q, a))}${napomena ? h`<p class="small">${napomena}</p>` : ''}</div>`)}
-          <div class="card cream"><h3>Izjava klijentice</h3><p class="small">${FS.IZJAVA}</p>
+          <div class="card cream"><h3>Izjava klijenta / klijentice</h3><p class="small">${FS.IZJAVA}</p>
             <label class="check"><input type="checkbox" name="izjava" ${cur && cur.izjava ? 'checked' : ''}><span>Slažem se s izjavom</span></label></div>
           <p class="err" id="uerr" hidden></p><button class="btn primary block" type="submit">Sačuvaj upitnik</button></form>`
-    : h`<div class="card flat center"><p class="muted" style="margin:0 0 8px">Za online popunjavanje prijavi se ili napravi račun.</p><a class="btn primary sm" href="#/prijava?tab=registracija">Napravi račun</a> <a class="btn sm" href="#/prijava">Prijava</a></div>`}`;
+    : h`<div class="card flat center"><p class="muted" style="margin:0 0 8px">Za online popunjavanje prijavi se (račun dobijaš uz pozivnicu trenera).</p><a class="btn primary sm" href="#/prijava">Prijava</a></div>`}`;
     bind(el, {
       'submit:upit': (f) => {
         const fd = new FormData(f), odg = {}, er = $('#uerr', el);
@@ -175,11 +175,11 @@
     });
   };
 
-  FS.upitnikBanner = (u) => (myUp(u.id) ? '' : h`<div class="card note"><b>Popuni upitnik</b><div class="small">Kratak upitnik za novu klijenticu, da ti mogu prilagoditi program.</div><a class="btn sm primary mt-s" href="#/upitnik">Popuni upitnik</a></div>`);
+  FS.upitnikBanner = (u) => (myUp(u.id) ? '' : h`<div class="card note"><b>Popuni upitnik</b><div class="small">Kratak upitnik za nove klijente, da ti mogu prilagoditi program.</div><a class="btn sm primary mt-s" href="#/upitnik">Popuni upitnik</a></div>`);
 
   FS.upitnikCard = (u) => {
     const x = myUp(u.id);
-    if (!x) return h`<div class="card"><h3>Upitnik</h3><p class="muted" style="margin:0">Klijentica još nije popunila upitnik.</p></div>`;
+    if (!x) return h`<div class="card"><h3>Upitnik</h3><p class="muted" style="margin:0">Klijent / klijentica još nije popunio/la upitnik.</p></div>`;
     const a = x.odg || {};
     const rows = U.map(([naslov, qs]) => {
       const lines = qs.map(([k, t, tip]) => {
@@ -190,6 +190,72 @@
       return lines.some(Boolean) ? h`<h4 style="margin:12px 0 4px">${naslov}</h4>${lines}` : '';
     });
     return h`<details class="card"><summary style="cursor:pointer"><b>Upitnik</b> <span class="small">· popunjen ${fmtDate(x.datum)}</span></summary>${rows}<p class="small mt-s">Izjava potvrđena: ${x.izjava ? 'da' : 'ne'}.</p></details>`;
+  };
+
+  /* ================= RASPORED TRENINGA (trenerica slaže po danima) ================= */
+  const DANI = ['Pon', 'Uto', 'Sri', 'Čet', 'Pet', 'Sub', 'Ned'];
+  const dl = (iso) => { const d = FS.parse(iso); return DANI[(d.getDay() + 6) % 7] + ' ' + d.getDate() + '.' + (d.getMonth() + 1) + '.'; };
+  const planStart = {};
+  const rasp = () => (Store.db.raspored = Store.db.raspored || []);
+  const entryLabel = (e) => {
+    if (e.tip === 'odmor') return 'Odmor';
+    if (e.tip === 'kond') return 'Kondicija (EMOM / HIIT / AMRAP)';
+    if (e.tip === 'kardio') return 'Kardio / hodanje';
+    const pr = Store.program(e.programId), dn = pr && pr.dani[e.dan];
+    return pr ? pr.naziv + (dn ? ': ' + dn.naziv : '') : 'Trening';
+  };
+  const planOptions = (u) => {
+    const o = [['', '— nije određeno —'], ['odmor', 'Odmor']];
+    Store.userPrograms(u).filter((pr) => FS.access(u, pr).on).forEach((pr) => pr.dani.forEach((dn, i) => o.push(['p|' + pr.id + '|' + i, pr.naziv + ': ' + dn.naziv])));
+    o.push(['kond', 'Kondicija (EMOM / HIIT / AMRAP)'], ['kardio', 'Kardio / hodanje']);
+    return o;
+  };
+  FS.planCard = (u) => {
+    const start = planStart[u.id] || FS.weekStart(today()), o = planOptions(u);
+    const days = Array.from({ length: 7 }, (_, i) => addDays(start, i));
+    const cur = (iso) => rasp().find((e) => e.userId === u.id && e.datum === iso);
+    const val = (e) => (!e ? '' : e.tip === 'dan' ? 'p|' + e.programId + '|' + e.dan : e.tip);
+    return h`<div class="card"><h3>Raspored treninga</h3>
+      <p class="small muted">Za svaki dan izaberi šta klijent / klijentica radi. To se prikazuje u njegovom / njenom prostoru, s dugmetom „Započni“. Najprije dodijeli program iznad.</p>
+      <div class="row between mb"><button class="btn sm" data-planshift="-7" data-uid="${u.id}">← Ranije</button><b>${dl(days[0])} – ${dl(days[6])}</b><button class="btn sm" data-planshift="7" data-uid="${u.id}">Dalje →</button></div>
+      <form data-act="plansave" data-uid="${u.id}" data-start="${start}" novalidate>
+        ${days.map((d, i) => h`<div class="field" style="margin-bottom:8px"><span>${dl(d)}${d === today() ? ' (danas)' : ''}</span>
+          <select name="s${i}">${opts(o, val(cur(d)))}</select>
+          <input name="n${i}" maxlength="150" placeholder="Napomena (nije obavezno)" value="${(cur(d) && cur(d).nota) || ''}" style="margin-top:4px"></div>`)}
+        <label class="field"><span>Ponovi isti raspored još</span><select name="rep">${opts([['0', 'Ne ponavljaj'], ['1', '1 sedmicu'], ['3', '3 sedmice'], ['7', '7 sedmica'], ['11', '11 sedmica (do 12 ukupno)']], '0')}</select></label>
+        <button class="btn primary block" type="submit">Sačuvaj raspored</button></form></div>`;
+  };
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest && e.target.closest('[data-planshift]'); if (!b) return;
+    const id = b.dataset.uid; planStart[id] = addDays(planStart[id] || FS.weekStart(today()), +b.dataset.planshift); FS.rerender();
+  });
+  document.addEventListener('submit', (e) => {
+    const f = e.target;
+    if (f.matches && f.matches('form[data-act=plansave]')) {
+      e.preventDefault(); const fd = new FormData(f), uidv = f.dataset.uid, start = f.dataset.start, reps = +fd.get('rep') || 0;
+      for (let w = 0; w <= reps; w++) for (let i = 0; i < 7; i++) {
+        const iso = addDays(start, w * 7 + i), v = String(fd.get('s' + i) || ''), nota = String(fd.get('n' + i) || '').trim().slice(0, 150);
+        Store.db.raspored = rasp().filter((x) => !(x.userId === uidv && x.datum === iso));
+        if (!v) continue;
+        const en = { id: uid(), userId: uidv, datum: iso, nota, ts: Date.now() };
+        if (v.startsWith('p|')) { const [, pid, di] = v.split('|'); Object.assign(en, { tip: 'dan', programId: pid, dan: +di }); } else en.tip = v;
+        Store.db.raspored.push(en);
+      }
+      Store.save(); toast('Raspored sačuvan.'); FS.rerender();
+    }
+    if (f.matches && f.matches('form[data-act=mjt]')) {
+      e.preventDefault(); if (FS.mjSubmit(f, f.dataset.uid, f.closest('.card') || document)) FS.rerender();
+    }
+  });
+  FS.rasporedCard = (u) => {
+    const t = today(), until = addDays(t, 13);
+    const list = rasp().filter((e) => e.userId === u.id && e.datum >= t && e.datum <= until).sort((a, b) => (a.datum < b.datum ? -1 : 1));
+    if (!list.length) return '';
+    const done = (iso) => Store.db.logs.some((l) => l.userId === u.id && l.datum === iso);
+    return h`<div class="card cream"><div class="eyebrow" style="color:var(--beige-2)">Moj raspored</div>
+      ${list.map((e) => { const pr = e.tip === 'dan' ? Store.program(e.programId) : null; const can = pr && FS.access(u, pr).on;
+        return h`<div class="row between" style="padding:8px 0;border-bottom:1px solid rgba(10,22,48,.12)"><div><b>${dl(e.datum)}${e.datum === t ? ' · danas' : ''}</b><div class="small">${entryLabel(e)}${e.nota ? ' · ' + e.nota : ''}</div></div>
+          ${done(e.datum) && e.tip !== 'odmor' ? h`<span class="badge ok">urađeno</span>` : (can ? h`<a class="btn sm primary" href="#/trening/novi?p=${pr.id}&d=${e.dan}&w=${FS.currentWeek(u, pr)}">Započni</a>` : '')}</div>`; })}</div>`;
   };
 
   /* ================= PDF VODIČ ZA ISHRANU ================= */
@@ -235,6 +301,178 @@
     Store.db.pdfVodic = { path, name: f.name.slice(0, 80), size: f.size, ts: Date.now() }; Store.save(); toast('PDF je dodat.'); FS.rerender();
   });
 
+
+  /* ================= POZIVNICE (registracija samo uz pozivnicu) ================= */
+  const pozList = () => (Store.db.pozivnice = Store.db.pozivnice || []);
+  const appUrl = () => location.origin + location.pathname;
+  FS.invMsg = (p) => 'Zdravo' + (p.ime ? ' ' + String(p.ime).split(' ')[0] : '') + '! Pozvan/a si u aplikaciju FITNESS STUDIO.\n\n1) Otvori: ' + appUrl() + '#/prijava?tab=registracija&e=' + encodeURIComponent(p.id) +
+    '\n2) Upiši e-mail ' + p.id + ', svoje ime i izaberi lozinku (najmanje 8 znakova, slovo i broj).\n3) Na iPhoneu: Safari, Podijeli, Dodaj na početni ekran.\n\nLozinku znaš samo ti.';
+  FS.pozivnicePending = () => {
+    const have = new Set(Store.db.users.map((u) => String(u.email || '').toLowerCase())), l = pozList().filter((p) => !have.has(String(p.id).toLowerCase()));
+    if (!l.length) return '';
+    return h`<h3>Poslane pozivnice</h3>${l.map((p) => h`<div class="card flat"><b>${p.ime || p.id}</b><div class="small">${p.id}${p.paket ? ' · ' + p.paket : ''} · čeka aktivaciju računa</div>
+      <div class="row mt-s"><button class="btn sm grow" data-invcopy="${p.id}">Kopiraj poruku</button><button class="btn sm danger" data-invdel="${p.id}" aria-label="Obriši pozivnicu">${icon('trash')}</button></div></div>`)}<h3>Klijenti</h3>`;
+  };
+  const copyText = async (t, ta) => {
+    try { await navigator.clipboard.writeText(t); toast('Poruka je kopirana. Zalijepi je u WhatsApp, Viber ili Instagram.'); }
+    catch (e) { if (ta) { ta.select(); try { document.execCommand('copy'); toast('Poruka je kopirana.'); } catch (er) { toast('Označi tekst i kopiraj ga ručno.'); } } }
+  };
+  FS.inviteSheet = (done) => {
+    FS.openSheet(h`<h2>Pozovi klijenta / klijenticu</h2><p class="small muted">Račun se može napraviti samo na e-mail koji ovdje upišeš. Poslije dobiješ poruku koju šalješ u WhatsApp, Viber ili Instagram.</p>
+      <form data-act="inv" novalidate><label class="field"><span>Ime i prezime</span><input name="ime" autocomplete="off"></label>
+      <label class="field"><span>E-mail</span><input name="email" type="email" autocapitalize="off" autocomplete="off"></label>
+      <label class="field"><span>Paket</span><select name="paket">${opts([['', 'Bez paketa'], 'START', 'ACTIVE', 'STRONG'])}</select></label>
+      <p class="err" id="ierr" hidden></p><button class="btn primary block" type="submit">Napravi pozivnicu</button></form>`, (s) => bind(s, {
+      'submit:inv': (f) => {
+        const d = formData(f), em = String(d.email || '').trim().toLowerCase(), ime = String(d.ime || '').trim(), er = $('#ierr', s);
+        const bad = (m) => { er.textContent = m; er.hidden = false; };
+        if (ime.length < 2) return bad('Unesi ime.');
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) return bad('Unesi ispravnu e-mail adresu.');
+        if (Store.db.users.some((u) => String(u.email).toLowerCase() === em)) return bad('Račun s ovim e-mailom već postoji.');
+        const inv = { id: em, ime: ime.slice(0, 80), paket: d.paket || '', ts: Date.now() };
+        const i = pozList().findIndex((x) => x.id === em); if (i >= 0) pozList()[i] = inv; else pozList().push(inv);
+        Store.save(); FS.closeSheet();
+        FS.openSheet(h`<h2>Pozivnica je spremna</h2><p class="small muted">Pošalji ovu poruku ${ime}. Kad se registruje tim e-mailom, račun je njen / njegov.</p>
+          <textarea id="imsg" rows="9" readonly>${FS.invMsg(inv)}</textarea>
+          <div class="row mt-s"><button class="btn primary grow" data-act="cp">Kopiraj poruku</button>${navigator.share ? h`<button class="btn grow" data-act="sh">Podijeli…</button>` : ''}</div>
+          <button class="btn block mt-s" data-act="ok">Gotovo</button>`, (s2) => bind(s2, {
+          'click:cp': () => copyText(FS.invMsg(inv), $('#imsg', s2)),
+          'click:sh': () => navigator.share({ text: FS.invMsg(inv) }).catch(() => {}),
+          'click:ok': () => { FS.closeSheet(); if (done) done(); }
+        }));
+      }
+    }));
+  };
+  document.addEventListener('click', async (e) => {
+    const c = e.target.closest && e.target.closest('[data-invcopy]'), d = e.target.closest && e.target.closest('[data-invdel]');
+    if (c) { const p = pozList().find((x) => x.id === c.dataset.invcopy); if (p) copyText(FS.invMsg(p)); }
+    if (d) {
+      if (!await FS.confirmSheet({ title: 'Obrisati pozivnicu?', text: 'Osoba se više neće moći registrovati s tim e-mailom.', ok: 'Obriši', danger: true })) return;
+      Store.db.pozivnice = pozList().filter((x) => x.id !== d.dataset.invdel); Store.save(); FS.rerender();
+    }
+  });
+
+  /* ================= UPLATE (ko je platio, a ko nije) ================= */
+  const MJESECI = ['Januar', 'Februar', 'Mart', 'April', 'Maj', 'Juni', 'Juli', 'August', 'Septembar', 'Oktobar', 'Novembar', 'Decembar'];
+  let uplMonth = today().slice(0, 7), uplFilter = 'svi';
+  const mjL = (m) => MJESECI[+m.slice(5, 7) - 1] + ' ' + m.slice(0, 4);
+  const shiftM = (m, d) => { const dt = new Date(+m.slice(0, 4), +m.slice(5, 7) - 1 + d, 1); return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0'); };
+  const uplList = () => (Store.db.uplate = Store.db.uplate || []);
+  const payOf = (id, m) => uplList().find((x) => x.userId === id && x.mjesec === m);
+  const expOf = (u) => { const p = FS.paketi().find((x) => x.id === u.paket); return p ? p.cijena : 0; };
+  FS.payTag = (u) => {
+    if (u.aktivan === false || !u.paket) return '';
+    return payOf(u.id, today().slice(0, 7)) ? h` · <span class="badge ok">plaćeno</span>` : h` · <span class="badge warn">nije plaćeno</span>`;
+  };
+  FS.uplateTab = () => {
+    const act = Store.klijentice().filter((u) => u.aktivan !== false);
+    const all = act.map((u) => ({ u, p: payOf(u.id, uplMonth), exp: expOf(u) }));
+    const paid = all.reduce((s, r) => s + (r.p ? +r.p.iznos || 0 : 0), 0), due = all.filter((r) => !r.p).reduce((s, r) => s + r.exp, 0);
+    const nPaid = all.filter((r) => r.p).length, nUn = all.filter((r) => !r.p && r.u.paket).length;
+    const rows = all.filter((r) => uplFilter === 'svi' || (uplFilter === 'jesu' ? r.p : !r.p && r.u.paket));
+    return h`<div class="row between mb"><button class="btn sm" data-uplshift="-1">←</button><b>${mjL(uplMonth)}</b><button class="btn sm" data-uplshift="1">→</button></div>
+      <div class="stats"><div class="stat"><b>${paid} ${config.valuta}</b><span>uplaćeno</span></div><div class="stat"><b>${due} ${config.valuta}</b><span>još čeka</span></div><div class="stat"><b>${nUn}</b><span>nisu platili</span></div></div>
+      <div class="chips mb">${[['svi', 'Svi'], ['nisu', 'Nisu platili'], ['jesu', 'Platili (' + nPaid + ')']].map(([k, l]) => h`<button class="chip ${uplFilter === k ? 'on' : ''}" data-uplf="${k}">${l}</button>`)}</div>
+      ${rows.length ? rows.map((r) => h`<div class="card"><div class="row between"><div class="grow"><a href="#/trener/klijentica/${r.u.id}"><b style="color:var(--cream)">${r.u.ime}</b></a>
+        <div class="small">${r.u.paket ? r.u.paket + ' · ' + r.exp + ' ' + config.valuta : 'bez paketa'}${r.p ? ' · uplaćeno ' + fmtDate(r.p.datum) + ': ' + r.p.iznos + ' ' + config.valuta + (r.p.napomena ? ' (' + r.p.napomena + ')' : '') : ''}</div></div>
+        ${r.p ? h`<span class="badge ok">plaćeno</span>` : h`<span class="badge warn">nije</span>`}</div>
+        <div class="row mt-s">${r.p ? h`<button class="btn sm grow" data-uplundo="${r.u.id}">Poništi uplatu</button>` : h`<button class="btn primary sm grow" data-uplpay="${r.u.id}">Označi kao plaćeno</button>`}</div></div>`) : h`<div class="empty">${act.length ? 'Nema klijenata za ovaj filter.' : 'Još nema klijenata.'}</div>`}`;
+  };
+  document.addEventListener('click', async (e) => {
+    const t = (sel) => e.target.closest && e.target.closest(sel);
+    let b;
+    if ((b = t('[data-uplshift]'))) { uplMonth = shiftM(uplMonth, +b.dataset.uplshift); FS.rerender(); }
+    if ((b = t('[data-uplf]'))) { uplFilter = b.dataset.uplf; FS.rerender(); }
+    if ((b = t('[data-uplundo]'))) {
+      if (!await FS.confirmSheet({ title: 'Poništiti uplatu?', text: 'Uplata za ' + mjL(uplMonth) + ' bit će uklonjena.', ok: 'Poništi', danger: true })) return;
+      Store.db.uplate = uplList().filter((x) => !(x.userId === b.dataset.uplundo && x.mjesec === uplMonth)); Store.save(); FS.rerender();
+    }
+    if ((b = t('[data-uplpay]'))) {
+      const u = Store.user(b.dataset.uplpay); if (!u) return;
+      FS.openSheet(h`<h2>Uplata: ${u.ime}</h2><div class="small mb">${mjL(uplMonth)}</div><form data-act="upls" novalidate>
+        <label class="field"><span>Iznos (${config.valuta})</span><input name="iznos" inputmode="decimal" value="${expOf(u) || ''}"></label>
+        <label class="field"><span>Napomena (nije obavezno)</span><input name="nota" maxlength="80" placeholder="npr. gotovina, račun…"></label>
+        <p class="err" id="uerr2" hidden></p><button class="btn primary block" type="submit">Sačuvaj uplatu</button></form>`, (s) => bind(s, {
+        'submit:upls': (f) => {
+          const d = formData(f), v = num(d.iznos);
+          if (isNaN(v) || v < 0 || v > 100000) { const er = $('#uerr2', s); er.textContent = 'Unesi ispravan iznos.'; er.hidden = false; return; }
+          Store.db.uplate = uplList().filter((x) => !(x.userId === u.id && x.mjesec === uplMonth));
+          Store.db.uplate.push({ id: uid(), userId: u.id, mjesec: uplMonth, iznos: v, datum: today(), napomena: String(d.nota || '').trim().slice(0, 80) });
+          Store.save(); FS.closeSheet(); toast('Uplata zabilježena.'); FS.rerender();
+        }
+      }));
+    }
+  });
+
+  /* ================= VJEŽBE: biblioteka samo za trenericu ================= */
+  FS.allowedExercises = (u) => {
+    if (u && u.role === 'trener') return Store.exercises();
+    const ids = new Set();
+    Store.allPrograms().filter((p) => FS.access(u, p).on).forEach((p) => (p.dani || []).forEach((d) => (d.vj || []).forEach((x) => ids.add(x.id))));
+    if (FS.DIJASTAZA) FS.DIJASTAZA.faze.forEach((f) => f.dani.forEach((d) => d.vj.forEach((x) => ids.add(x.id))));
+    return Store.exercises().filter((e) => ids.has(e.id));
+  };
+  const vjezbe0 = V.vjezbe, vjezba0 = V.vjezba;
+  V.vjezbe = (el, p, q) => {
+    const u = Auth.user();
+    if (u && u.role === 'trener') return vjezbe0(el, p, q);
+    el.innerHTML = h`<div class="card note"><b>Vježbe su u programima.</b><p class="muted" style="margin:6px 0 0">Vježbe vidiš unutar programa koji ti je dodijeljen ili koji si kupila / kupio.</p></div><a class="btn primary block" href="#/programi">Programi</a>`;
+  };
+  V.vjezba = (el, p, q) => {
+    const u = Auth.user();
+    if (u && u.role === 'trener') return vjezba0(el, p, q);
+    if (!FS.allowedExercises(u).some((e) => e.id === p.id)) { el.innerHTML = h`<div class="card note"><b>Vježba nije dostupna.</b><p class="muted" style="margin:6px 0 0">Vježbe se otključavaju uz program.</p></div><a class="btn primary block" href="#/programi">Programi</a>`; return; }
+    return vjezba0(el, p, q);
+  };
+  const home1 = V.home;
+  V.home = (el, p, q) => {
+    home1(el, p, q);
+    const u = Auth.user();
+    if (!(u && u.role === 'trener')) el.querySelectorAll('a.tile[href="#/vjezbe"]').forEach((a) => a.remove());
+  };
+
+  /* ================= VODIČ: čitač PDF-a (iste stranice, sa slikama) ================= */
+  const BASE = (document.currentScript && document.currentScript.src ? document.currentScript.src : location.href).replace(/[^/]+$/, '');
+  let pdfLib = null, pdfCache = { path: '', blob: null };
+  FS.pdfReady = () => !!pdfInfo();
+  FS.pdfTab = () => {
+    const p = pdfInfo();
+    return p ? h`<div id="pdfhost"><div class="card"><p class="muted" style="margin:0">Učitavam vodič…</p></div></div>
+      <button class="btn block mb" data-pdfget="1">Preuzmi PDF</button>`
+      : h`<div class="card note">PDF vodič još nije dodat. ${Auth.user() && Auth.user().role === 'trener' ? 'Dodaj ga u panelu: Programi, pa PDF vodič.' : 'Trenerica će ga uskoro dodati.'}</div>`;
+  };
+  FS.pdfMount = async (root) => {
+    const host = $('#pdfhost', root), p = pdfInfo();
+    if (!host || !p) return;
+    try {
+      if (pdfCache.path !== p.path) { const b = await FS.fileStore.get(p.path); if (!b) throw new Error('nema'); pdfCache = { path: p.path, blob: b }; }
+      if (!pdfLib) { pdfLib = await import(BASE + 'vendor/pdf.min.mjs'); pdfLib.GlobalWorkerOptions.workerSrc = BASE + 'vendor/pdf.worker.min.mjs'; }
+      const doc = await pdfLib.getDocument({ data: new Uint8Array(await pdfCache.blob.arrayBuffer()) }).promise;
+      if (!host.isConnected) { doc.destroy(); return; }
+      const first = await doc.getPage(1), vp = first.getViewport({ scale: 1 }), ratio = vp.height / vp.width;
+      host.innerHTML = '<div class="pdfinfo small muted">Stranice: ' + doc.numPages + '. Dodirni dvaput za uvećanje.</div>';
+      const boxes = [];
+      for (let i = 1; i <= doc.numPages; i++) { const d = document.createElement('div'); d.className = 'pdfpg'; d.style.aspectRatio = '1 / ' + ratio.toFixed(4); d.dataset.n = i; host.appendChild(d); boxes.push(d); }
+      const state = new Map();
+      const render = async (box) => {
+        if (state.get(box)) return; state.set(box, 'busy');
+        try {
+          const pg = await doc.getPage(+box.dataset.n), w = box.clientWidth || 360, sc = (w / pg.getViewport({ scale: 1 }).width) * Math.min(window.devicePixelRatio || 1, 2);
+          const v = pg.getViewport({ scale: sc }), cv = document.createElement('canvas'); cv.width = Math.floor(v.width); cv.height = Math.floor(v.height);
+          await pg.render({ canvasContext: cv.getContext('2d'), viewport: v }).promise;
+          if (state.get(box) === 'busy') { box.replaceChildren(cv); state.set(box, 'done'); }
+        } catch (e) { state.delete(box); console.warn('pdf page', e); }
+      };
+      const io = new IntersectionObserver((es) => es.forEach((en) => {
+        if (en.isIntersecting) render(en.target);
+        else if (state.get(en.target) === 'done') { en.target.replaceChildren(); state.delete(en.target); }
+      }), { rootMargin: '900px 0px' });
+      boxes.forEach((b) => io.observe(b));
+      FS.onLeave(() => { io.disconnect(); doc.destroy(); });
+      host.addEventListener('dblclick', (ev) => { const b = ev.target.closest('.pdfpg'); if (b) b.classList.toggle('zoom'); });
+    } catch (e) { host.innerHTML = '<div class="card alert">Vodič se trenutno ne može prikazati. Provjeri internet i pokušaj ponovo.</div>'; console.warn(e); }
+  };
+
   /* ================= POČETNA: programi i vodič vidljivi prije registracije ================= */
   const home0 = V.home;
   V.home = (el, p, q) => {
@@ -244,7 +482,7 @@
     const sec = h`<div class="eyebrow">Gotovi programi i vodič</div><h2>Za samostalan trening</h2>
       ${shop.map((pr) => h`<a class="price-card" href="${pr.tip === 'vodic' ? '#/ishrana' : '#/program/' + pr.id}"><div class="grow"><div class="nm" style="font-size:18px">${pr.naziv}</div><div class="ds">${pr.tip === 'vodic' ? 'e-vodič · 42 recepta · dnevni jelovnik' : pr.sedmica + ' sedmica · ' + pr.dana + '× sedmično · pristup ' + pr.sedmica + ' sedmica'}</div></div><div class="price-tag">${pr.cijena} ${config.valuta}</div></a>`)}
       <a class="btn block mb" href="#/programi">Svi programi →</a><div class="eyebrow mt">Prije početka</div>
-      <a class="card" href="#/upitnik" style="display:block"><b>Upitnik za novu klijenticu</b><div class="small muted">Preuzmi ili popuni online prije početka coachinga.</div></a>`;
+      <a class="card" href="#/upitnik" style="display:block"><b>Upitnik za nove klijente</b><div class="small muted">Preuzmi ili popuni online prije početka coachinga.</div></a>`;
     anchor.insertAdjacentHTML('beforebegin', sec.s);
   };
 

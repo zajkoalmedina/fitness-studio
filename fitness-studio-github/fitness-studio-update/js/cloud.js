@@ -9,7 +9,7 @@
   const { Store, Auth, uid, today, toast } = FS;
   const BASE = cfg.url.replace(/\/$/, ''), KEY = cfg.key;
   const SK = 'fs_sb_session';
-  const COLLS = ['logs', 'mjere', 'poruke', 'chat', 'kupovine', 'prijave', 'programi', 'zahtjevi', 'upitnici'];
+  const COLLS = ['logs', 'mjere', 'poruke', 'chat', 'kupovine', 'prijave', 'programi', 'zahtjevi', 'upitnici', 'raspored', 'uplate', 'pozivnice'];
   const CONFIGS = ['vjezbeMod', 'vjezbeNove', 'programMod', 'cijene', 'pdfVodic'];
   const PROF = ['ime', 'telefon', 'programi', 'pstart', 'paket', 'jelovnik', 'aktivan', 'mora_promijeniti', 'dob', 'saglasnost'];
   const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -22,7 +22,7 @@
   let sess = null;                      // { access_token, refresh_token, expires_at, user: { id, email } }
   let snap = new Map(), onServer = new Set(), profSnap = new Map(), since = '', timer = null, saving = false, again = false, saveTimer = null;
 
-  const emptyDb = () => ({ v: 2, users: [], programi: [], logs: [], mjere: [], kupovine: [], poruke: [], prijave: [], chat: [], zahtjevi: [], upitnici: [], vjezbeMod: {}, vjezbeNove: [], programMod: {}, cijene: {}, pdfVodic: {} });
+  const emptyDb = () => ({ v: 2, users: [], programi: [], logs: [], mjere: [], kupovine: [], poruke: [], prijave: [], chat: [], zahtjevi: [], upitnici: [], raspored: [], uplate: [], pozivnice: [], vjezbeMod: {}, vjezbeNove: [], programMod: {}, cijene: {}, pdfVodic: {} });
 
   /* ---------- niski sloj: pozivi prema serveru ---------- */
   function saveSess(s) { sess = s; if (s) store.set(SK, JSON.stringify(s)); else store.del(SK); }
@@ -69,6 +69,7 @@
     if (/not confirmed/i.test(m)) return 'E-mail adresa nije potvrđena.';
     if (/rate limit|too many|security purposes/i.test(m)) return 'Previše pokušaja. Pokušaj ponovo za nekoliko minuta.';
     if (/password/i.test(m) && /(least|weak|short)/i.test(m)) return 'Lozinka mora imati najmanje 8 znakova, slova i broj.';
+    if (/database error saving|saving new user/i.test(m)) return 'Račun se može napraviti samo uz pozivnicu trenera. Javi se treneru.';
     if (/failed to fetch|network|load failed/i.test(m)) return 'Nema veze sa serverom. Provjeri internet.';
     return m || 'Došlo je do greške.';
   };

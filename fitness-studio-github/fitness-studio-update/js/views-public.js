@@ -370,13 +370,13 @@
       el.innerHTML = h`<h1>Račun</h1><div class="card"><div class="user-chip"><div class="avatar">${FS.initials(u.ime)}</div><div class="grow"><b>${u.ime}</b><div class="small">${u.email} · ${u.role === 'trener' ? 'trenerica' : 'klijentica'}</div></div></div></div>
         <a class="btn primary block mb" href="${homeFor(u)}">${u.role === 'trener' ? 'Otvori trenerski panel' : 'Otvori moj prostor'}</a>
         <button class="btn block" data-act="out">Odjava</button>`;
-      bind(el, { 'click:out': () => { Auth.logout(); toast('Odjavljena si.'); FS.refreshNav(); go('#/'); } });
+      bind(el, { 'click:out': () => { Auth.logout(); toast('Odjava uspješna.'); FS.refreshNav(); go('#/'); } });
       return;
     }
     let tab = q.tab === 'registracija' ? 'registracija' : 'prijava';
     const draw = () => {
-      el.innerHTML = h`<h1>${tab === 'prijava' ? 'Prijava' : 'Novi račun'}</h1>
-        <div class="seg"><button data-act="tab" data-t="prijava" class="${tab === 'prijava' ? 'on' : ''}">Prijava</button><button data-act="tab" data-t="registracija" class="${tab === 'registracija' ? 'on' : ''}">Registracija</button></div>
+      el.innerHTML = h`<h1>${tab === 'prijava' ? 'Prijava' : (FS.cloud ? 'Aktiviraj račun' : 'Novi račun')}</h1>
+        <div class="seg"><button data-act="tab" data-t="prijava" class="${tab === 'prijava' ? 'on' : ''}">Prijava</button><button data-act="tab" data-t="registracija" class="${tab === 'registracija' ? 'on' : ''}">${FS.cloud ? 'Pozivnica' : 'Registracija'}</button></div>
         ${tab === 'prijava' ? h`<form class="card" data-act="login" novalidate>
             <label class="field"><span>E-mail</span><input name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="off" required></label>
             <label class="field"><span>Lozinka</span><input name="pass" type="password" autocomplete="current-password" required></label>
@@ -385,16 +385,17 @@
             <button class="btn sm block mb" data-act="fill" data-e="trenerica@demo.ba" data-p="Trener#2026">Trenerica · trenerica@demo.ba</button>
             <button class="btn sm block mb" data-act="fill" data-e="ana@demo.ba" data-p="Klijent#2026">Klijentica · ana@demo.ba</button>
             <button class="btn sm block" data-act="fill" data-e="maja@demo.ba" data-p="Klijent#2026">Klijentica · maja@demo.ba</button></div>` : ''}` : h`
+          ${FS.cloud ? h`<div class="card note small">Račun možeš napraviti samo uz pozivnicu trenera. Upiši e-mail na koji je stigla pozivnica.</div>` : ''}
           <form class="card" data-act="reg" novalidate>
             <label class="field"><span>Ime i prezime</span><input name="ime" autocomplete="name" required></label>
-            <label class="field"><span>E-mail</span><input name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="off" required></label>
+            <label class="field"><span>E-mail</span><input name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="off" value="${q.e || ''}" required></label>
             <label class="field"><span>Lozinka (min. 8 znakova, slovo i broj)</span><input name="pass" type="password" autocomplete="new-password" required></label>
             <label class="field"><span>Moj uzrast</span><select name="dob" data-act="dob">${opts([['18+', '18 godina ili više'], ['16-17', '16–17 godina'], ['ispod16', 'Ispod 16 godina']])}</select></label>
             <label class="check" id="cons" hidden><input type="checkbox" name="saglasnost"><span>Imam pismenu saglasnost roditelja ili staratelja za treniranje.</span></label>
             <label class="check"><input type="checkbox" name="odgovornost"><span>Razumijem da treniram na vlastitu odgovornost i da trener ne zamjenjuje ljekara. Za zdravstvene tegobe prvo se javljam ljekaru.</span></label>
             <p class="err" id="err" hidden></p><button class="btn primary block" type="submit">Napravi račun</button></form>`}`;
     };
-    const after = (usr) => { FS.refreshNav(); toast('Dobrodošla, ' + usr.ime.split(' ')[0] + '!'); go(homeFor(usr)); };
+    const after = (usr) => { FS.refreshNav(); toast('Dobro došli, ' + usr.ime.split(' ')[0] + '!'); go(homeFor(usr)); };
     const showErr = (m) => { const e = $('#err', el); e.textContent = m; e.hidden = false; };
     draw();
     bind(el, {

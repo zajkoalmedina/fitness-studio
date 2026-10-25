@@ -5,7 +5,7 @@
   const V = FS.views;
   const { h, raw, icon, bind, formData, opts, toast, openSheet, closeSheet, confirmSheet, Store, Auth, config, num, r1, fmtDate, today, uid, $, $$, weekStart } = FS;
   const go = (hash) => { location.hash = hash; };
-  const TABS = [['pregled', 'Pregled'], ['klijentice', 'Klijentice'], ['programi', 'Programi'], ['narudzbe', 'Narudžbe'], ['upiti', 'Upiti'], ['vjezbe', 'Vježbe']];
+  const TABS = [['pregled', 'Pregled'], ['klijentice', 'Klijenti'], ['programi', 'Programi'], ['uplate', 'Uplate'], ['narudzbe', 'Narudžbe'], ['upiti', 'Upiti'], ['vjezbe', 'Vježbe']];
   const nav = (tab) => h`<div class="chips">${TABS.map(([k, l]) => h`<a class="chip ${tab === k ? 'on' : ''}" href="#/trener?tab=${k}">${l}</a>`)}</div>`;
   const nameOf = (id) => { const u = Store.user(id); return u ? u.ime : '(izbrisan račun)'; };
   const isUrl = (s) => !s || /^https:\/\/[^\s]+$/i.test(s);
@@ -23,7 +23,7 @@
       const monthly = kl.filter((u) => u.aktivan !== false && u.paket).reduce((s, u) => s + (FS.paketi().find((x) => x.id === u.paket) || { cijena: 0 }).cijena, 0);
       const sales = Store.db.kupovine.reduce((s, k) => s + (k.iznos || 0), 0);
       const recent = Store.db.logs.slice().sort((a, b) => (a.datum < b.datum ? 1 : -1)).slice(0, 8);
-      body = h`<div class="stats"><div class="stat"><b>${kl.filter((u) => u.aktivan !== false).length}</b><span>aktivnih klijentica</span></div><div class="stat"><b>${week}</b><span>treninga ove sedmice</span></div><div class="stat"><b>${newCount()}</b><span>novih upita</span></div></div>
+      body = h`<div class="stats"><div class="stat"><b>${kl.filter((u) => u.aktivan !== false).length}</b><span>aktivnih klijenata</span></div><div class="stat"><b>${week}</b><span>treninga ove sedmice</span></div><div class="stat"><b>${newCount()}</b><span>novih upita</span></div></div>
         ${config.demo ? h`<div class="demo-bar">Iznosi su procjena iz demo podataka, bez stvarnih uplata</div>` : ''}
         <div class="grid2"><div class="card"><div class="small">Coaching mjesečno</div><div class="big" style="font-size:30px">${monthly} ${config.valuta}</div></div><div class="card"><div class="small">Prodaja programa</div><div class="big" style="font-size:30px">${sales} ${config.valuta}</div></div></div>
         <h3>Nedavna aktivnost</h3>
@@ -31,10 +31,13 @@
     }
 
     if (tab === 'klijentice') {
-      body = h`<button class="btn primary block mb" data-act="newc">${icon('plus')} Nova klijentica</button>
+      body = h`<button class="btn primary block mb" data-act="newc">${icon('plus')} ${FS.cloud ? 'Pozovi klijenta / klijenticu' : 'Novi klijent / klijentica'}</button>
+        ${FS.cloud && FS.pozivnicePending ? FS.pozivnicePending() : ''}
         ${kl.length ? kl.map((u) => { const last = Store.logsOf(u.id)[0], target = u.paket ? config.ciljPoPaketu[u.paket] : null;
-          return h`<a class="ex" href="#/trener/klijentica/${u.id}"><div class="avatar" style="width:46px;height:46px">${FS.initials(u.ime)}</div><div class="grow"><b>${u.ime}</b><div class="small">${u.paket || 'bez paketa'}${u.aktivan === false ? ' · neaktivna' : ''} · ${last ? 'zadnji trening ' + fmtDate(last.datum) : 'nema treninga'}</div></div>${target ? h`<span class="badge">${Store.weekCount(u.id)}/${target}</span>` : ''}</a>`; }) : h`<div class="empty">Još nema klijentica.</div>`}`;
+          return h`<a class="ex" href="#/trener/klijentica/${u.id}"><div class="avatar" style="width:46px;height:46px">${FS.initials(u.ime)}</div><div class="grow"><b>${u.ime}</b><div class="small">${u.paket || 'bez paketa'}${FS.payTag(u)}${u.aktivan === false ? ' · neaktivan/na' : ''} · ${last ? 'zadnji trening ' + fmtDate(last.datum) : 'nema treninga'}</div></div>${target ? h`<span class="badge">${Store.weekCount(u.id)}/${target}</span>` : ''}</a>`; }) : h`<div class="empty">Još nema klijentica.</div>`}`;
     }
+
+    if (tab === 'uplate') body = FS.uplateTab();
 
     if (tab === 'programi') {
       body = h`${FS.pdfCard()}<div class="card"><h3>Cjenovnik paketa (mjesečno, ${config.valuta})</h3><form data-act="cijene" novalidate><div class="grid3">${FS.paketi().map((x) => h`<label class="field" style="margin:0"><span>${x.id}</span><input name="${x.id}" inputmode="decimal" value="${x.cijena}"></label>`)}</div><p class="small mt-s">Naziv i cijenu svakog gotovog programa mijenjaš ispod, u uređivanju programa.</p><button class="btn sm primary" type="submit">Sačuvaj cijene</button></form></div>
@@ -75,7 +78,7 @@
     bind(el, {
       'click:out': () => { Auth.logout(); FS.refreshNav(); go('#/'); },
       'click:reset': async () => { if (await confirmSheet({ title: 'Resetovati demo podatke?', text: 'Svi lokalni podaci aplikacije bit će vraćeni na početno stanje i bit ćeš odjavljena.', ok: 'Resetuj', danger: true })) { await Store.reset(); FS.refreshNav(); toast('Demo podaci vraćeni.'); go('#/'); } },
-      'click:newc': () => openSheet(h`<h2>Nova klijentica</h2><form data-act="addc" novalidate>
+      'click:newc': () => FS.cloud ? FS.inviteSheet(rr) : openSheet(h`<h2>Novi klijent / klijentica</h2><form data-act="addc" novalidate>
           <label class="field"><span>Ime i prezime</span><input name="ime" autocomplete="off"></label><label class="field"><span>E-mail</span><input name="email" type="email" autocapitalize="off" autocomplete="off"></label>
           <label class="field"><span>Privremena lozinka</span><input name="pass" autocomplete="off"></label><label class="field"><span>Paket</span><select name="paket">${opts([['', 'Bez paketa'], 'START', 'ACTIVE', 'STRONG'])}</select></label>
           <p class="err" id="cerr" hidden></p><button class="btn primary block" type="submit">Napravi račun</button></form>`, (s) => bind(s, {
@@ -138,13 +141,16 @@
       <div class="card"><div class="grid2"><label class="field" style="margin:0"><span>Paket</span><select data-act="paket">${opts([['', 'Bez paketa'], 'START', 'ACTIVE', 'STRONG'], u.paket || '')}</select></label>
         <label class="field" style="margin:0"><span>Status računa</span><select data-act="status">${opts([['1', 'Aktivna'], ['0', 'Neaktivna (bez prijave)']], u.aktivan === false ? '0' : '1')}</select></label></div></div>
       <div class="stats"><div class="stat"><b>${logs.length}</b><span>treninga</span></div><div class="stat"><b>${Store.weekCount(u.id)}</b><span>ove sedmice</span></div><div class="stat"><b>${wpts.length ? wpts[wpts.length - 1].y : '–'}</b><span>težina (kg)</span></div></div>
-      <div class="card"><h3>Programi klijentice</h3>
+      <div class="card"><h3>Programi klijenta / klijentice</h3>
         ${Store.userPrograms(u).map((x) => h`<div class="row between" style="padding:6px 0"><a href="#/program/${x.id}" class="grow"><b style="color:var(--cream)">${x.naziv}</b><div class="small">${FS.accessLabel(x, u)}</div></a>${FS.access(u, x).trajno ? '' : h`<button class="btn sm" data-act="renew" data-id="${x.id}">Produži</button>`}<button class="icon-btn" data-act="unassign" data-id="${x.id}" aria-label="Ukloni">${icon('trash')}</button></div>`)}
         ${(u.programi || []).length ? '' : h`<p class="muted">Nema dodijeljenih programa.</p>`}
         <div class="row mt-s"><select data-act="assignsel" class="grow"><option value="">Dodijeli program…</option>${assignable.map((x) => h`<option value="${x.id}">${x.naziv}</option>`)}</select><button class="btn sm" data-act="assign">Dodaj</button></div>
         <a class="btn sm block mt-s" href="#/trener/program/novi?za=${u.id}">+ Napravi individualni program</a></div>
+      ${FS.planCard(u)}
       <div class="card"><h3>Težina</h3>${FS.lineChart(wpts, { label: 'Težina' })}</div>
       ${FS.mjTable(mj)}
+      <div class="card"><h3>Upiši mjerenja klijenta / klijentice</h3>${FS.mjForm('mjt', u.id)}</div>
+      <details class="card"><summary style="cursor:pointer"><b>Historija mjerenja</b></summary><div class="mt-s">${FS.mjHistory(mj, false)}</div></details>
       ${FS.upitnikCard(u)}
       <div class="card"><h3>Privatna bilješka</h3><textarea data-act="note" placeholder="Samo ti vidiš ovu bilješku…" maxlength="1500">${u.biljeska || ''}</textarea><button class="btn sm mt-s" data-act="savenote">Sačuvaj bilješku</button></div>
       <h3>Šta je radila i s koliko kg</h3>

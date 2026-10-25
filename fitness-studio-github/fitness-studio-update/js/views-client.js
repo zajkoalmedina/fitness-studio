@@ -39,6 +39,7 @@
           ${u.paket ? h`<div class="row between"><h2 style="margin:0">${u.paket}</h2><span class="small">${ciljN} treninga sedmično</span></div>
             <div class="progress mt-s" role="progressbar" aria-valuenow="${wc}" aria-valuemax="${ciljN}"><i style="width:${Math.min(100, (wc / ciljN) * 100)}%"></i></div>
             <div class="small mt-s">Ove sedmice: <b>${wc}</b> od ${ciljN}</div>` : h`<p class="muted" style="margin:0 0 8px">Trenutno nemaš aktivan coaching paket.</p><a class="btn dark sm" href="#/paketi">Pogledaj pakete</a>`}</div>
+        ${FS.rasporedCard ? FS.rasporedCard(u) : ''}
         <a class="btn primary block mb" href="#/trening/novi">${icon('plus')} Započni trening</a>
         <div class="stats"><div class="stat"><b>${logs.length}</b><span>ukupno treninga</span></div><div class="stat"><b>${logs.filter((l) => l.datum.startsWith(mon)).length}</b><span>ovaj mjesec</span></div><div class="stat"><b>${last && last.tezina ? last.tezina : '–'}</b><span>zadnja težina (kg)</span></div></div>
         <h3>Moji programi</h3>
@@ -89,7 +90,7 @@
     if (tab === 'poruke') FS.chatThread($('#chatbox', el), { userId: u.id, me: 'klijent', title: 'Razgovor s trenericom' });
     bind(el, {
       'click:pw': () => passSheet(u, false),
-      'click:out': () => { Auth.logout(); FS.refreshNav(); toast('Odjavljena si.'); go('#/'); },
+      'click:out': () => { Auth.logout(); FS.refreshNav(); toast('Odjava uspješna.'); go('#/'); },
       'click:dellog': async (b) => { if (await confirmSheet({ title: 'Obrisati trening?', text: 'Ova radnja se ne može poništiti.', ok: 'Obriši', danger: true })) { Store.db.logs = Store.db.logs.filter((l) => l.id !== b.dataset.id); Store.save(); rerender(); } },
       'click:delmj': async (b) => { if (await confirmSheet({ title: 'Obrisati mjerenje?', text: 'Ova radnja se ne može poništiti.', ok: 'Obriši', danger: true })) { Store.db.mjere = Store.db.mjere.filter((m) => m.id !== b.dataset.id); Store.save(); rerender(); } },
       'submit:mj': (f) => { if (FS.mjSubmit(f, u.id, el)) rerender(); },
@@ -175,7 +176,7 @@
       'click:addset': (t) => { const v = d.vjezbe[t.dataset.vi], l = v.serije[v.serije.length - 1] || { kg: '', rep: '' }; v.serije.push({ kg: l.kg, rep: l.rep, ok: false }); save(); draw(); },
       'click:rmex': (t) => { d.vjezbe.splice(+t.dataset.vi, 1); save(); draw(); },
       'click:addex': () => {
-        const draw2 = (qs) => { const r = Store.exercises().filter((e) => !qs || e.naziv.toLowerCase().includes(qs.toLowerCase())); return h`${r.map((e) => h`<button class="ex" style="width:100%;text-align:left;font:inherit" data-act="pick" data-id="${e.id}"><div class="grow"><b>${e.naziv}</b><div class="small">${e.grupa}</div></div></button>`)}`.s; };
+        const draw2 = (qs) => { const r = (FS.allowedExercises ? FS.allowedExercises(u) : Store.exercises()).filter((e) => !qs || e.naziv.toLowerCase().includes(qs.toLowerCase())); return h`${r.map((e) => h`<button class="ex" style="width:100%;text-align:left;font:inherit" data-act="pick" data-id="${e.id}"><div class="grow"><b>${e.naziv}</b><div class="small">${e.grupa}</div></div></button>`)}`.s; };
         openSheet(h`<h2>Dodaj vježbu</h2><label class="field"><input type="search" data-act="sq" placeholder="Pretraži…"></label><div id="pl">${FS.raw(draw2(''))}</div>`, (s) => bind(s, {
           'input:sq': (i) => { $('#pl', s).innerHTML = draw2(i.value); },
           'click:pick': (b) => { const last = Store.lastSets(u.id, b.dataset.id); d.vjezbe.push({ id: b.dataset.id, cilj: '', serije: Array.from({ length: 3 }, (_, i) => ({ kg: last && last[i] && last[i].kg ? String(last[i].kg) : '', rep: last && last[i] ? String(last[i].rep) : '10', ok: false })) }); save(); closeSheet(); draw(); }
