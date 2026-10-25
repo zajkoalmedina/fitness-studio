@@ -1,6 +1,6 @@
 /* Service worker: offline školjka aplikacije.
    Pri svakoj izmjeni fajlova povećaj broj verzije (CACHE) da se korisnicima osvježi keš. */
-const CACHE = 'fitness-studio-v34';
+const CACHE = 'fitness-studio-v35';
 const ASSETS = [
   './', 'index.html', 'manifest.json', 'css/style.css',
   'js/config.js', 'js/config.cloud.js', 'js/cloud.js', 'js/util.js', 'js/data.js', 'js/data2.js', 'js/data3.js', 'js/data4.js', 'js/data5.js', 'js/data6.js', 'js/trcanje.js', 'js/zagrijavanje.js', 'js/tehnika.js', 'js/periodization.js', 'js/muscles.js', 'js/figure.js', 'js/store.js', 'js/views-public.js', 'js/views-client.js', 'js/views-trainer.js', 'js/views-nutrition.js', 'js/views-kond.js', 'js/chat.js', 'js/extras.js', 'js/app.js',
