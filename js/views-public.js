@@ -230,18 +230,16 @@
     if (!e) { el.innerHTML = h`<div class="empty">Vježba nije pronađena.</div><a class="btn block" href="#/vjezbe">Sve vježbe</a>`; return; }
     el.innerHTML = h`<div class="eyebrow">${e.grupa} · ${e.nivo}</div><h1>${e.naziv}</h1>
       <div class="video">${e.video ? videoEmbed(e.video) : h`<div><div class="play">${icon('play')}</div><div class="small" style="max-width:26ch;margin:auto">Videouputa uskoro. Trenerica je može dodati u trenerskom panelu.</div></div>`}</div>
-      ${FS.hasFigure && FS.hasFigure(e.id) ? h`<div class="card figcard"><div id="figbox" aria-live="off"></div>
-        <div class="row between" style="gap:6px;margin-top:6px"><div class="fstill">${FS.raw(FS.figureSVG(e.id, 0, 'Početni položaj'))}<span class="small">Početak</span></div><div class="fstill">${FS.raw(FS.figureSVG(e.id, 1, 'Završni položaj'))}<span class="small">Kraj</span></div></div></div>` : ''}
+      ${FS.hasFigure && FS.hasFigure(e.id) ? h`<div class="card figcard"><div class="row" style="gap:8px"><div class="fstill big">${FS.raw(FS.figureSVG(e.id, 0, 'Početni položaj'))}<span class="small">1 · Početak</span></div><div class="fstill big">${FS.raw(FS.figureSVG(e.id, 1, 'Završni položaj'))}<span class="small">2 · Kraj</span></div></div></div>` : ''}
       ${(() => { const m = FS.muskulChips ? FS.muskulChips(e.id) : { p: [], s: [] }; return m.p.length || m.s.length ? h`<div class="card"><h3>Koji mišići rade</h3>
         ${m.p.length ? h`<div class="mb"><b>Primarni (glavni):</b> ${m.p.join(', ')}</div>` : ''}
         ${m.s.length ? h`<div><b>Sekundarni (pomažu):</b> ${m.s.join(', ')}</div>` : ''}
-        <p class="small mt-s">Silueta je približan prikaz pokreta (bočni pogled). Pravo izvođenje pogledaj na videu.</p></div>` : ''; })()}
+        <p class="small mt-s">Dvije slike prikazuju početni i završni položaj (približan bočni prikaz). Pravo izvođenje pogledaj na videu.</p></div>` : ''; })()}
       <div class="row wrap mb"><span class="badge">${e.oprema}</span><span class="badge ${DIJ_TONE[e.dij]}">${FS.DIJ_LABEL[e.dij]}</span></div>
       ${e.dij !== 'da' ? h`<div class="card ${e.dij === 'ne' ? 'alert' : 'note'}"><b>${e.dij === 'ne' ? 'Pažnja:' : 'Napomena:'}</b> ${e.dij === 'ne' ? 'ova vježba se kod dijastaze izbjegava.' : 'kod dijastaze uvodi se tek u kasnijim fazama i uz odobrenje stručnjaka.'} <a href="#/dijastaza">Više o dijastazi</a></div>` : ''}
       <div class="card"><h3>Kako izvesti</h3><ol class="steps">${e.koraci.map((k) => h`<li><span>${k}</span></li>`)}</ol></div>
       <div class="card"><h3>Savjeti</h3><ul class="dots">${e.savjeti.map((k) => h`<li>${k}</li>`)}</ul><h3>Česte greške</h3><ul class="dots">${(e.greske || []).map((k) => h`<li>${k}</li>`)}</ul></div>
       <p class="small center">Ako osjetiš bol (a ne samo napor), prekini vježbu i javi se trenerici.</p>`;
-    if (FS.mountFigure) FS.mountFigure($('#figbox', el), e.id);
   };
 
   /* ================= PROGRAMI (prodaja) ================= */
@@ -317,8 +315,9 @@
         <div class="small mt-s">${FS.PER_OPIS[per.tip] || ''} ${per.deload ? FS.DELOAD_OPIS : ''}</div></div>` : ''}
       ${full && prog.bilj ? h`<details class="card"><summary><b>Napomene za program</b></summary><ul class="dots mt-s">${prog.bilj.map((t) => h`<li>${t}</li>`)}</ul></details>` : ''}
       ${full ? h`<div class="card"><div class="eyebrow">Direktnih serija sedmično${hasPlan ? ' (sedmica ' + week + ')' : ''}</div><div class="row wrap mt-s">${FS.MISICI.filter((m) => vol[m] > 0).map((m) => h`<span class="pill">${m} <b>${vol[m]}</b></span>`)}</div></div>` : ''}
+      ${full && FS.balans ? (() => { const b = FS.balans(prog), tot = Object.values(b).reduce((a, c) => a + c, 0); return tot ? h`<details class="card"><summary><b>Balans pokreta u programu</b></summary><div class="row wrap mt-s">${FS.BALANS_KLJUCEVI.filter((k2) => b[k2] > 0).map((k2) => h`<span class="pill">${k2} <b>${b[k2]}</b></span>`)}</div><p class="small mt-s">Serije po ciklusu dana. Program drži ravnotežu između guranja i povlačenja (horizontalno i vertikalno), pregiba kuka i koljena.</p></details>` : ''; })() : ''}
       ${days.map((d, i) => h`<div class="card"><div class="row between"><h3 style="margin:0">${d.naziv}${d.vj[0] && d.vj[0].tag ? h` <span class="small">· ${d.vj[0].tag} dan</span>` : ''}</h3>${isK ? h`<a class="btn sm primary" href="#/trening/novi?p=${prog.id}&d=${i}&w=${week}">Započni</a>` : ''}</div>
-        <ul class="clean mt-s">${d.vj.map((x) => { const e = Store.ex(x.id); return e ? (full ? h`<li>${FS.hasFigure(e.id) ? h`<a href="#/vjezba/${e.id}" class="ph figph" aria-hidden="true" tabindex="-1">${FS.raw(FS.figureSVG(e.id, 1, ''))}</a>` : ''}<div class="grow"><a href="#/vjezba/${e.id}"><b style="color:var(--cream)">${e.naziv}</b></a>${x.n ? h`<div class="small">${x.n}</div>` : ''}${x.pct ? h`<div class="small">≈ ${x.pct} % težine iz 1. sedmice</div>` : ''}</div><b>${x.s} × ${x.r}</b></li>` : '') : ''; })}</ul>${full ? '' : h`<div class="row between"><span class="muted">${d.vj.length} vježbi</span><span class="muted small">${icon('lock')} Otključava se nakon kupovine</span></div>`}</div>`)}`;
+        <ul class="clean mt-s">${d.vj.map((x) => { const e = Store.ex(x.id); return e ? (full ? h`<li>${FS.hasFigure(e.id) ? h`<a href="#/vjezba/${e.id}" class="ph figph" aria-hidden="true" tabindex="-1">${FS.raw(FS.figureSVG(e.id, 1, ''))}</a>` : ''}<div class="grow"><a href="#/vjezba/${e.id}"><b style="color:var(--cream)">${e.naziv}</b></a>${x.n ? h`<div class="small">${x.n}</div>` : ''}${FS.raw(FS.pauzaTag ? FS.pauzaTag(x) : '')}${x.pct ? h`<div class="small">≈ ${x.pct} % težine iz 1. sedmice</div>` : ''}</div><b>${x.s} × ${x.r}</b></li>` : '') : ''; })}</ul>${full ? '' : h`<div class="row between"><span class="muted">${d.vj.length} vježbi</span><span class="muted small">${icon('lock')} Otključava se nakon kupovine</span></div>`}</div>`)}`;
     };
     draw();
     bind(el, { 'click:buy': () => buySheet(prog), 'click:wk': (b) => { week = +b.dataset.w; draw(); } });
@@ -341,7 +340,7 @@
         ${ack ? h`<h2 class="mt">Program po fazama</h2>
           ${D.faze.map((f, i) => h`<details class="card" ${i === 0 ? 'open' : ''}><summary style="cursor:pointer"><b style="font-family:var(--serif);font-size:18px">${f.naziv}</b><div class="small">${f.sedmice} · ${f.dana}</div></summary>
             <p class="muted mt-s">${f.cilj}</p>
-            <ul class="clean">${f.dani[0].vj.map((x) => { const e = Store.ex(x.id); return h`<li><div class="grow"><a href="#/vjezba/${e.id}"><b style="color:var(--cream)">${e.naziv}</b></a>${x.n ? h`<div class="small">${x.n}</div>` : ''}</div><b>${x.s} × ${x.r}</b></li>`; })}</ul>
+            <ul class="clean">${f.dani[0].vj.map((x) => { const e = Store.ex(x.id); return h`<li><div class="grow"><a href="#/vjezba/${e.id}"><b style="color:var(--cream)">${e.naziv}</b></a>${x.n ? h`<div class="small">${x.n}</div>` : ''}${FS.raw(FS.pauzaTag ? FS.pauzaTag(x) : '')}</div><b>${x.s} × ${x.r}</b></li>`; })}</ul>
             ${u && u.role === 'klijentica' ? h`<a class="btn primary block mt-s" href="#/trening/novi?p=dijastaza&f=${i}">Započni trening</a>` : h`<p class="small mt-s">Prijavi se kao klijentica da bi bilježila treninge.</p>`}</details>`)}
           <div class="card note"><b>Kada preći na sljedeću fazu?</b><p class="muted mt-s" style="margin:0">${D.napredovanje}</p></div>` : ''}
         <div class="card"><h2>Individualna prilagodba</h2>

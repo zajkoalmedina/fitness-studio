@@ -101,6 +101,7 @@
   const GRUPA_MISIC = { Noge: 'kvadriceps', Gluteusi: 'glutei', Leđa: 'leđa', Prsa: 'grudi', Ramena: 'ramena', Ruke: 'biceps', Core: 'core' };
   FS.primMisic = (id) => {
     if (FS.MUSCLE[id]) return FS.MUSCLE[id][0];
+    if (FS.EXTRA_MUSKUL && FS.EXTRA_MUSKUL[id]) return FS.EXTRA_MUSKUL[id].p[0];
     const e = (FS.EXERCISES || []).find((x) => x.id === id) || (window.FS.Store && FS.Store.ex ? FS.Store.ex(id) : null);
     return e ? GRUPA_MISIC[e.grupa] || null : null;
   };

@@ -206,3 +206,5 @@ ul.clean li .figph{margin-right:10px}
 .pdfpg.zoom{width:180%;max-width:none}
 #pdfhost{overflow-x:auto}
 .pdfinfo{margin:0 0 8px}
+
+.fstill.big .fig{max-height:170px}.fstill.big{padding:8px}.rest{color:var(--gold,#f3b36b)}.restbar{position:sticky;top:8px;z-index:30;background:#f3b36b;color:#1d2b4a;border-radius:14px;padding:10px 14px;font-weight:700;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.restbar button{background:#1d2b4a;color:#fff;border:0;border-radius:10px;padding:6px 10px}

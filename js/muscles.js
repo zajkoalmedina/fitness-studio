@@ -63,6 +63,7 @@
     m_v_podizanje: M(['leđa'], ['ramena', 'donja leđa']), m_sjedeca_rotacija: M(['core'], ['leđa']), m_pas: M(['zadnja loža', 'listovi'], ['ramena']),
     m_kukovi_krug: M(['glutei'], ['core']), m_rame_krug: M(['ramena'], ['leđa']), m_ptica_reach: M(['leđa', 'donja leđa'], ['glutei', 'zadnja loža', 'ramena'])
   };
+  Object.assign(FS.MUSKUL, FS.EXTRA_MUSKUL || {});
   /* za vježbe koje je trenerica dodala sama: grupa vježbe daje okvirnu sliku */
   const GR = { Noge: M(['kvadriceps', 'glutei']), Gluteusi: M(['glutei'], ['zadnja loža']), Leđa: M(['leđa'], ['biceps']), Prsa: M(['grudi'], ['triceps']), Ramena: M(['ramena']), Ruke: M(['biceps', 'triceps']), Core: M(['core']), Mobilnost: M(['donja leđa'], ['leđa']) };
   FS.muskulOf = (id) => {

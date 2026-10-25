@@ -555,8 +555,8 @@
         const state = i < cur ? 'urađena' : i === cur ? 'trenutna' : 'sljedeća';
         return h`<details class="card" ${i === cur || !isK ? 'open' : ''}><summary style="cursor:pointer"><div class="row between"><b style="font-family:var(--serif);font-size:18px">${f.naziv}</b><span class="badge ${i < cur ? 'ok' : i === cur ? 'warn' : ''}">${state}</span></div><div class="small">${f.sedmice} · ${f.dana}</div></summary>
           <p class="muted mt-s">${f.cilj}</p>
-          <ul class="clean">${f.dani[0].vj.map((x) => { const e = Store.ex(x.id); if (!e) return ''; return h`<li>${FS.hasFigure(e.id) ? h`<a href="#/vjezba/${e.id}" class="ph figph" aria-hidden="true" tabindex="-1">${FS.raw(FS.figureSVG(e.id, 1, ''))}</a>` : ''}<div class="grow"><a href="#/vjezba/${e.id}"><b style="color:var(--cream)">${e.naziv}</b></a>${x.n ? h`<div class="small">${x.n}</div>` : ''}</div><b>${x.s} × ${x.r}</b></li>`; })}</ul>
-          ${isK ? h`<a class="btn primary block mt-s" href="#/trening/novi?p=dijastaza&f=${i}">Započni trening</a>` : ''}
+          ${f.dani.map((dd, di) => h`<h3 class="mt-s">${dd.naziv}</h3><ul class="clean">${dd.vj.map((x) => { const e = Store.ex(x.id); if (!e) return ''; return h`<li>${FS.hasFigure(e.id) ? h`<a href="#/vjezba/${e.id}" class="ph figph" aria-hidden="true" tabindex="-1">${FS.raw(FS.figureSVG(e.id, 1, ''))}</a>` : ''}<div class="grow"><a href="#/vjezba/${e.id}"><b style="color:var(--cream)">${e.naziv}</b></a>${x.n ? h`<div class="small">${x.n}</div>` : ''}${FS.raw(FS.pauzaTag ? FS.pauzaTag(x) : '')}</div><b>${x.s} × ${x.r}</b></li>`; })}</ul>
+          ${isK ? h`<a class="btn primary block mt-s" href="#/trening/novi?p=dijastaza&f=${i}&d=${di}">Započni ${dd.naziv.toLowerCase()}</a>` : ''}`)}
           ${isK && i === cur ? h`<button class="btn block mt-s" data-act="next" data-i="${i}">Završila sam ovu fazu</button>` : ''}</details>`;
       };
       el.innerHTML = h`<div class="eyebrow">Kućni program · besplatno za klijente</div><h1>Dijastaza recti</h1>
@@ -569,6 +569,7 @@
           ${isK ? h`<div class="progress mb" role="progressbar" aria-valuenow="${cur}" aria-valuemax="4"><i style="width:${Math.min(100, (cur / 4) * 100)}%"></i></div><div class="small mb">${cur >= 4 ? 'Završila si sve četiri faze. Svaka čast!' : 'Faza ' + (cur + 1) + ' od 4'}</div>` : ''}
           ${D.faze.map(phase)}
           <div class="card note"><b>Kada preći na sljedeću fazu?</b><p class="muted mt-s" style="margin:0">${D.napredovanje}</p></div>
+          ${D.kretanje ? h`<div class="card"><h3>${D.kretanje.naslov}</h3><p class="muted">${D.kretanje.uvod}</p><ul class="dots">${D.kretanje.savjeti.map((t) => h`<li>${t}</li>`)}</ul></div>` : ''}
           <div class="card"><h3>Izbjegavaj u početku</h3><ul class="clean">${D.izbjegavaj.map((t) => h`<li><span class="tick no">✕</span><span>${t}</span></li>`)}</ul></div>
           <details class="card"><summary style="cursor:pointer;font-weight:600">Orijentaciona samoprovjera razmaka</summary><ol class="steps mt-s">${D.samotest.map((t) => h`<li><span>${t}</span></li>`)}</ol></details>` : ''}
         <div class="card"><h2>Individualna prilagodba</h2>
@@ -602,6 +603,7 @@
     if (!shop.length || !anchor) return;
     const sec = h`<div class="eyebrow">Gotovi programi i vodič</div><h2>Za samostalan trening</h2>
       ${shop.map((pr) => h`<a class="price-card" href="${pr.tip === 'vodic' ? '#/ishrana' : '#/program/' + pr.id}"><div class="grow"><div class="nm" style="font-size:18px">${pr.naziv}</div><div class="ds">${pr.tip === 'vodic' ? 'e-vodič · 42 recepta · dnevni jelovnik' : pr.sedmica + ' sedmica · ' + pr.dana + '× sedmično · pristup ' + pr.sedmica + ' sedmica'}</div></div><div class="price-tag">${pr.cijena} ${config.valuta}</div></a>`)}
+      <a class="card" href="#/trcanje" style="display:block"><b>Trčanje za početnice: 5 km i 10 km</b><div class="small muted">Planovi i kalkulator tempa</div></a>
       <a class="btn block mb" href="#/programi">Svi programi →</a><div class="eyebrow mt">Prije početka</div>
       <a class="card" href="#/upitnik" style="display:block"><b>Upitnik za nove klijente</b><div class="small muted">Preuzmi ili popuni online prije početka coachinga.</div></a>`;
     anchor.insertAdjacentHTML('beforebegin', sec.s);
@@ -611,7 +613,7 @@
   const alati0 = V.alati;
   V.alati = (el, p, q) => {
     alati0(el, p, q);
-    const wrap = document.createElement('div'); wrap.innerHTML = h`<a class="card" href="#/suplementi" style="display:block"><b>Suplementi</b><div class="small muted">Praktične smjernice: šta ima smisla, a šta ne</div></a>`.s;
-    el.appendChild(wrap.firstChild);
+    const wrap = document.createElement('div'); wrap.innerHTML = h`<a class="card" href="#/trcanje" style="display:block"><b>Trčanje: planovi 5 km i 10 km + kalkulator tempa</b><div class="small muted">Za početnice, korak po korak</div></a><a class="card" href="#/suplementi" style="display:block"><b>Suplementi</b><div class="small muted">Praktične smjernice: šta ima smisla, a šta ne</div></a>`.s;
+    while (wrap.firstChild) el.appendChild(wrap.firstChild);
   };
 })();

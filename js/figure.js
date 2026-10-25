@@ -96,6 +96,7 @@
     m_rame_krug: [{ t: 180, th: 0, sh: 0, ua: 80, fa: 82 }, { t: 180, th: 0, sh: 0, ua: -80, fa: -80 }],
     m_ptica_reach: [{ t: 105, th: 12, sh: -6, ua: 100, fa: 100, ua2: -110, fa2: -110 }, { t: 105, th: 12, sh: -6, ua: -110, fa: -110, ua2: 100, fa2: 100 }]
   });
+  Object.keys(FS.EXTRA_POSES || {}).forEach((k) => { const v = FS.EXTRA_POSES[k]; const r = typeof v === 'string' ? P[v] : v; if (r) P[k] = r; });
   FS.FIGURE_IDS = Object.keys(P);
 
   function solve(p) {

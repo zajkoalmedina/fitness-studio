@@ -5,11 +5,11 @@
 
   const ROUTES = [
     ['', 'home'], ['paketi', 'paketi'], ['alati', 'alati'], ['vjezbe', 'vjezbe'], ['vjezba/:id', 'vjezba'],
-    ['programi', 'programi'], ['program/:id', 'program'], ['dijastaza', 'dijastaza'], ['ishrana', 'ishrana'], ['kondicija', 'kondicija'], ['suplementi', 'suplementi'], ['upitnik', 'upitnik'], ['kond/:id', 'kond'], ['prijava', 'prijava'],
+    ['programi', 'programi'], ['program/:id', 'program'], ['dijastaza', 'dijastaza'], ['ishrana', 'ishrana'], ['kondicija', 'kondicija'], ['suplementi', 'suplementi'], ['trcanje', 'trcanje'], ['upitnik', 'upitnik'], ['kond/:id', 'kond'], ['prijava', 'prijava'],
     ['moj', 'moj', 'klijentica'], ['trening/novi', 'trening_novi', 'klijentica'],
     ['trener', 'trener', 'trener'], ['trener/klijentica/:id', 'trener_klijentica', 'trener'], ['trener/program/:id', 'trener_program', 'trener']
   ];
-  const DETAIL = new Set(['vjezba', 'program', 'trening_novi', 'trener_klijentica', 'trener_program', 'paketi', 'dijastaza', 'ishrana', 'kond', 'suplementi', 'upitnik']);
+  const DETAIL = new Set(['vjezba', 'program', 'trening_novi', 'trener_klijentica', 'trener_program', 'paketi', 'dijastaza', 'ishrana', 'kond', 'suplementi', 'upitnik', 'trcanje']);
   const leave = [];
   FS.onLeave = (fn) => leave.push(fn);
 
