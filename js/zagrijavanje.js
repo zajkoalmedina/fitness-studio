@@ -4,7 +4,14 @@
   const { h, bind, $ } = FS;
   const V = (FS.views = FS.views || {});
 
+  const jeT = () => { const u = FS.Auth.user(); return !!u && u.role === 'trener'; };
   FS.ZAGR = [
+    { id: 'cft', naziv: 'Opće zagrijavanje po CFT 1 i 2', min: 14, za: 'Od ležećeg položaja ka stojećem: mobilnost, klečeći, potkoljenice, stojeći', vj: [
+      ['LEŽEĆI · Koljena na prsa, kružno', 40, 'Ležeći na leđima, ruke oko koljena, mali krugovi za donja leđa.'], ['LEŽEĆI · Rotacija kukova (brisači, windshield)', 45, 'Koljena savijena, spuštaj ih lijevo–desno, ramena na podu.'], ['LEŽEĆI · Glute bridge', 40, '10–12 ponavljanja, stisni gluteuse.'], ['LEŽEĆI · Dead bug', 40, 'Donja leđa na podu, sporo.'],
+      ['MOBILNOST · Mačka–krava', 45, 'Na sve četiri, kičma kroz cijeli raspon.'], ['MOBILNOST · Rotacija grudnog dijela (otvorena knjiga)', 60, 'Po 30 s na stranu, pogled prati ruku.'], ['MOBILNOST · Bird dog', 40, 'Naizmjenično ruka–noga, bez ljuljanja zdjelice.'],
+      ['KLEČEĆI · Istezanje pregibača kuka (half-kneeling)', 60, 'Po 30 s na stranu, zdjelica podvučena.'], ['KLEČEĆI · Sjedenje na petama i dizanje (kneeling squat)', 40, 'Kontrolisano, ispravi kukove na vrhu.'],
+      ['POTKOLJENICE · Koljeno ka zidu (gležanj)', 60, 'Po 30 s na stranu, peta na podu.'], ['POTKOLJENICE · Podizanje prstiju (tibialis)', 30, 'Leđa uz zid, 15–20 ponavljanja.'], ['POTKOLJENICE · Podizanje na prste (listovi)', 30, '15 ponavljanja, spuštaj sporo.'],
+      ['STOJEĆI · Zamasi nogom naprijed–nazad i bočno', 60, 'Po 15 s na stranu u oba smjera.'], ['STOJEĆI · Inchworm sa sklekom', 45, 'Hodaj rukama u plank pa nazad.'], ['STOJEĆI · Kruženje ramenima i rukama', 30, 'Veliki krugovi, naprijed i nazad.'], ['STOJEĆI · Čučanj tjelesnom težinom (prazna šipka ako treba)', 40, '10 ponavljanja, pun raspon.'], ['PULS · Jumping jacks ili lagano skakanje', 40, 'Podigni puls prije glavnog dijela.']] },
     { id: 'opce', naziv: 'Opće zagrijavanje', min: 6, za: 'Prije bilo kojeg treninga', vj: [
       ['Lagano hodanje ili marš u mjestu', 60, 'Podigni puls, diši mirno.'], ['Kruženje ramenima', 30, 'Naprijed pa nazad.'], ['Kruženje kukovima', 30, 'Veliki, spori krugovi.'],
       ['Mačka–krava', 40, 'Na sve četiri, savijaj i izvijaj kičmu.'], ['Svjetski najbolji istezaj (lunge s rotacijom)', 60, 'Po 30 s na svaku stranu.'], ['Čučanj tjelesnom težinom', 40, 'Kontrolisano, 10–12 ponavljanja.'], ['Glute bridge', 40, '10–12 ponavljanja.'], ['Čučanj s rukama iznad glave i širenje grudi', 40, 'Otvori prsa, ruke iznad glave.']] },
@@ -30,6 +37,7 @@
 
   V.zagrijavanje = (el, p, q) => {
     q = q || {};
+    if (!jeT()) { el.innerHTML = h`<h1>Zagrijavanje</h1><p class="muted">Dostupno samo trenerici.</p>`; return; }
     const z = FS.ZAGR.find((x) => x.id === q.r);
     if (!z) {
       el.innerHTML = h`<div class="eyebrow">Prije treninga</div><h1>Zagrijavanje</h1>
@@ -71,10 +79,10 @@
   const hint = '<a class="card" href="#/zagrijavanje" style="display:block"><b>Zagrijavanje prije treninga</b><div class="small muted">Vođene rutine s tajmerom (5–12 min)</div></a>';
   ['program', 'trening_novi'].forEach((k) => {
     const f = V[k]; if (!f) return;
-    V[k] = (el, p, q) => { const r = f(el, p, q); const u = FS.Auth.user(); if (u) { const h1 = el.querySelector('h1'); if (h1 && h1.parentNode === el) { const nx = h1.nextElementSibling; (nx || h1).insertAdjacentHTML('afterend', hint); } } return r; };
+    V[k] = (el, p, q) => { const r = f(el, p, q); const u = FS.Auth.user(); if (u && u.role === 'trener') { const h1 = el.querySelector('h1'); if (h1 && h1.parentNode === el) { const nx = h1.nextElementSibling; (nx || h1).insertAdjacentHTML('afterend', hint); } } return r; };
   });
   const prog0 = V.programi;
-  if (prog0) V.programi = (el, p, q) => { const r = prog0(el, p, q); const h1 = el.querySelector('h1'); if (h1 && h1.parentNode === el) h1.insertAdjacentHTML('afterend', hint); return r; };
+  if (prog0) V.programi = (el, p, q) => { const r = prog0(el, p, q); const h1 = el.querySelector('h1'); if (jeT() && h1 && h1.parentNode === el) h1.insertAdjacentHTML('afterend', hint); return r; };
   const alati2 = V.alati;
-  V.alati = (el, p, q) => { alati2(el, p, q); el.insertAdjacentHTML('beforeend', h`<a class="card" href="#/zagrijavanje" style="display:block"><b>Zagrijavanje</b><div class="small muted">Rutine s tajmerom za noge, gornji dio, kondiciju i snagu</div></a>`.s); };
+  V.alati = (el, p, q) => { alati2(el, p, q); if (jeT()) el.insertAdjacentHTML('beforeend', h`<a class="card" href="#/zagrijavanje" style="display:block"><b>Zagrijavanje</b><div class="small muted">Rutine s tajmerom za noge, gornji dio, kondiciju i snagu</div></a>`.s); };
 })();
