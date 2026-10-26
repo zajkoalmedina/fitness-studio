@@ -215,7 +215,7 @@
     if (!isNew && !src) { el.innerHTML = h`<div class="empty">Program nije pronađen.</div><a class="btn block" href="#/trener?tab=programi">Nazad</a>`; return; }
     const builtin = !!src && FS.GOTOVI.some((x) => x.id === src.id);
     const za = q.za && Store.user(q.za) ? q.za : null;
-    const P = src ? JSON.parse(JSON.stringify(src)) : { id: 'p_' + uid(), naziv: za ? 'Individualni program – ' + Store.user(za).ime : '', opis: '', nivo: 'početni', sedmica: 4, dana: 3, cijena: 0, tip: za ? 'individualni' : 'gotov', uShopu: false, dani: [{ naziv: 'Dan 1', vj: [] }] };
+    const P = src ? JSON.parse(JSON.stringify(src)) : { id: 'p_' + uid(), naziv: za ? 'Individualni program – ' + Store.user(za).ime : '', opis: '', nivo: 'početni', sedmica: 4, dana: 3, cijena: 0, tip: za ? 'individualni' : 'gotov', uShopu: false, per: { tip: 'nema', deload: 4 }, dani: [{ naziv: 'Dan 1', vj: [] }] };
     const exOpts = () => Store.exercises().map((e) => [e.id, `${e.grupa} · ${e.nivo} · ${e.naziv}`]);
 
     const draw = () => {

@@ -115,8 +115,9 @@
     if (src) {
       d.programId = q.p; d.dan = src.naziv;
       src.vj.forEach((x) => {
-        const last = Store.lastSets(u.id, x.id), n = x.s || 3;
-        d.vjezbe.push({ id: x.id, pauza: FS.pauza ? FS.pauza(x) : 0, cilj: x.r + (x.pct ? ' · ≈ ' + x.pct + ' % težine iz 1. sedmice' : ''), serije: Array.from({ length: n }, (_, i) => ({ kg: last && last[i] && last[i].kg ? String(last[i].kg) : '', rep: String(parseInt(x.r, 10) || ''), ok: false })) });
+        const last = Store.lastSets(u.id, x.id), n = x.s || 3, base = x.pct ? Store.baseKg(u.id, x.id) : 0;
+        const sug = base ? Math.round((base * x.pct / 100) / (base >= 20 ? 2.5 : 1)) * (base >= 20 ? 2.5 : 1) : 0;
+        d.vjezbe.push({ id: x.id, pauza: FS.pauza ? FS.pauza(x) : 0, cilj: x.r + (x.pct ? ' · ≈ ' + x.pct + ' % težine iz 1. sedmice' + (sug ? ' (prijedlog ' + sug + ' kg)' : '') : ''), serije: Array.from({ length: n }, (_, i) => ({ kg: sug ? String(sug) : (last && last[i] && last[i].kg ? String(last[i].kg) : ''), rep: String(parseInt(x.r, 10) || ''), ok: false })) });
       });
     }
     return d;

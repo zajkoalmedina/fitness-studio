@@ -118,6 +118,12 @@
       const l = Store.logsOf(uidv).find((x) => x.vjezbe.some((v) => v.id === exId));
       return l ? l.vjezbe.find((v) => v.id === exId).serije : null;
     },
+    /* težina iz prve zabilježene sedmice (najbolja serija prvog treninga te vježbe) */
+    baseKg(uidv, exId) {
+      const ls2 = Store.logsOf(uidv).filter((x) => x.vjezbe.some((v) => v.id === exId)); if (!ls2.length) return 0;
+      const first = ls2[ls2.length - 1], v = first.vjezbe.find((q) => q.id === exId);
+      return Math.max(0, ...v.serije.map((z) => +z.kg || 0));
+    },
     draft: { get() { try { return JSON.parse(ls.get(DKEY)); } catch (e) { return null; } }, set(d) { ls.set(DKEY, JSON.stringify(d)); }, clear() { ls.del(DKEY); } }
   };
 
