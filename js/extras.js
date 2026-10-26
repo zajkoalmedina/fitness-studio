@@ -301,7 +301,7 @@
         const p = String(formData(f).p || '').trim(), er = $('#pwerr', s);
         try { await Auth.setPassword(u.id, p); } catch (x) { er.textContent = x.message; er.hidden = false; return; }
         u.mora_promijeniti = true; r.status = 'obradjeno'; Store.save(); FS.closeSheet();
-        const msg = 'Zdravo ' + String(u.ime).split(' ')[0] + '! Tvoja nova privremena lozinka za FITNESS STUDIO je: ' + p + '\nPrijavi se s e-mailom ' + u.email + ', pa ćeš odmah izabrati svoju lozinku.';
+        const msg = 'Zdravo ' + String(u.ime).split(' ')[0] + '! Tvoja nova privremena lozinka za aplikaciju Almedina Fitness je: ' + p + '\nPrijavi se s e-mailom ' + u.email + ', pa ćeš odmah izabrati svoju lozinku.';
         FS.openSheet(h`<h2>Lozinka je postavljena</h2><p class="small muted">Pošalji klijentu ovu poruku (WhatsApp, Viber, Instagram).</p><textarea id="pwmsg" rows="6" readonly>${msg}</textarea>
           <div class="row mt-s"><button class="btn primary grow" data-act="cp">Kopiraj poruku</button><button class="btn grow" data-act="ok">Gotovo</button></div>`, (s2) => bind(s2, {
           'click:cp': () => copyText(msg, $('#pwmsg', s2)), 'click:ok': () => { FS.closeSheet(); FS.rerender(); } }));
@@ -368,7 +368,7 @@
   /* ================= POZIVNICE (registracija samo uz pozivnicu) ================= */
   const pozList = () => (Store.db.pozivnice = Store.db.pozivnice || []);
   const appUrl = () => location.origin + location.pathname;
-  FS.invMsg = (p) => 'Zdravo' + (p.ime ? ' ' + String(p.ime).split(' ')[0] : '') + '! Pozvan/a si u aplikaciju FITNESS STUDIO.\n\n1) Otvori: ' + appUrl() + '#/prijava?tab=registracija&e=' + encodeURIComponent(p.id) +
+  FS.invMsg = (p) => 'Zdravo' + (p.ime ? ' ' + String(p.ime).split(' ')[0] : '') + '! Pozvan/a si u aplikaciju Almedina Fitness.\n\n1) Otvori: ' + appUrl() + '#/prijava?tab=registracija&e=' + encodeURIComponent(p.id) +
     '\n2) Upiši e-mail ' + p.id + ', svoje ime i izaberi lozinku (najmanje 8 znakova, slovo i broj).\n3) Na iPhoneu: Safari, Podijeli, Dodaj na početni ekran.\n\nLozinku znaš samo ti.';
   FS.pozivnicePending = () => {
     const have = new Set(Store.db.users.map((u) => String(u.email || '').toLowerCase())), l = pozList().filter((p) => !have.has(String(p.id).toLowerCase()));
@@ -612,7 +612,7 @@
       <a class="btn block mb" href="#/programi">Svi programi →</a><div class="eyebrow mt">Prije početka</div>
       <a class="card" href="#/upitnik" style="display:block"><b>Upitnik za nove klijente</b><div class="small muted">Preuzmi ili popuni online prije početka coachinga.</div></a>`;
     anchor.insertAdjacentHTML('beforebegin', sec.s);
-    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 43</p>');
+    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 44</p>');
   };
 
   /* Kalkulatori: veza na suplemente */

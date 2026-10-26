@@ -1,7 +1,7 @@
 /* Postavke aplikacije – ovdje mijenjaš osnovne podatke brenda. */
 window.FS = window.FS || {};
 FS.config = {
-  brand: 'FITNESS STUDIO',
+  brand: 'ALMEDINA FITNESS',
   trenerIme: 'Tvoja trenerica',        // npr. 'Amina Hadžić'
   instagram: 'https://instagram.com/almedina.zajko',                       // npr. 'https://instagram.com/tvoj_profil' (ostavi prazno dok nemaš)
   valuta: 'KM',

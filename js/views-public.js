@@ -39,7 +39,7 @@
     const u = Auth.user();
     el.innerHTML = h`
       <section class="hero">
-        <img src="images/trener.jpg" alt="FITNESS STUDIO – trenerica" fetchpriority="high">
+        <img src="images/trener.jpg" alt="Almedina Fitness – trenerica" fetchpriority="high">
         <div class="inner">
           <div class="eyebrow">Personalni treninzi · Online coaching</div>
           <h1>FITNESS<br>STUDIO</h1>
