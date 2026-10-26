@@ -102,6 +102,9 @@ textarea{min-height:96px;resize:vertical}
 input:focus,select:focus,textarea:focus{border-color:var(--beige);box-shadow:0 0 0 3px rgba(200,170,138,.2)}
 .check{display:flex;gap:10px;align-items:flex-start;margin-bottom:14px;font-size:14px;color:var(--cream-2)}
 .check input{width:22px;height:22px;min-height:22px;flex:none;margin-top:2px;accent-color:var(--beige)}
+.check input{-webkit-appearance:none;appearance:none;width:24px;height:24px;min-height:24px;border:2px solid var(--beige);border-radius:6px;background:rgba(255,255,255,.04) center/16px no-repeat;padding:0;cursor:pointer}
+.check input:checked{background-color:var(--cream);border-color:var(--cream);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M3 8.5l3.2 3.2L13 4.5' fill='none' stroke='%230a1630' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/></svg>")}
+.check input:disabled{opacity:.4}
 .field .check input{-webkit-appearance:none;appearance:none;width:24px;height:24px;min-height:24px;border:2px solid var(--beige);border-radius:6px;background:rgba(255,255,255,.04) center/16px no-repeat;padding:0;cursor:pointer}
 .field .check input[type=radio]{border-radius:6px}
 .field .check input:checked{background-color:var(--cream);border-color:var(--cream);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M3 3l10 10M13 3L3 13' stroke='%230a1630' stroke-width='2.6' stroke-linecap='round'/></svg>")}

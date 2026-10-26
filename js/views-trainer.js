@@ -231,10 +231,14 @@
           <div class="row wrap">${Array.from({ length: parseInt(P.sedmica, 10) || 1 }, (_, i) => { const x = FS.weekInfo(P, i + 1); return h`<span class="pill" title="${x.faza}">${i + 1}. ${x.deload ? 'deload' : x.faza.toLowerCase()}</span>`; })}</div></div>
         <div class="card"><div class="eyebrow">Direktnih serija sedmično (sedmica 1)</div><div class="row wrap mt-s">${FS.MISICI.map((m) => [m, FS.weekVolume(P, 1)[m]]).filter((x) => x[1] > 0).map(([m, v]) => h`<span class="pill">${m} <b>${v}</b></span>`)}</div><p class="small mt-s">Pregledni okvir: oko 10 do 20 serija po mišićnoj grupi sedmično za rast, početnicama dovoljno 6 do 10.</p></div>
         ${P.dani.map((d, di) => h`<div class="card"><div class="row"><input data-act="dn" data-di="${di}" value="${d.naziv}" maxlength="60" class="grow"><button class="icon-btn" data-act="rmday" data-di="${di}" aria-label="Ukloni dan">${icon('trash')}</button></div>
-          ${d.vj.map((x, xi) => h`<div class="card flat" style="margin:10px 0 0;padding:10px"><div class="row"><select data-act="xe" data-di="${di}" data-xi="${xi}" class="grow">${opts(exOpts(), x.id)}</select><button class="icon-btn" data-act="rmex" data-di="${di}" data-xi="${xi}" aria-label="Ukloni">${icon('trash')}</button></div>
+          ${d.vj.map((x, xi) => h`<div class="card flat" style="margin:10px 0 0;padding:10px;${x.p === 0 ? 'border-left:4px solid var(--beige)' : (xi > 0 && d.vj[xi - 1].p === 0 ? 'border-left:4px solid var(--beige)' : '')}">
+            ${x.p === 0 ? h`<div class="small" style="color:var(--beige);margin-bottom:6px"><b>Superserija</b> · odmah poslije ove ide sljedeća vježba</div>` : (xi > 0 && d.vj[xi - 1].p === 0 ? h`<div class="small" style="color:var(--beige);margin-bottom:6px"><b>Superserija</b> · par prethodne vježbe</div>` : '')}
+            <div class="row"><select data-act="xe" data-di="${di}" data-xi="${xi}" class="grow">${opts(exOpts(), x.id)}</select><button class="icon-btn" data-act="xup" data-di="${di}" data-xi="${xi}" aria-label="Pomjeri gore">↑</button><button class="icon-btn" data-act="xdn" data-di="${di}" data-xi="${xi}" aria-label="Pomjeri dolje">↓</button><button class="icon-btn" data-act="rmex" data-di="${di}" data-xi="${xi}" aria-label="Ukloni">${icon('trash')}</button></div>
             <div class="grid3 mt-s"><label class="field" style="margin:0"><span>Serije</span><input data-act="xs" data-di="${di}" data-xi="${xi}" inputmode="numeric" value="${x.s}"></label><label class="field" style="margin:0;grid-column:span 2"><span>Ponavljanja</span><input data-act="xr" data-di="${di}" data-xi="${xi}" value="${x.r}" maxlength="30"></label></div>
+            <div class="grid2 mt-s"><label class="field" style="margin:0"><span>Pauza između serija (s)</span><input data-act="xp" data-di="${di}" data-xi="${xi}" inputmode="numeric" placeholder="auto ${FS.pauza ? FS.pauza({ ...x, fix: false, p: x.p === 0 ? undefined : x.p }) : ''}" value="${x.fix && x.p != null && x.p !== 0 ? x.p : ''}" ${x.p === 0 ? 'disabled' : ''}></label>
+              <label class="check" style="margin:0;align-self:end"><input type="checkbox" data-act="xss" data-di="${di}" data-xi="${xi}" ${x.p === 0 ? 'checked' : ''} ${xi === d.vj.length - 1 ? 'disabled' : ''}><span>Superserija sa sljedećom</span></label></div>
             <input class="mt-s" data-act="xn" data-di="${di}" data-xi="${xi}" value="${x.n || ''}" placeholder="Napomena (nije obavezno)" maxlength="120"></div>`)}
-          <button class="btn sm block mt-s" data-act="addex" data-di="${di}">+ Vježba</button></div>`)}
+          <div class="row mt-s"><button class="btn sm grow" data-act="addex" data-di="${di}">+ Vježba</button><button class="btn sm grow" data-act="newex" data-di="${di}">+ Nova vježba</button></div></div>`)}
         <button class="btn block mb" data-act="addday">+ Dodaj dan</button>
         <div class="card flat"><div class="small">Kopiraj trening iz postojećeg programa</div><div class="row mt-s"><select data-act="cpsel" class="grow"><option value="">Izaberi trening…</option>${Store.allPrograms().filter((x) => x.id !== P.id).flatMap((x) => x.dani.map((d, di) => h`<option value="${x.id}|${di}">${x.naziv} · ${d.naziv}</option>`))}</select><button class="btn sm" data-act="cpday">Dodaj</button></div></div>
         <p class="err" id="perr" hidden></p><button class="btn primary block" data-act="save">Sačuvaj program</button>
@@ -253,7 +257,22 @@
       'input:xs': (t) => { P.dani[t.dataset.di].vj[t.dataset.xi].s = parseInt(t.value, 10) || 0; },
       'input:xr': (t) => { P.dani[t.dataset.di].vj[t.dataset.xi].r = t.value; },
       'input:xn': (t) => { P.dani[t.dataset.di].vj[t.dataset.xi].n = t.value; },
-      'click:addex': (t) => { P.dani[t.dataset.di].vj.push({ id: Store.exercises()[0].id, s: 3, r: '10', n: '' }); draw(); },
+      'input:xp': (t) => { const x = P.dani[t.dataset.di].vj[t.dataset.xi], v = parseInt(t.value, 10); if (t.value.trim() !== '' && v >= 0 && v <= 900) { x.fix = true; x.p = v; } else { delete x.fix; delete x.p; } },
+      'change:xss': (t) => { const x = P.dani[t.dataset.di].vj[t.dataset.xi]; if (t.checked) { x.p = 0; x.ss = true; delete x.fix; } else { delete x.p; delete x.ss; } draw(); },
+      'click:xup': (t) => { const a = P.dani[t.dataset.di].vj, i = +t.dataset.xi; if (i > 0) { [a[i - 1], a[i]] = [a[i], a[i - 1]]; draw(); } },
+      'click:xdn': (t) => { const a = P.dani[t.dataset.di].vj, i = +t.dataset.xi; if (i < a.length - 1) { [a[i + 1], a[i]] = [a[i], a[i + 1]]; draw(); } },
+      'click:newex': (t) => { const di = +t.dataset.di; exSheet(null, () => { const l = (Store.db.vjezbeNove || []).slice(-1)[0]; if (l) { P.dani[di].vj.push({ id: l.id, s: 3, r: '10', n: '' }); } draw(); }); },
+      'click:addex': (t) => {
+        const di = +t.dataset.di; let g = 'Sve', qs = '';
+        const list = () => Store.exercises().filter((e) => (g === 'Sve' || e.grupa === g) && (!qs || (e.naziv + ' ' + e.grupa).toLowerCase().includes(qs.toLowerCase())));
+        const rows = () => h`${list().map((e) => h`<button class="ex" style="width:100%;text-align:left;font:inherit" data-act="pickex" data-id="${e.id}"><div class="grow"><b>${e.naziv}</b><div class="small">${e.grupa} · ${e.nivo}${FS.zona && FS.zona(e.id) ? ' · zona ' + FS.zona(e.id) : ''}</div></div></button>`)}`.s;
+        openSheet(h`<h2>Dodaj vježbu</h2><label class="field"><input type="search" data-act="pq" placeholder="Pretraži…"></label>
+          <div class="chips mb">${['Sve', ...FS.GRUPE].map((x) => h`<button class="chip ${x === 'Sve' ? 'on' : ''}" data-act="pg" data-v="${x}">${x}</button>`)}</div><div id="pl">${FS.raw(rows())}</div>`, (sh) => bind(sh, {
+          'input:pq': (i) => { qs = i.value; $('#pl', sh).innerHTML = rows(); },
+          'click:pg': (b) => { g = b.dataset.v; sh.querySelectorAll('[data-act=pg]').forEach((c) => c.classList.toggle('on', c === b)); $('#pl', sh).innerHTML = rows(); },
+          'click:pickex': (b) => { P.dani[di].vj.push({ id: b.dataset.id, s: 3, r: '10', n: '' }); closeSheet(); draw(); }
+        }));
+      },
       'click:rmex': (t) => { P.dani[t.dataset.di].vj.splice(+t.dataset.xi, 1); draw(); },
       'click:cpday': () => { const v = $('[data-act=cpsel]', el).value; if (!v) { toast('Izaberi trening.'); return; } const [pid, di] = v.split('|'); const sp = Store.program(pid); const d = sp && sp.dani[+di]; if (!d) return; P.dani.push({ naziv: d.naziv, vj: JSON.parse(JSON.stringify(d.vj)) }); toast('Trening je dodan, možeš ga urediti.'); draw(); },
       'click:addday': () => { P.dani.push({ naziv: 'Dan ' + (P.dani.length + 1), vj: [] }); draw(); },
