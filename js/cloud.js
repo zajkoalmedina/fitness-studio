@@ -111,7 +111,19 @@
   }
 
   /* ---------- spremanje (razlika u odnosu na server) ---------- */
+  /* individualni programi moraju imati vlasnika (klijenticu), inače ih ona zbog zaštite podataka ne može učitati */
+  function fixOwners() {
+    let n = 0; const db = Store.db;
+    (db.programi || []).forEach((pr) => {
+      if (pr.tip !== 'individualni' || pr.vlasnik || pr.userId) return;
+      const u = (db.users || []).find((x) => x.role !== 'trener' && (x.programi || []).includes(pr.id));
+      if (u) { pr.vlasnik = u.id; n++; }
+    });
+    return n;
+  }
+  FS.fixOwners = fixOwners;
   async function flush() {
+    if (Auth.user() && Auth.user().role === 'trener') fixOwners();
     if (saving) { again = true; return; }
     saving = true;
     try {
@@ -169,6 +181,7 @@
   /* ---------- osvježavanje (nove poruke i izmjene s drugih uređaja) ---------- */
   async function poll() {
     if (!sess || document.hidden || saving) return;
+    if (Auth.user() && Auth.user().role === 'trener' && fixOwners()) Store.save();
     try {
       const rows = await api(`/rest/v1/docs?select=*&updated_at=gt.${encodeURIComponent(since)}&order=updated_at.asc`);
       const changed = new Set(); let newMsg = false;

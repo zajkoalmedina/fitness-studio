@@ -287,6 +287,7 @@
         if (builtin) { Store.db.programMod = Store.db.programMod || {}; Store.db.programMod[P.id] = { naziv: P.naziv, opis: P.opis, nivo: P.nivo, sedmica: P.sedmica, dana: P.dana, cijena: P.cijena, uShopu: P.uShopu, dani: P.dani, per: FS.perOf(P) }; }
         else { const i = Store.db.programi.findIndex((x) => x.id === P.id); if (i >= 0) Store.db.programi[i] = P; else Store.db.programi.push(P); }
         if (za && !Store.user(za).programi.includes(P.id)) Store.user(za).programi.push(P.id);
+        if (za && P.tip === 'individualni' && !P.vlasnik) P.vlasnik = za;
         Store.save(); toast('Program sačuvan.'); go(za ? '#/trener/klijentica/' + za : '#/trener?tab=programi');
       },
       'click:revert': async () => { if (await confirmSheet({ title: 'Vratiti original?', text: 'Tvoje izmjene ovog programa bit će odbačene.', ok: 'Vrati' })) { delete Store.db.programMod[P.id]; Store.save(); toast('Vraćen originalni program.'); go('#/trener?tab=programi'); } },
