@@ -276,6 +276,23 @@
     const a = document.activeElement;
     if (/^#\/moj/.test(location.hash) && !(a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) && FS.rerender) FS.rerender();
   });
+  /* klik na dan u "Moj raspored" otvara trening tog dana (vježbe + dugme Započni) */
+  const openDay = (el) => {
+    const u = Auth.user(), [pid, di] = el.dataset.rd.split('|'), pr = Store.program(pid); if (!u || !pr) return;
+    const w = FS.currentWeek(u, pr), dn = FS.weekDays(pr, w)[+di]; if (!dn) return;
+    FS.openSheet(h`<div class="eyebrow">${pr.naziv}</div><h2 style="margin-top:2px">${dn.naziv}</h2>
+      ${dn.vj.map((x) => { const e = Store.ex(x.id) || { naziv: x.id }; const pz = FS.pauza ? FS.pauza(x) : 0;
+        return h`<div class="kv"><span>${e.naziv}${pz > 0 ? h` <span class="small muted">· pauza ${pz} s</span>` : ''}</span><b>${x.s || 3} × ${x.r}</b></div>`; })}
+      <a class="btn primary block mt" href="#/trening/novi?p=${pr.id}&d=${+di}&w=${w}">Započni trening</a>`, (sh) => {
+      const a = sh.querySelector('a.btn'); if (a) a.addEventListener('click', () => { if (FS.closeSheet) FS.closeSheet(); });
+    });
+  };
+  document.addEventListener('click', (e) => {
+    const r = e.target.closest && e.target.closest('[data-rd]'); if (!r || e.target.closest('a,button')) return; openDay(r);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return; const r = e.target.closest && e.target.closest('[data-rd]'); if (r) openDay(r);
+  });
   FS.rasporedCard = (u) => {
     const t = today(), until = addDays(t, 13);
     const list = rasp().filter((e) => e.userId === u.id && e.datum >= t && e.datum <= until).sort((a, b) => (a.datum < b.datum ? -1 : 1));
@@ -283,7 +300,7 @@
     const done = (iso) => Store.db.logs.some((l) => l.userId === u.id && l.datum === iso);
     return h`<div class="card cream"><div class="eyebrow" style="color:var(--beige-2)">Moj raspored</div>
       ${list.map((e) => { const pr = e.tip === 'dan' ? Store.program(e.programId) : null; const can = pr && FS.access(u, pr).on;
-        return h`<div class="row between" style="padding:8px 0;border-bottom:1px solid rgba(10,22,48,.12)"><div><b>${dl(e.datum)}${e.datum === t ? ' · danas' : ''}</b><div class="small">${entryLabel(e)}${e.nota ? ' · ' + e.nota : ''}</div></div>
+        return h`<div class="row between" ${can ? h`data-rd="${pr.id}|${e.dan}" role="button" tabindex="0"` : ''} style="padding:8px 0;border-bottom:1px solid rgba(10,22,48,.12);${can ? 'cursor:pointer' : ''}"><div><b>${dl(e.datum)}${e.datum === t ? ' · danas' : ''}</b><div class="small">${entryLabel(e)}${e.nota ? ' · ' + e.nota : ''}</div></div>
           ${done(e.datum) && e.tip !== 'odmor' ? h`<span class="badge ok">urađeno</span>` : (e.tip === 'dij' ? h`<a class="btn sm primary" href="#/trening/novi?p=dijastaza&f=${e.faza}">Započni</a>` : can ? h`<a class="btn sm primary" href="#/trening/novi?p=${pr.id}&d=${e.dan}&w=${FS.currentWeek(u, pr)}">Započni</a>` : '')}</div>`; })}</div>`;
   };
 
@@ -620,7 +637,7 @@
       <a class="btn block mb" href="#/programi">Svi programi →</a><div class="eyebrow mt">Prije početka</div>
       <a class="card" href="#/upitnik" style="display:block"><b>Upitnik za nove klijente</b><div class="small muted">Preuzmi ili popuni online prije početka coachinga.</div></a>`;
     anchor.insertAdjacentHTML('beforebegin', sec.s);
-    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 46</p>');
+    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 47</p>');
   };
 
   /* Kalkulatori: veza na suplemente */
