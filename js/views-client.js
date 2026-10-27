@@ -109,11 +109,12 @@
     const pr = Store.program(pid); if (!pr || !pr.dani[+d]) return null;
     const wk = Math.min(pr.sedmica || 1, Math.max(1, parseInt(w, 10) || 1)); return FS.weekDays(pr, wk)[+d];
   }
+  const srcSig = (src) => src ? src.vj.map((x) => [x.id, x.s, x.r, x.pct, x.p, x.fix, x.ss].join(':')).join('|') : '';
   function buildDraft(u, q) {
     const d = { uid: u.id, start: Date.now(), programId: null, dan: '', vjezbe: [], rpe: '', biljeska: '' };
     const src = q.p ? sourceDay(q.p, q.d, q.f, q.w || FS.currentWeek(u, Store.program(q.p))) : null;
     if (src) {
-      d.programId = q.p; d.dan = src.naziv;
+      d.programId = q.p; d.dan = src.naziv; d.sig = srcSig(src); d.q = { p: q.p, d: q.d, f: q.f, w: q.w || FS.currentWeek(u, Store.program(q.p)) };
       src.vj.forEach((x) => {
         const last = Store.lastSets(u.id, x.id), n = x.s || 3, base = x.pct ? Store.baseKg(u.id, x.id) : 0;
         const sug = base ? Math.round((base * x.pct / 100) / (base >= 20 ? 2.5 : 1)) * (base >= 20 ? 2.5 : 1) : 0;
@@ -157,8 +158,19 @@
 
     const save = () => Store.draft.set(d);
     const run = () => {
+      if (!q.p && mine && d.q && d.q.p) { const c = sourceDay(d.q.p, d.q.d, d.q.f, d.q.w); if (c && c.naziv === d.dan) q = d.q; } // nastavak: provjeri je li trenerica promijenila dan
       const src = q.p ? sourceDay(q.p, q.d, q.f, q.w || FS.currentWeek(u, Store.program(q.p))) : null;
-      if (q.p && mine && d.programId === q.p && src && d.dan === src.naziv) { clean(); draw(); } // isti trening: nastavi gdje je stala
+      if (q.p && mine && d.programId === q.p && src && d.dan === src.naziv) {
+        const cur = d.sig || d.vjezbe.filter((v) => !v.extra).map((v) => v.id).join('|');
+        const want = d.sig ? srcSig(src) : src.vj.map((x) => x.id).join('|');
+        if (cur !== want) { // trenerica je u međuvremenu promijenila ovaj dan: osvježi vježbe, sačuvaj već upisano
+          const old = d.vjezbe, nd = buildDraft(u, q), used = new Set();
+          nd.vjezbe.forEach((v) => { const i = old.findIndex((o, k) => !o.extra && !used.has(k) && o.id === v.id); if (i >= 0) { used.add(i); const o = old[i]; v.serije.forEach((s2, si) => { if (o.serije[si]) { s2.kg = o.serije[si].kg; s2.rep = o.serije[si].rep; s2.ok = o.serije[si].ok; } }); } });
+          old.forEach((o) => { if (o.extra) nd.vjezbe.push(o); });
+          nd.start = d.start; nd.rpe = d.rpe; nd.biljeska = d.biljeska; d = nd; Store.draft.set(d); toast('Trening je ažuriran: trenerica je promijenila vježbe.');
+        }
+        clean(); draw();
+      } // isti trening: nastavi gdje je stala
       else if (q.p && mine && hasWork) {
         confirmSheet({ title: 'Imaš nezavršen trening', text: 'Započeti novi i odbaciti nezavršeni?', ok: 'Novi trening', cancel: 'Nastavi stari' }).then((ok) => { if (ok) start(); else { clean(); draw(); } });
       } else if (q.p) start();
@@ -189,7 +201,7 @@
         const draw2 = (qs) => { const r = (FS.allowedExercises ? FS.allowedExercises(u) : Store.exercises()).filter((e) => !qs || e.naziv.toLowerCase().includes(qs.toLowerCase())); return h`${r.map((e) => h`<button class="ex" style="width:100%;text-align:left;font:inherit" data-act="pick" data-id="${e.id}"><div class="grow"><b>${e.naziv}</b><div class="small">${e.grupa} · ${e.nivo}</div></div></button>`)}`.s; };
         openSheet(h`<h2>Dodaj vježbu</h2><label class="field"><input type="search" data-act="sq" placeholder="Pretraži…"></label><div id="pl">${FS.raw(draw2(''))}</div>`, (s) => bind(s, {
           'input:sq': (i) => { $('#pl', s).innerHTML = draw2(i.value); },
-          'click:pick': (b) => { const last = Store.lastSets(u.id, b.dataset.id); d.vjezbe.push({ id: b.dataset.id, cilj: '', serije: Array.from({ length: 3 }, (_, i) => ({ kg: last && last[i] && last[i].kg ? String(last[i].kg) : '', rep: last && last[i] ? String(last[i].rep) : '10', ok: false })) }); save(); closeSheet(); draw(); }
+          'click:pick': (b) => { const last = Store.lastSets(u.id, b.dataset.id); d.vjezbe.push({ id: b.dataset.id, extra: true, cilj: '', serije: Array.from({ length: 3 }, (_, i) => ({ kg: last && last[i] && last[i].kg ? String(last[i].kg) : '', rep: last && last[i] ? String(last[i].rep) : '10', ok: false })) }); save(); closeSheet(); draw(); }
         }));
       },
       'click:cancel': async () => { if (await confirmSheet({ title: 'Odbaciti trening?', text: 'Uneseni podaci će biti izgubljeni.', ok: 'Odbaci', danger: true })) { Store.draft.clear(); d = null; go('#/moj'); } },
