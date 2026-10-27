@@ -113,3 +113,9 @@ end $$;
 drop policy if exists chat_img_read on storage.objects;
 create policy chat_img_read on storage.objects for select to authenticated
   using (bucket_id = 'chat' and (storage.foldername(name))[1] = 'img');
+
+-- patch8
+-- Klijentica može učitati program koji joj je dodijeljen (i individualni), čak i ako nema oznaku vlasnika
+drop policy if exists docs_select_assigned on public.docs;
+create policy docs_select_assigned on public.docs for select to authenticated
+  using (coll = 'programi' and id = any (coalesce((select programi from public.profiles where id = auth.uid()), '{}'::text[])));
