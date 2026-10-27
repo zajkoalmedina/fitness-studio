@@ -256,9 +256,10 @@
       e.preventDefault(); const fd = new FormData(f), uidv = f.dataset.uid, start = f.dataset.start, reps = +fd.get('rep') || 0;
       for (let w = 0; w <= reps; w++) for (let i = 0; i < 7; i++) {
         const iso = addDays(start, w * 7 + i), v = String(fd.get('s' + i) || ''), nota = String(fd.get('n' + i) || '').trim().slice(0, 150);
+        const prevE = rasp().find((x) => x.userId === uidv && x.datum === iso);
         Store.db.raspored = rasp().filter((x) => !(x.userId === uidv && x.datum === iso));
         if (!v) continue;
-        const en = { id: uid(), userId: uidv, datum: iso, nota, ts: Date.now() };
+        const en = { id: prevE ? prevE.id : uid(), userId: uidv, datum: iso, nota, ts: Date.now() };
         if (v.startsWith('dij|')) Object.assign(en, { tip: 'dij', faza: +v.split('|')[1] }); else if (v.startsWith('p|')) { const [, pid, di] = v.split('|'); Object.assign(en, { tip: 'dan', programId: pid, dan: +di }); } else en.tip = v;
         Store.db.raspored.push(en);
       }
@@ -267,6 +268,13 @@
     if (f.matches && f.matches('form[data-act=mjt]')) {
       e.preventDefault(); if (FS.mjSubmit(f, f.dataset.uid, f.closest('.card') || document)) FS.rerender();
     }
+  });
+  /* kad s servera stignu nove izmjene (raspored, programi), osvježi početni ekran klijentice */
+  window.addEventListener('fs:docs', (e) => {
+    const c = (e.detail && e.detail.colls) || [];
+    if (!c.some((k) => ['raspored', 'programi', 'users', 'kupovine'].includes(k))) return;
+    const a = document.activeElement;
+    if (/^#\/moj/.test(location.hash) && !(a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) && FS.rerender) FS.rerender();
   });
   FS.rasporedCard = (u) => {
     const t = today(), until = addDays(t, 13);
@@ -612,7 +620,7 @@
       <a class="btn block mb" href="#/programi">Svi programi →</a><div class="eyebrow mt">Prije početka</div>
       <a class="card" href="#/upitnik" style="display:block"><b>Upitnik za nove klijente</b><div class="small muted">Preuzmi ili popuni online prije početka coachinga.</div></a>`;
     anchor.insertAdjacentHTML('beforebegin', sec.s);
-    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 45</p>');
+    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 46</p>');
   };
 
   /* Kalkulatori: veza na suplemente */

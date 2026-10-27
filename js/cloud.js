@@ -185,6 +185,13 @@
         place(db, r); snap.set(k, js); onServer.add(k); changed.add(r.coll);
         if (r.coll === 'chat' && r.data && r.data.from !== (Auth.user() || {}).role.replace('klijentica', 'klijent')) newMsg = true;
       });
+      if (sess && Auth.user() && Auth.user().role === 'klijentica') { // ukloni raspored koji je trenerica obrisala
+        try {
+          const ids = new Set((await api('/rest/v1/docs?select=id&coll=eq.raspored')).map((r) => r.id)), db2 = Store.db;
+          const keep = (db2.raspored || []).filter((x) => ids.has(x.id));
+          if (keep.length !== (db2.raspored || []).length) { db2.raspored.forEach((x) => { if (!ids.has(x.id)) { snap.delete('raspored/' + x.id); onServer.delete('raspored/' + x.id); } }); db2.raspored = keep; changed.add('raspored'); }
+        } catch (e) { /* ignoriši */ }
+      }
       if (sess && Auth.user() && Auth.user().role === 'trener') {
         const prof = await fetchAll('profiles', 'select=*&order=created_at.asc');
         prof.forEach((p) => {
