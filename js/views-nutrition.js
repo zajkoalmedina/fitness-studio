@@ -77,17 +77,18 @@
       if (u.role === 'trener') return h`<div class="card">Jelovnik koriste klijentice. Ti vidiš cijelu kolekciju u kartici Recepti.</div>`;
       const J = dnevnik(), dan = (J.dani[datum] = J.dani[datum] || {});
       let k = 0, p = 0, uh = 0, m = 0; const izabrani = [];
-      SLOTS.forEach(([key]) => { const e = dan[key], r = e && rid(e.id); if (r) { const f = e.por || 1; k += r.kcal * f; p += r.p * f; uh += r.uh * f; m += r.m * f; izabrani.push([key, r, f]); } });
+      SLOTS.forEach(([key]) => { const e = dan[key], r = e && rid(e.id); if (r) { const f = e.por || 1; k += r.kcal * f; p += r.p * f; uh += r.uh * f; m += r.m * f; const ex = izabrani.find((x) => x[1].id === r.id); if (ex) ex[2] += f; else izabrani.push([key, r, f]); } });
       const cilj = +J.cilj || 0, ost = cilj - k;
       const grupe = ['Doručak', 'Ručak', 'Večera', 'Užina', 'Voće'];
       const sel = ([key, label, pref]) => { const e = dan[key] || {}; const ord = pref ? [pref, ...grupe.filter((x) => x !== pref)] : grupe;
         return h`<div class="card flat"><div class="eyebrow" style="margin:0">${label}</div>
           <select data-act="rec" data-k="${key}" aria-label="${label}"><option value="">Izaberi recept</option>${ord.map((gr) => h`<optgroup label="${gr}">${R().filter((r) => r.obrok === gr).map((r) => h`<option value="${r.id}" ${e.id === r.id ? 'selected' : ''}>${r.naziv} (${r.kcal} kcal)</option>`)}</optgroup>`)}</select>
-          ${rid(e.id) ? h`<div class="row between mt-s"><span class="small">${Math.round(rid(e.id).kcal * (e.por || 1))} kcal · P ${fx(rid(e.id).p * (e.por || 1))} g</span><label class="small">Porcija <select data-act="por" data-k="${key}" style="width:auto;min-height:36px">${POR.map((x) => h`<option value="${x}" ${(e.por || 1) === x ? 'selected' : ''}>${fx(x)}</option>`)}</select></label></div>` : ''}</div>`; };
+          ${e.ostatak && key === 'vecera' ? h`<div class="badge ok mt-s">ostatak od ručka: skuhaj odmah veću količinu</div>` : ''}${rid(e.id) ? h`<div class="row between mt-s"><span class="small">${Math.round(rid(e.id).kcal * (e.por || 1))} kcal · P ${fx(rid(e.id).p * (e.por || 1))} g</span><label class="small">Porcija <select data-act="por" data-k="${key}" style="width:auto;min-height:36px">${POR.map((x) => h`<option value="${x}" ${(e.por || 1) === x ? 'selected' : ''}>${fx(x)}</option>`)}</select></label></div>` : ''}</div>`; };
       return h`<div class="card"><div class="row between"><button class="icon-btn" data-act="dd" data-d="-1" aria-label="Prethodni dan">‹</button><input type="date" data-act="dt" value="${datum}" style="width:auto"><button class="icon-btn" data-act="dd" data-d="1" aria-label="Sljedeći dan">›</button></div>
         <label class="field mt-s"><span>Dnevni cilj (kcal)</span><input data-act="cilj" inputmode="numeric" value="${J.cilj || ''}" placeholder="npr. 1800"></label>
         <a class="small" href="#/alati?tab=kalorije">Izračunaj svoj cilj u kalkulatoru</a>
         <div class="row mt-s"><button class="btn sm primary grow" data-act="auto" data-n="1">Napravi jelovnik za ovaj dan</button><button class="btn sm grow" data-act="auto" data-n="7">Napravi za 7 dana</button></div>
+        <label class="field mt-s"><span>Večera od ostataka ručka (štedi vrijeme i novac)</span><select data-act="ost">${[['neki', 'Povremeno (oko 3 dana sedmično)'], ['svaki', 'Svaki dan'], ['ne', 'Ne, svaki obrok posebno']].map(([k, l]) => h`<option value="${k}" ${(J.ostaci || 'neki') === k ? 'selected' : ''}>${l}</option>`)}</select></label>
         <p class="small muted mt-s">Jelovnik se slaže prema tvom dnevnom cilju. Poslije možeš sama zamijeniti bilo koji obrok ili porciju.</p></div>
         ${SLOTS.map(sel)}
         <div class="card cream"><div class="eyebrow" style="color:var(--beige-2)">Ukupno danas</div>
@@ -105,6 +106,7 @@
     bind(el, {
       'click:tab': (t) => { tab = t.dataset.t; draw(); window.scrollTo(0, 0); },
       'click:rf': (t) => { rf = t.dataset.k; draw(); },
+      'change:ost': (t) => { dnevnik().ostaci = t.value; Store.save(); },
       'click:auto': async (t) => {
         const J = dnevnik(), n = +t.dataset.n;
         if (!(+J.cilj >= 800)) { FS.toast('Prvo upiši dnevni cilj (kcal) ili ga izračunaj u kalkulatoru.'); return; }

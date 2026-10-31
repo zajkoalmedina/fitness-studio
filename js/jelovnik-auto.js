@@ -11,7 +11,7 @@
   const macros = (T, M) => (M && M.p > 0 ? M : { p: (T * 0.25) / 4, m: (T * 0.25) / 9, uh: (T * 0.5) / 4 });
 
   /* jedan dan: kombinira obroke tako da se poklope i kalorije i makroi; vraća { dorucak: {id, por}, ... } */
-  FS.autoDay = (target, seed, used, M) => {
+  FS.autoDay = (target, seed, used, M, left) => {
     const R = FS.RECEPTI_V || [], rand = rnd(hash(String(seed))), G = macros(target, M), SPLIT = target >= 2000 ? SPLIT5 : SPLIT4, slots = Object.keys(SPLIT), NC = slots.length > 4 ? 9 : 14;
     const cand = {};
     slots.forEach((slot) => {
@@ -30,11 +30,13 @@
         if (!best || e < best.e) best = { e, pick: pick.slice() };
         return;
       }
-      cand[slots[i]].forEach((c) => { pick[i] = c; rec(i + 1, k + c.r.kcal * c.f, p + c.r.p * c.f, u + c.r.uh * c.f, m + c.r.m * c.f, sc + c.sc); });
+      let list = cand[slots[i]];
+      if (left && slots[i] === 'vecera') { const rr = pick[1].r; list = POR.map((f) => ({ r: rr, f, sc: 0.05 * Math.abs(f - 1) - 0.2, ostatak: true })); } // večera = ostatak ručka
+      list.forEach((c) => { pick[i] = c; rec(i + 1, k + c.r.kcal * c.f, p + c.r.p * c.f, u + c.r.uh * c.f, m + c.r.m * c.f, sc + c.sc); });
     };
     rec(0, 0, 0, 0, 0, 0);
     const day = {};
-    if (best) slots.forEach((slot, i) => { day[slot] = { id: best.pick[i].r.id, por: best.pick[i].f }; if (used) used.add(best.pick[i].r.id); });
+    if (best) slots.forEach((slot, i) => { day[slot] = { id: best.pick[i].r.id, por: best.pick[i].f }; if (best.pick[i].ostatak) day[slot].ostatak = true; if (used) used.add(best.pick[i].r.id); });
     return day;
   };
 
@@ -45,7 +47,7 @@
     let used = new Set(), prev = new Set();
     for (let i = 0; i < days; i++) {
       const iso = FS.addDays(startIso, i);
-      const d = FS.autoDay(target, iso + ':' + (J.autoSeed = (J.autoSeed || 0)), prev, M || J.makro);
+      const d = FS.autoDay(target, iso + ':' + (J.autoSeed = (J.autoSeed || 0)), prev, M || J.makro, J.ostaci === 'svaki' || (J.ostaci !== 'ne' && [0, 2, 4].includes(i % 7)));
       J.dani[iso] = d; prev = new Set(Object.values(d).map((x) => x.id));
       used = new Set([...used, ...prev]);
     }
