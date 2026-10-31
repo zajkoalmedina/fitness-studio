@@ -164,9 +164,8 @@
       'click:mkjel': (b) => {
         const u = Auth.user(), kc = +b.dataset.k, M = { p: +b.dataset.p, uh: +b.dataset.u, m: +b.dataset.m }; if (!u || !(kc >= 800)) return;
         u.jelovnik = u.jelovnik || { cilj: kc, dani: {} }; u.jelovnik.cilj = kc; u.jelovnik.makro = M;
-        const has = (u.programi || []).includes('vodic-ishrana');
-        if (has && FS.autoMenu) { FS.autoMenu(u, kc, today(), 7, M); toast('Jelovnik za 7 dana je spreman.'); } else { Store.save(); toast('Cilj je sačuvan. Za jelovnik su potrebni recepti iz Vodiča za ishranu.'); }
-        location.hash = '#/ishrana?tab=jelovnik';
+        Store.save(); toast('Cilj je sačuvan. Sad izaberi namirnice koje voliš.');
+        location.hash = '#/ishrana?tab=jelovnik&pref=1';
       },
       'click:save': (b) => {
         const u = Auth.user(); Store.db.mjere.push({ id: uid(), userId: u.id, datum: today(), tezina: num(b.dataset.t), struk: null, kukovi: null, biljeska: 'Iz BMI kalkulatora' });
@@ -191,7 +190,7 @@
           <div class="kv"><span>Održavanje (TDEE)</span><b>${Math.round(tdee)} kcal</b></div>
           <div class="divider"></div><div class="eyebrow">Orijentacioni makronutrijenti</div>
           <div class="stats" style="margin:0"><div class="stat"><b>${Math.round(prot)}</b><span>g proteina</span></div><div class="stat"><b>${Math.round(carb)}</b><span>g ugljikohidrata</span></div><div class="stat"><b>${Math.round(fat)}</b><span>g masti</span></div></div>
-          ${Auth.user() && Auth.user().role === 'klijentica' ? h`<button class="btn primary block mt-s" data-act="mkjel" data-k="${Math.round(kcal)}" data-p="${Math.round(prot)}" data-u="${Math.round(carb)}" data-m="${Math.round(fat)}">Napravi mi jelovnik za ${Math.round(kcal)} kcal</button>` : (!Auth.user() ? h`<a class="btn block mt-s" href="#/prijava">Prijavi se da dobiješ jelovnik</a>` : '')}
+          ${Auth.user() && Auth.user().role === 'klijentica' ? h`<button class="btn primary block mt-s" data-act="mkjel" data-k="${Math.round(kcal)}" data-p="${Math.round(prot)}" data-u="${Math.round(carb)}" data-m="${Math.round(fat)}">Izaberi namirnice i napravi jelovnik (${Math.round(kcal)} kcal)</button>` : (!Auth.user() ? h`<a class="btn block mt-s" href="#/prijava">Prijavi se da dobiješ jelovnik</a>` : '')}
           <p class="small mt-s">Za trudnice, dojilje, osobe s zdravstvenim stanjima ili poremećajima ishrane potreban je individualan plan stručnjaka.</p></div>`.s;
       }
     });

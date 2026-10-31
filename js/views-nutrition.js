@@ -87,9 +87,13 @@
       return h`<div class="card"><div class="row between"><button class="icon-btn" data-act="dd" data-d="-1" aria-label="Prethodni dan">‹</button><input type="date" data-act="dt" value="${datum}" style="width:auto"><button class="icon-btn" data-act="dd" data-d="1" aria-label="Sljedeći dan">›</button></div>
         <label class="field mt-s"><span>Dnevni cilj (kcal)</span><input data-act="cilj" inputmode="numeric" value="${J.cilj || ''}" placeholder="npr. 1800"></label>
         <a class="small" href="#/alati?tab=kalorije">Izračunaj svoj cilj u kalkulatoru</a>
-        <div class="row mt-s"><button class="btn sm primary grow" data-act="auto" data-n="1">Napravi jelovnik za ovaj dan</button><button class="btn sm grow" data-act="auto" data-n="7">Napravi za 7 dana</button></div>
-        <label class="field mt-s"><span>Večera od ostataka ručka (štedi vrijeme i novac)</span><select data-act="ost">${[['neki', 'Povremeno (oko 3 dana sedmično)'], ['svaki', 'Svaki dan'], ['ne', 'Ne, svaki obrok posebno']].map(([k, l]) => h`<option value="${k}" ${(J.ostaci || 'neki') === k ? 'selected' : ''}>${l}</option>`)}</select></label>
-        <p class="small muted mt-s">Jelovnik se slaže prema tvom dnevnom cilju. Poslije možeš sama zamijeniti bilo koji obrok ili porciju.</p></div>
+</div>
+        <div class="card" id="prefcard" style="${q.pref ? 'border-color:var(--beige)' : ''}"><h3 style="margin-top:0">Napravi moj jelovnik</h3>
+          <p class="small muted">1) Izaberi namirnice. Dodirni jednom ako ih <b>voliš</b> (✓), dvaput ako ih <b>ne jedeš</b> (✕), treći put poništi.</p>
+          <div class="row wrap mb">${(FS.NAMIRNICE || []).map(([k, l]) => { const st = (J.voli || []).includes(k) ? 'v' : (J.ne || []).includes(k) ? 'n' : ''; return h`<button class="btn sm ${st === 'v' ? 'primary' : st === 'n' ? 'danger' : ''}" data-act="nm" data-k="${k}">${st === 'v' ? '✓ ' : st === 'n' ? '✕ ' : ''}${l}</button>`; })}</div>
+          <label class="field mt-s"><span>Večera od ostataka ručka (štedi vrijeme i novac)</span><select data-act="ost">${[['neki', 'Povremeno (oko 3 dana sedmično)'], ['svaki', 'Svaki dan'], ['ne', 'Ne, svaki obrok posebno']].map(([k, l]) => h`<option value="${k}" ${(J.ostaci || 'neki') === k ? 'selected' : ''}>${l}</option>`)}</select></label>
+          <div class="row mt-s"><button class="btn sm primary grow" data-act="auto" data-n="7">Napravi jelovnik za 7 dana</button><button class="btn sm grow" data-act="auto" data-n="1">Samo za ovaj dan</button></div>
+          <p class="small muted mt-s">Jelovnik se slaže prema tvom dnevnom cilju i namirnicama koje voliš. Poslije možeš sama zamijeniti bilo koji obrok ili porciju.</p></div>
         ${SLOTS.map(sel)}
         <div class="card cream"><div class="eyebrow" style="color:var(--beige-2)">Ukupno danas</div>
           <div class="stats"><div class="stat"><b>${Math.round(k)}</b><span>kcal</span></div><div class="stat"><b>${fx(p)}</b><span>proteini g</span></div><div class="stat"><b>${fx(uh)}</b><span>UH g</span></div><div class="stat"><b>${fx(m)}</b><span>masti g</span></div></div>
@@ -103,9 +107,13 @@
       <div class="card flat center"><p class="muted">Želiš plan ishrane prilagođen sebi? Dostupan je uz coaching pakete.</p><a class="btn sm" href="#/paketi">Pogledaj pakete</a></div>`;
 
     draw();
+    if (q.pref && tab === 'jelovnik') { const c = $('#prefcard', el); if (c) setTimeout(() => c.scrollIntoView({ block: 'start' }), 50); }
     bind(el, {
       'click:tab': (t) => { tab = t.dataset.t; draw(); window.scrollTo(0, 0); },
       'click:rf': (t) => { rf = t.dataset.k; draw(); },
+      'click:nm': (t) => { const J = dnevnik(), k = t.dataset.k; J.voli = J.voli || []; J.ne = J.ne || [];
+        if (J.voli.includes(k)) { J.voli = J.voli.filter((x) => x !== k); J.ne.push(k); } else if (J.ne.includes(k)) J.ne = J.ne.filter((x) => x !== k); else J.voli.push(k);
+        Store.save(); const y = window.scrollY; draw(); window.scrollTo(0, y); },
       'change:ost': (t) => { dnevnik().ostaci = t.value; Store.save(); },
       'click:auto': async (t) => {
         const J = dnevnik(), n = +t.dataset.n;
