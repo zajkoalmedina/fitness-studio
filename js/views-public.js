@@ -70,7 +70,7 @@
         <a class="tile" href="#/paketi?tab=personalni">${icon('user')}<b>Personalni treninzi</b><small>Individualno i 2 na 1</small></a>
         <a class="tile" href="#/paketi?tab=tinejdzeri">${icon('shield')}<b>Tinejdžeri</b><small>Od 16 godina</small></a>
       </div>
-      ${FS.igCard ? FS.igCard('Želiš plan baš za sebe?', 'Piši mi „PLAN“ u inbox na Instagramu, pa ćemo složiti trening po tvom tempu.') : ''}
+      ${FS.igCard ? FS.igCard('Želiš plan baš za sebe?', 'Javi mi se na Instagramu i složit ćemo trening po tvom tempu.') : ''}
       <div class="card flat mt center"><p class="muted" style="margin:0">Imaš pitanje? Prijavi se i javit ću ti se.</p><button class="btn sm mt-s" data-act="lead">Pošalji upit</button></div>`;
     bind(el, { 'click:lead': () => openLead('') });
   };
@@ -85,7 +85,7 @@
         <p>Jedan dan sam puna energije, drugi dan je loše. I opet se vratim na početak. Više puta.</p>
         <p>Naučila sam da se ne čeka savršen dan. Dovoljno je doći i uraditi koliko danas možeš. To je disciplina, a motivacija dolazi poslije.</p>
         <p><b>Ako počinješ ispočetka, vraćaš se poslije pauze ili si nesigurna i prvi put kreće — javi se.</b> Znam kako je tamo gdje si ti.</p></div>
-      ${FS.igCard ? FS.igCard('Počni svojim tempom', 'Piši mi „PLAN“ u inbox na Instagramu.') : ''}
+      ${FS.igCard ? FS.igCard('Počni svojim tempom', 'Javi mi se na Instagramu, bez obaveze.') : ''}
       <a class="btn block mt" href="#/paketi">Pogledaj pakete</a>`;
   };
 
