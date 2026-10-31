@@ -5,7 +5,7 @@
   const { h, icon, bind, formData, num, $, today, addDays, fmtDate, Store, Auth } = FS;
   const VID = 'vodic-ishrana';
   const SLOTS = [['dorucak', 'Doručak', 'Doručak'], ['rucak', 'Ručak', 'Ručak'], ['uzina', 'Užina', 'Užina'], ['vecera', 'Večera', 'Večera'], ['d1', 'Dodatni obrok', ''], ['d2', 'Dodatni obrok', '']];
-  const POR = [0.5, 1, 1.5, 2];
+  const POR = [0.5, 0.75, 1, 1.25, 1.5, 2];
   const fx = (n) => String(Math.round(n * 10) / 10).replace('.', ',');
 
   const FAQ = [
@@ -51,17 +51,21 @@
     const R = () => FS.RECEPTI_V || [];
     const rid = (id) => R().find((x) => x.id === id);
     const makro = (r) => h`<div class="row wrap mt-s"><span class="pill">${r.kcal} kcal</span><span class="pill">P ${fx(r.p)} g</span><span class="pill">UH ${fx(r.uh)} g</span><span class="pill">M ${fx(r.m)} g</span></div>`;
-    const lockBox = () => h`<div class="card note"><div class="row"><span style="width:26px">${icon('lock')}</span><div class="grow"><b>${prod().naziv}</b><div class="small">42 recepta sa sastojcima i pripremom + Moj dnevni jelovnik. Cijena ${prod().cijena} ${FS.config.valuta}.</div></div></div><button class="btn primary block mt-s" data-act="buy">Kupi vodič</button></div>`;
-    const kartica = (r, open) => h`<details class="card" ${open ? 'open' : ''}><summary style="cursor:pointer"><div class="row between"><b>${r.naziv}</b><span class="badge">${r.obrok}</span></div>
-      <div class="small">${r.kcal} kcal · P ${fx(r.p)} · UH ${fx(r.uh)} · M ${fx(r.m)}${r.cilj ? ' · ' + r.cilj : ''}</div></summary>
+    const lockBox = () => h`<div class="card note"><div class="row"><span style="width:26px">${icon('lock')}</span><div class="grow"><b>${prod().naziv}</b><div class="small">${R().length} recepata (i bosanska jela, voće) sa sastojcima i pripremom + Moj dnevni jelovnik sa automatskim izborom obroka. Cijena ${prod().cijena} ${FS.config.valuta}.</div></div></div><button class="btn primary block mt-s" data-act="buy">Kupi vodič</button></div>`;
+    const kartica = (r, open) => h`<details class="card" ${open ? 'open' : ''}><summary style="cursor:pointer"><div class="row between"><b>${r.naziv}</b><span class="badge">${r.bos ? '🇧🇦 ' : ''}${r.obrok}</span></div>
+      <div class="small">${r.kcal} kcal · P ${fx(r.p)} · UH ${fx(r.uh)} · M ${fx(r.m)}${r.v != null ? ' · vlakna ' + fx(r.v) : ''}${r.cilj ? ' · ' + r.cilj : ''}</div></summary>
       ${FS.recFoto ? FS.recFoto(r.id) : ''}
+      ${r.v != null ? h`<div class="row wrap mt-s"><span class="pill">${r.kcal} kcal</span><span class="pill">P ${fx(r.p)} g</span><span class="pill">UH ${fx(r.uh)} g</span><span class="pill">M ${fx(r.m)} g</span><span class="pill">vlakna ${fx(r.v)} g</span></div>` : ''}
       <h3 class="mt-s">Sastojci (1 porcija)</h3><ul class="dots">${r.sast.map((x) => h`<li>${x}</li>`)}</ul>
       <h3>Priprema</h3><p style="margin:0">${r.priprema || 'Pripremi prema popisu sastojaka.'}</p>
       ${r.okvir ? h`<p class="small mt-s">Makroi su okvirna procjena za pretpostavljenu porciju.</p>` : ''}${r.jogurt100 ? h`<p class="small mt-s">Podaci po 100 g proizvoda, provjeri etiketu pakovanja.</p>` : ''}</details>`;
     const SAMPLE = ['r01', 'r07', 'r13'];
+    const FILT = [['sve', 'Sve'], ['bos', '🇧🇦 Bosanska jela'], ['Doručak', 'Doručak'], ['Ručak', 'Ručak'], ['Večera', 'Večera'], ['Užina', 'Užina'], ['Voće', 'Voće']];
+    let rf = 'sve';
     const recepti = () => {
-      const all = R(), g = has();
-      return h`<p class="muted">${all.length} recepata sa kalorijama i makroima po porciji. Vrijednosti su okvirne i zavise od namirnica i veličine porcije.</p>
+      const g = has(), all = R().filter((r) => rf === 'sve' || (rf === 'bos' ? r.bos : r.obrok === rf));
+      return h`<p class="muted">${R().length} recepata i namirnica sa kalorijama, makroima i vlaknima po porciji. Vrijednosti su okvirne i zavise od namirnica i veličine porcije.</p>
+        <div class="row wrap mb">${FILT.map(([k, l]) => h`<button class="btn sm ${rf === k ? 'primary' : ''}" data-act="rf" data-k="${k}">${l}</button>`)}</div>
         ${g ? '' : lockBox()}
         ${g ? all.map((r) => kartica(r)) : all.map((r) => SAMPLE.includes(r.id) ? kartica(r) : h`<div class="card"><div class="row between"><b>${r.naziv}</b><span class="badge">${r.obrok}</span></div><div class="row between small"><span>${r.kcal} kcal · P ${fx(r.p)} g</span><span>${icon('lock')}</span></div></div>`)}`;
     };
@@ -75,14 +79,16 @@
       let k = 0, p = 0, uh = 0, m = 0; const izabrani = [];
       SLOTS.forEach(([key]) => { const e = dan[key], r = e && rid(e.id); if (r) { const f = e.por || 1; k += r.kcal * f; p += r.p * f; uh += r.uh * f; m += r.m * f; izabrani.push([key, r, f]); } });
       const cilj = +J.cilj || 0, ost = cilj - k;
-      const grupe = ['Doručak', 'Ručak', 'Večera', 'Užina'];
+      const grupe = ['Doručak', 'Ručak', 'Večera', 'Užina', 'Voće'];
       const sel = ([key, label, pref]) => { const e = dan[key] || {}; const ord = pref ? [pref, ...grupe.filter((x) => x !== pref)] : grupe;
         return h`<div class="card flat"><div class="eyebrow" style="margin:0">${label}</div>
           <select data-act="rec" data-k="${key}" aria-label="${label}"><option value="">Izaberi recept</option>${ord.map((gr) => h`<optgroup label="${gr}">${R().filter((r) => r.obrok === gr).map((r) => h`<option value="${r.id}" ${e.id === r.id ? 'selected' : ''}>${r.naziv} (${r.kcal} kcal)</option>`)}</optgroup>`)}</select>
           ${rid(e.id) ? h`<div class="row between mt-s"><span class="small">${Math.round(rid(e.id).kcal * (e.por || 1))} kcal · P ${fx(rid(e.id).p * (e.por || 1))} g</span><label class="small">Porcija <select data-act="por" data-k="${key}" style="width:auto;min-height:36px">${POR.map((x) => h`<option value="${x}" ${(e.por || 1) === x ? 'selected' : ''}>${fx(x)}</option>`)}</select></label></div>` : ''}</div>`; };
       return h`<div class="card"><div class="row between"><button class="icon-btn" data-act="dd" data-d="-1" aria-label="Prethodni dan">‹</button><input type="date" data-act="dt" value="${datum}" style="width:auto"><button class="icon-btn" data-act="dd" data-d="1" aria-label="Sljedeći dan">›</button></div>
         <label class="field mt-s"><span>Dnevni cilj (kcal)</span><input data-act="cilj" inputmode="numeric" value="${J.cilj || ''}" placeholder="npr. 1800"></label>
-        <a class="small" href="#/alati?tab=kalorije">Izračunaj svoj cilj u kalkulatoru</a></div>
+        <a class="small" href="#/alati?tab=kalorije">Izračunaj svoj cilj u kalkulatoru</a>
+        <div class="row mt-s"><button class="btn sm primary grow" data-act="auto" data-n="1">Napravi jelovnik za ovaj dan</button><button class="btn sm grow" data-act="auto" data-n="7">Napravi za 7 dana</button></div>
+        <p class="small muted mt-s">Jelovnik se slaže prema tvom dnevnom cilju. Poslije možeš sama zamijeniti bilo koji obrok ili porciju.</p></div>
         ${SLOTS.map(sel)}
         <div class="card cream"><div class="eyebrow" style="color:var(--beige-2)">Ukupno danas</div>
           <div class="stats"><div class="stat"><b>${Math.round(k)}</b><span>kcal</span></div><div class="stat"><b>${fx(p)}</b><span>proteini g</span></div><div class="stat"><b>${fx(uh)}</b><span>UH g</span></div><div class="stat"><b>${fx(m)}</b><span>masti g</span></div></div>
@@ -98,6 +104,14 @@
     draw();
     bind(el, {
       'click:tab': (t) => { tab = t.dataset.t; draw(); window.scrollTo(0, 0); },
+      'click:rf': (t) => { rf = t.dataset.k; draw(); },
+      'click:auto': async (t) => {
+        const J = dnevnik(), n = +t.dataset.n;
+        if (!(+J.cilj >= 800)) { FS.toast('Prvo upiši dnevni cilj (kcal) ili ga izračunaj u kalkulatoru.'); return; }
+        const dan = J.dani[datum] || {};
+        if (Object.keys(dan).length && !(await FS.confirmSheet({ title: 'Napraviti novi jelovnik?', text: n > 1 ? 'Zamijenit će obroke za idućih 7 dana.' : 'Zamijenit će izabrane obroke za ovaj dan.', ok: 'Napravi' }))) return;
+        FS.autoMenu(u, +J.cilj, datum, n); FS.toast(n > 1 ? 'Jelovnik za 7 dana je spreman.' : 'Jelovnik je spreman.'); draw();
+      },
       'click:buy': () => FS.buySheet(prod()),
       'change:rec': (t) => { const d = dnevnik().dani[datum] = dnevnik().dani[datum] || {}; if (t.value) d[t.dataset.k] = { id: t.value, por: (d[t.dataset.k] || {}).por || 1 }; else delete d[t.dataset.k]; Store.save(); draw(); },
       'change:por': (t) => { const d = dnevnik().dani[datum]; if (d && d[t.dataset.k]) { d[t.dataset.k].por = +t.value; Store.save(); draw(); } },
