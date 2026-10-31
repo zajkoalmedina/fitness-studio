@@ -65,7 +65,6 @@
         <a class="tile" href="#/alati">${icon('calc')}<b>BMI i kalorije</b><small>Brzi kalkulatori</small></a>
         <a class="tile" href="#/ishrana">${icon('flame')}<b>Ishrana</b><small>Vodič, recepti, primjer dana</small></a>
         <a class="tile" href="#/prica">${icon('heart')}<b>Moja priča</b><small>Kron, operacije, povratak</small></a>
-        <a class="tile" href="#/ritmicarke">${icon('flame')}<b>Ritmička gimnastika</b><small>7 treninga od 60 min, sa tajmerom</small></a>
         <a class="tile" href="#/dijastaza">${icon('heart')}<b>Dijastaza</b><small>Siguran kućni program</small></a>
         ${(() => { const u = FS.Auth.user(); return u && u.role === 'trener' ? h`<a class="tile" href="#/zagrijavanje">${icon('flame')}<b>Zagrijavanje</b><small>Samo za tebe</small></a>` : ''; })()}<a class="tile" href="#/trcanje">${icon('flame')}<b>Trčanje</b><small>Planovi 5 km i 10 km</small></a>
         <a class="tile" href="#/paketi?tab=personalni">${icon('user')}<b>Personalni treninzi</b><small>Individualno i 2 na 1</small></a>
