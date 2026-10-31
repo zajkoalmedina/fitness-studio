@@ -81,10 +81,12 @@
       <div class="eyebrow">Moja priča</div>
       <h2>Nema motivacije. Postoji disciplina i cilj.</h2>
       <img src="images/trener.jpg" alt="Almedina" style="width:100%;border-radius:16px;margin:8px 0 14px">
-      <div class="card"><p>Imam Crohnovu bolest godinama. Dva puta sam završila na hitnim, iznenadnim operacijama.</p>
-        <p>Jedan dan sam puna energije, drugi dan je loše. I opet se vratim na početak. Više puta.</p>
-        <p>Naučila sam da se ne čeka savršen dan. Dovoljno je doći i uraditi koliko danas možeš. To je disciplina, a motivacija dolazi poslije.</p>
-        <p><b>Ako počinješ ispočetka, vraćaš se poslije pauze ili si nesigurna i prvi put kreće — javi se.</b> Znam kako je tamo gdje si ti.</p></div>
+      <div class="card"><p>Imam Crohnovu bolest već godinama. Dva puta sam završila na hitnim, iznenadnim operacijama.</p>
+        <p>Jedan dan sam puna energije, a drugi je loš. I opet se vratim na početak. Više puta.</p>
+        <p>Naučila sam da se ne čeka savršen dan. Dovoljno je doći i uraditi onoliko koliko danas možeš. To je disciplina, a motivacija dolazi poslije.</p>
+        <p><b>Ako počinješ ispočetka, vraćaš se poslije pauze ili si nesigurna jer kreće prvi put, javi mi se.</b> Znam kako je tamo gdje si ti.</p></div>
+      <div class="card"><div class="eyebrow">Obrazovanje</div>
+        <ul style="margin:6px 0 0;padding-left:18px"><li>Bachelor kondicione pripreme</li><li>CFT1 edukacija</li><li>Certificirani fitness instruktor, level 3</li></ul></div>
       ${FS.igCard ? FS.igCard('Počni svojim tempom', 'Javi mi se na Instagramu, bez obaveze.') : ''}
       <a class="btn block mt" href="#/paketi">Pogledaj pakete</a>`;
   };
