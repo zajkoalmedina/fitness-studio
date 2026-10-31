@@ -58,7 +58,7 @@
       ${r.v != null ? h`<div class="row wrap mt-s"><span class="pill">${r.kcal} kcal</span><span class="pill">P ${fx(r.p)} g</span><span class="pill">UH ${fx(r.uh)} g</span><span class="pill">M ${fx(r.m)} g</span><span class="pill">vlakna ${fx(r.v)} g</span></div>` : ''}
       <h3 class="mt-s">Sastojci (1 porcija)</h3><ul class="dots">${r.sast.map((x) => h`<li>${x}</li>`)}</ul>
       <h3>Priprema</h3><p style="margin:0">${r.priprema || 'Pripremi prema popisu sastojaka.'}</p>
-      ${r.okvir ? h`<p class="small mt-s">Makroi su okvirna procjena za pretpostavljenu porciju.</p>` : ''}${r.jogurt100 ? h`<p class="small mt-s">Podaci po 100 g proizvoda, provjeri etiketu pakovanja.</p>` : ''}</details>`;
+      ${r.okvir ? h`<p class="small mt-s">Makroi su okvirna procjena za pretpostavljenu porciju.</p>` : ''}${r.v != null ? h`<p class="small mt-s">Ugljikohidrati uključuju vlakna. Vlakna daju oko 2 kcal/g, zato zbir 4/4/9 može biti malo viši od navedenih kalorija.</p>` : ''}${r.jogurt100 ? h`<p class="small mt-s">Podaci po 100 g proizvoda, provjeri etiketu pakovanja.</p>` : ''}</details>`;
     const SAMPLE = ['r01', 'r07', 'r13'];
     const FILT = [['sve', 'Sve'], ['bos', '🇧🇦 Bosanska jela'], ['Doručak', 'Doručak'], ['Ručak', 'Ručak'], ['Večera', 'Večera'], ['Užina', 'Užina'], ['Voće', 'Voće']];
     let rf = 'sve';
@@ -110,12 +110,12 @@
         if (!(+J.cilj >= 800)) { FS.toast('Prvo upiši dnevni cilj (kcal) ili ga izračunaj u kalkulatoru.'); return; }
         const dan = J.dani[datum] || {};
         if (Object.keys(dan).length && !(await FS.confirmSheet({ title: 'Napraviti novi jelovnik?', text: n > 1 ? 'Zamijenit će obroke za idućih 7 dana.' : 'Zamijenit će izabrane obroke za ovaj dan.', ok: 'Napravi' }))) return;
-        FS.autoMenu(u, +J.cilj, datum, n); FS.toast(n > 1 ? 'Jelovnik za 7 dana je spreman.' : 'Jelovnik je spreman.'); draw();
+        FS.autoMenu(u, +J.cilj, datum, n, J.makro); FS.toast(n > 1 ? 'Jelovnik za 7 dana je spreman.' : 'Jelovnik je spreman.'); draw();
       },
       'click:buy': () => FS.buySheet(prod()),
       'change:rec': (t) => { const d = dnevnik().dani[datum] = dnevnik().dani[datum] || {}; if (t.value) d[t.dataset.k] = { id: t.value, por: (d[t.dataset.k] || {}).por || 1 }; else delete d[t.dataset.k]; Store.save(); draw(); },
       'change:por': (t) => { const d = dnevnik().dani[datum]; if (d && d[t.dataset.k]) { d[t.dataset.k].por = +t.value; Store.save(); draw(); } },
-      'change:cilj': (t) => { const v = Math.round(num(t.value)); if (v >= 800 && v <= 6000) { dnevnik().cilj = v; Store.save(); } else FS.toast('Unesi cilj između 800 i 6000 kcal.'); draw(); },
+      'change:cilj': (t) => { const v = Math.round(num(t.value)); if (v >= 800 && v <= 6000) { if (dnevnik().cilj !== v) delete dnevnik().makro; dnevnik().cilj = v; Store.save(); } else FS.toast('Unesi cilj između 800 i 6000 kcal.'); draw(); },
       'change:dt': (t) => { if (t.value) { datum = t.value; draw(); } },
       'click:dd': (t) => { datum = addDays(datum, +t.dataset.d); draw(); },
       'submit:quick': (f) => {
