@@ -293,6 +293,10 @@
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter') return; const r = e.target.closest && e.target.closest('[data-rd]'); if (r) openDay(r);
   });
+  /* dugme koje otvara poruke na Instagramu (DM) */
+  FS.IG_DM = 'https://ig.me/m/almedina.zajko';
+  FS.igCard = (naslov, tekst) => h`<div class="card flat center mt"><b>${naslov || 'Pitanja ili plan za tebe?'}</b><p class="muted small" style="margin:6px 0 10px">${tekst || 'Piši mi „PLAN“ u inbox na Instagramu.'}</p>
+    <a class="btn primary block" href="${FS.IG_DM}" target="_blank" rel="noopener">Piši mi na Instagram</a></div>`;
   FS.rasporedCard = (u) => {
     const t = today(), until = addDays(t, 13);
     const list = rasp().filter((e) => e.userId === u.id && e.datum >= t && e.datum <= until).sort((a, b) => (a.datum < b.datum ? -1 : 1));
@@ -637,7 +641,7 @@
       <a class="btn block mb" href="#/programi">Svi programi →</a><div class="eyebrow mt">Prije početka</div>
       <a class="card" href="#/upitnik" style="display:block"><b>Upitnik za nove klijente</b><div class="small muted">Preuzmi ili popuni online prije početka coachinga.</div></a>`;
     anchor.insertAdjacentHTML('beforebegin', sec.s);
-    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 53</p>');
+    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 54</p>');
   };
 
   /* Kalkulatori: veza na suplemente */

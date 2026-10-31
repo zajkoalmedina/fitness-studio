@@ -39,14 +39,17 @@
           ${u.paket ? h`<div class="row between"><h2 style="margin:0">${u.paket}</h2><span class="small">${ciljN} treninga sedmično</span></div>
             <div class="progress mt-s" role="progressbar" aria-valuenow="${wc}" aria-valuemax="${ciljN}"><i style="width:${Math.min(100, (wc / ciljN) * 100)}%"></i></div>
             <div class="small mt-s">Ove sedmice: <b>${wc}</b> od ${ciljN}</div>` : h`<p class="muted" style="margin:0 0 8px">Trenutno nemaš aktivan coaching paket.</p><a class="btn dark sm" href="#/paketi">Pogledaj pakete</a>`}</div>
+        ${FS.podsjetnikCard ? FS.podsjetnikCard(u) : ''}
         ${FS.rasporedCard ? FS.rasporedCard(u) : ''}
         <a class="btn primary block mb" href="#/trening/novi">${icon('plus')} Započni trening</a>
         <div class="stats"><div class="stat"><b>${logs.length}</b><span>ukupno treninga</span></div><div class="stat"><b>${logs.filter((l) => l.datum.startsWith(mon)).length}</b><span>ovaj mjesec</span></div><div class="stat"><b>${last && last.tezina ? last.tezina : '–'}</b><span>zadnja težina (kg)</span></div></div>
+        ${FS.vodaCard ? FS.vodaCard(u) : ''}
         <h3>Moji programi</h3>
         ${progs.length ? progs.map((pr) => h`<a class="ex" href="#/program/${pr.id}"><div class="ph">${icon('clipboard')}</div><div class="grow"><b>${pr.naziv}</b><div class="small">${FS.accessLabel(pr, u)} · ${pr.dani.length} dana</div></div></a>`) : h`<div class="card flat center"><p class="muted">Još nemaš programa.</p><a class="btn sm" href="#/programi">Pogledaj programe</a></div>`}
         <a class="ex" href="#/kondicija"><div class="ph">${icon('flame')}</div><div class="grow"><b>Kondicija: EMOM, HIIT, AMRAP</b><div class="small">Intenzivni treninzi s tajmerom</div></div></a>
         <a class="ex" href="#/ishrana"><div class="ph">${icon('flame')}</div><div class="grow"><b>Vodič za ishranu</b><div class="small">Principi, recepti, primjer dana</div></div></a>
         <a class="ex" href="#/dijastaza"><div class="ph">${icon('heart')}</div><div class="grow"><b>Kućni program za dijastazu</b><div class="small">Besplatno · 4 faze</div></div></a>
+        ${FS.igCard ? FS.igCard('Treba ti pomoć ili promjena plana?', 'Piši mi direktno na Instagramu.') : ''}
         <div class="row mt"><button class="btn sm grow" data-act="pw">Promijeni lozinku</button><button class="btn sm grow danger" data-act="out">Odjava</button></div>`;
     }
 
@@ -72,6 +75,7 @@
         <div class="card"><h3>Lični rekordi</h3>${bl.length ? bl.map(([id, b]) => h`<div class="kv"><span>${(Store.ex(id) || { naziv: id }).naziv}</span><b>${b.kg} kg × ${b.rep}</b></div>`) : h`<p class="muted">Rekordi se pojavljuju kad upišeš treninge s tegovima.</p>`}</div>
         ${FS.mjTable(mj)}
         <div class="card"><h3>Novo mjerenje</h3>${FS.mjForm()}</div>
+        ${FS.fotoCard ? FS.fotoCard(u) : ''}
         <h3>Historija mjerenja</h3>
         ${FS.mjHistory(mj, true)}`;
     }

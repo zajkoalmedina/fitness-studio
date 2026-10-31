@@ -42,7 +42,7 @@
         <img src="images/trener.jpg" alt="Almedina Fitness – trenerica" fetchpriority="high">
         <div class="inner">
           <div class="eyebrow">Personalni treninzi · Online coaching</div>
-          <h1>FITNESS<br>STUDIO</h1>
+          <h1>ALMEDINA<br>FITNESS</h1>
           <p>Stručno vođen, siguran i elegantan trening prilagođen tvojim ciljevima i mogućnostima.</p>
           <div class="row wrap mt">
             <a class="btn primary" href="#/paketi">Pogledaj pakete</a>
@@ -64,16 +64,31 @@
         <a class="tile" href="#/programi">${icon('list')}<b>Programi</b><small>Gotovi planovi treninga</small></a>
         <a class="tile" href="#/alati">${icon('calc')}<b>BMI i kalorije</b><small>Brzi kalkulatori</small></a>
         <a class="tile" href="#/ishrana">${icon('flame')}<b>Ishrana</b><small>Vodič, recepti, primjer dana</small></a>
+        <a class="tile" href="#/prica">${icon('heart')}<b>Moja priča</b><small>Kron, operacije, povratak</small></a>
         <a class="tile" href="#/dijastaza">${icon('heart')}<b>Dijastaza</b><small>Siguran kućni program</small></a>
         ${(() => { const u = FS.Auth.user(); return u && u.role === 'trener' ? h`<a class="tile" href="#/zagrijavanje">${icon('flame')}<b>Zagrijavanje</b><small>Samo za tebe</small></a>` : ''; })()}<a class="tile" href="#/trcanje">${icon('flame')}<b>Trčanje</b><small>Planovi 5 km i 10 km</small></a>
         <a class="tile" href="#/paketi?tab=personalni">${icon('user')}<b>Personalni treninzi</b><small>Individualno i 2 na 1</small></a>
         <a class="tile" href="#/paketi?tab=tinejdzeri">${icon('shield')}<b>Tinejdžeri</b><small>Od 16 godina</small></a>
       </div>
+      ${FS.igCard ? FS.igCard('Želiš plan baš za sebe?', 'Piši mi „PLAN“ u inbox na Instagramu, pa ćemo složiti trening po tvom tempu.') : ''}
       <div class="card flat mt center"><p class="muted" style="margin:0">Imaš pitanje? Prijavi se i javit ću ti se.</p><button class="btn sm mt-s" data-act="lead">Pošalji upit</button></div>`;
     bind(el, { 'click:lead': () => openLead('') });
   };
 
   /* ================= PAKETI ================= */
+  V.prica = (el) => {
+    el.innerHTML = h`
+      <div class="eyebrow">Moja priča</div>
+      <h2>Nema motivacije. Postoji disciplina i cilj.</h2>
+      <img src="images/trener.jpg" alt="Almedina" style="width:100%;border-radius:16px;margin:8px 0 14px">
+      <div class="card"><p>Imam Crohnovu bolest godinama. Dva puta sam završila na hitnim, iznenadnim operacijama.</p>
+        <p>Jedan dan sam puna energije, drugi dan je loše. I opet se vratim na početak. Više puta.</p>
+        <p>Naučila sam da se ne čeka savršen dan. Dovoljno je doći i uraditi koliko danas možeš. To je disciplina, a motivacija dolazi poslije.</p>
+        <p><b>Ako počinješ ispočetka, vraćaš se poslije pauze ili si nesigurna i prvi put kreće — javi se.</b> Znam kako je tamo gdje si ti.</p></div>
+      ${FS.igCard ? FS.igCard('Počni svojim tempom', 'Piši mi „PLAN“ u inbox na Instagramu.') : ''}
+      <a class="btn block mt" href="#/paketi">Pogledaj pakete</a>`;
+  };
+
   V.paketi = (el, p, q) => {
     let tab = ['online', 'personalni', 'tinejdzeri'].includes(q.tab) ? q.tab : 'online';
     const draw = () => {
@@ -191,7 +206,7 @@
           <div class="divider"></div><div class="eyebrow">Orijentacioni makronutrijenti</div>
           <div class="stats" style="margin:0"><div class="stat"><b>${Math.round(prot)}</b><span>g proteina</span></div><div class="stat"><b>${Math.round(carb)}</b><span>g ugljikohidrata</span></div><div class="stat"><b>${Math.round(fat)}</b><span>g masti</span></div></div>
           ${Auth.user() && Auth.user().role === 'klijentica' ? h`<button class="btn primary block mt-s" data-act="mkjel" data-k="${Math.round(kcal)}" data-p="${Math.round(prot)}" data-u="${Math.round(carb)}" data-m="${Math.round(fat)}">Izaberi namirnice i napravi jelovnik (${Math.round(kcal)} kcal)</button>` : (!Auth.user() ? h`<a class="btn block mt-s" href="#/prijava">Prijavi se da dobiješ jelovnik</a>` : '')}
-          <p class="small mt-s">Za trudnice, dojilje, osobe s zdravstvenim stanjima ili poremećajima ishrane potreban je individualan plan stručnjaka.</p></div>`.s;
+          <p class="small mt-s">Za trudnice, dojilje, osobe s zdravstvenim stanjima ili poremećajima ishrane potreban je individualan plan stručnjaka.</p></div>${FS.igCard ? FS.igCard('Želiš plan ishrane prilagođen sebi?', 'Javi mi se na Instagramu, napisaću ti plan.') : ''}`.s;
       }
     });
   };

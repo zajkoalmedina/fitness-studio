@@ -78,7 +78,7 @@
       const J = dnevnik(), dan = (J.dani[datum] = J.dani[datum] || {});
       let k = 0, p = 0, uh = 0, m = 0; const izabrani = [];
       SLOTS.forEach(([key]) => { const e = dan[key], r = e && rid(e.id); if (r) { const f = e.por || 1; k += r.kcal * f; p += r.p * f; uh += r.uh * f; m += r.m * f; const ex = izabrani.find((x) => x[1].id === r.id); if (ex) ex[2] += f; else izabrani.push([key, r, f]); } });
-      const cilj = +J.cilj || 0, ost = cilj - k;
+      const cilj = +J.cilj || 0, ost = cilj - k, sp = FS.spisak ? FS.spisak(J, datum, 7) : { items: [], extra: [] };
       const grupe = ['Doručak', 'Ručak', 'Večera', 'Užina', 'Voće'];
       const sel = ([key, label, pref]) => { const e = dan[key] || {}; const ord = pref ? [pref, ...grupe.filter((x) => x !== pref)] : grupe;
         return h`<div class="card flat"><div class="eyebrow" style="margin:0">${label}</div>
@@ -90,6 +90,7 @@
 </div>
         <div class="card" id="prefcard" style="${q.pref ? 'border-color:var(--beige)' : ''}"><h3 style="margin-top:0">Napravi moj jelovnik</h3>
           <p class="small muted">1) Izaberi namirnice. Dodirni jednom ako ih <b>voliš</b> (✓), dvaput ako ih <b>ne jedeš</b> (✕), treći put poništi.</p>
+          <div class="row mb"><button class="btn sm ${['piletina', 'curetina', 'junetina', 'riba'].every((k) => (J.ne || []).includes(k)) ? 'primary' : ''}" data-act="vege">🌱 Vegetarijanski jelovnik (bez mesa i ribe)</button></div>
           <div class="row wrap mb">${(FS.NAMIRNICE || []).map(([k, l]) => { const st = (J.voli || []).includes(k) ? 'v' : (J.ne || []).includes(k) ? 'n' : ''; return h`<button class="btn sm ${st === 'v' ? 'primary' : st === 'n' ? 'danger' : ''}" data-act="nm" data-k="${k}">${st === 'v' ? '✓ ' : st === 'n' ? '✕ ' : ''}${l}</button>`; })}</div>
           <label class="field mt-s"><span>Večera od ostataka ručka (štedi vrijeme i novac)</span><select data-act="ost">${[['neki', 'Povremeno (oko 3 dana sedmično)'], ['svaki', 'Svaki dan'], ['ne', 'Ne, svaki obrok posebno']].map(([k, l]) => h`<option value="${k}" ${(J.ostaci || 'neki') === k ? 'selected' : ''}>${l}</option>`)}</select></label>
           <div class="row mt-s"><button class="btn sm primary grow" data-act="auto" data-n="7">Napravi jelovnik za 7 dana</button><button class="btn sm grow" data-act="auto" data-n="1">Samo za ovaj dan</button></div>
@@ -100,6 +101,10 @@
           <div class="kv"><span>${!k ? 'Izaberi obroke' : (ost < 0 ? 'Iznad cilja za' : 'Preostalo do cilja')}</span><b>${cilj ? Math.abs(Math.round(ost)) + ' kcal' : '–'}</b></div></div>
         <div class="card"><h3>Namirnice za ovaj dan</h3>${izabrani.length ? izabrani.map(([, r, f]) => h`<div class="mb"><b>${r.naziv}</b>${f !== 1 ? h` <span class="badge">× ${fx(f)}</span>` : ''}<ul class="dots">${r.sast.map((x) => h`<li>${x}</li>`)}</ul></div>`) : h`<p class="muted">Popis se pojavljuje kad izabereš obroke.</p>`}
           ${izabrani.length ? h`<p class="small">Količine su za 1 porciju${izabrani.some(([, , f]) => f !== 1) ? ', pomnoži ih brojem porcija' : ''}.</p>` : ''}</div>
+        ${sp.items.length ? h`<div class="card"><div class="row between"><h3 style="margin:0">Spisak za kupovinu</h3><button class="btn sm" data-act="spcopy">Kopiraj</button></div>
+          <p class="small muted">Za dane od ${fmtDate(datum)} (najviše 7 dana), količine su zbirne i okvirne.</p>
+          ${sp.items.map((x) => h`<label class="check" style="display:flex;gap:10px;padding:6px 0"><input type="checkbox" data-act="kup" data-k="${x.key}" ${(J.kup || {})[x.key] ? 'checked' : ''}><span>${x.text}</span></label>`)}
+          ${sp.extra.length ? h`<div class="small muted mt-s">Još treba: ${sp.extra.join(', ')}</div>` : ''}</div>` : ''}
         <p class="small">Vrijednosti su okvirne i nisu individualni medicinski plan.</p>`;
     };
 
@@ -111,6 +116,11 @@
     bind(el, {
       'click:tab': (t) => { tab = t.dataset.t; draw(); window.scrollTo(0, 0); },
       'click:rf': (t) => { rf = t.dataset.k; draw(); },
+      'click:vege': () => { const J = dnevnik(), M = ['piletina', 'curetina', 'junetina', 'riba']; J.ne = J.ne || []; J.voli = (J.voli || []).filter((x) => !M.includes(x));
+        if (M.every((k) => J.ne.includes(k))) J.ne = J.ne.filter((k) => !M.includes(k)); else M.forEach((k) => { if (!J.ne.includes(k)) J.ne.push(k); });
+        Store.save(); const y = window.scrollY; draw(); window.scrollTo(0, y); },
+      'change:kup': (t) => { const J = dnevnik(); J.kup = J.kup || {}; if (t.checked) J.kup[t.dataset.k] = 1; else delete J.kup[t.dataset.k]; Store.save(); },
+      'click:spcopy': () => { const sp = FS.spisak(dnevnik(), datum, 7), tx = 'Spisak za kupovinu\n' + sp.items.map((x) => '• ' + x.text).join('\n') + (sp.extra.length ? '\n\nJoš treba: ' + sp.extra.join(', ') : ''); try { navigator.clipboard.writeText(tx).then(() => FS.toast('Spisak je kopiran.')); } catch (e) { FS.toast('Kopiranje nije podržano.'); } },
       'click:nm': (t) => { const J = dnevnik(), k = t.dataset.k; J.voli = J.voli || []; J.ne = J.ne || [];
         if (J.voli.includes(k)) { J.voli = J.voli.filter((x) => x !== k); J.ne.push(k); } else if (J.ne.includes(k)) J.ne = J.ne.filter((x) => x !== k); else J.voli.push(k);
         Store.save(); const y = window.scrollY; draw(); window.scrollTo(0, y); },

@@ -9,7 +9,7 @@
 
   /* namirnice koje klijentica bira (voli / ne jede) */
   FS.NAMIRNICE = [
-    ['piletina', 'Piletina', /pile|pileć/], ['curetina', 'Ćuretina', /ćuret|pureć/], ['junetina', 'Junetina', /junet|govedin/],
+    ['piletina', 'Piletina', /pile|pileć/], ['curetina', 'Ćuretina', /ćuret|pureć/], ['junetina', 'Junetina', /junet|govedin|\bmes[oa]|šunk|pršut|slanin/],
     ['riba', 'Riba i tuna', /rib[aeu]|tun[aeiou]|pastrmk|losos/], ['jaja', 'Jaja', /jaj|omlet|kajgan/],
     ['mlijecno', 'Mliječni proizvodi', /jogurt|mlijek|\bsir|skyr|kefir|feta|mozzarell|parmezan/], ['grah', 'Grah, leća, grašak', /grah|leć|grašak|mahun/],
     ['riza', 'Riža', /riž/], ['tjestenina', 'Tjestenina', /tjestenin/], ['heljda', 'Heljda i zob', /heljd|zob|pahulj/], ['krompir', 'Krompir', /krompir|pire/],
@@ -60,6 +60,47 @@
     const day = {};
     if (best) slots.forEach((slot, i) => { day[slot] = { id: best.pick[i].r.id, por: best.pick[i].f }; if (best.pick[i].ostatak) day[slot].ostatak = true; if (used) used.add(best.pick[i].r.id); });
     return day;
+  };
+
+
+  /* ---------- spisak za kupovinu: sabira sastojke svih izabranih obroka (količina × porcija) ---------- */
+  const UNITS = /^(g|kg|ml|l|dl|kašika|kašike|kašiku|kašičica|kašičice|kašičicu|kafena kašičica|kafene kašičice|šolja|šolje|šaka|kriška|kriške|kriški|list|lista|listova|glavica|glavice|češnja|češnja)\b\s*/i;
+  const num = (x) => parseFloat(String(x).replace(',', '.'));
+  FS.parseSast = (line) => {
+    let m = String(line).trim().match(/^(\d+)\/(\d+)\s+(.*)$/), q, rest;
+    if (m) { q = +m[1] / +m[2]; rest = m[3]; }
+    else {
+      m = String(line).trim().match(/^(\d+(?:[.,]\d+)?)(?:\s*[–-]\s*(\d+(?:[.,]\d+)?))?\s*(.*)$/);
+      if (!m) return { text: String(line).trim() };
+      q = m[2] ? (num(m[1]) + num(m[2])) / 2 : num(m[1]); rest = m[3];
+    }
+    let unit = '', um = rest.match(UNITS);
+    if (um) { unit = um[1].toLowerCase(); rest = rest.slice(um[0].length); }
+    rest = rest.replace(/\s*\(.*?\)\s*/g, ' ').replace(/,.*$/, '').trim().toLowerCase();
+    return { q, unit, name: rest };
+  };
+  const fmtQ = (q, unit) => {
+    if (unit === 'g') return q >= 1000 ? (Math.round(q / 100) / 10 + ' kg').replace('.', ',') : Math.round(q / 5) * 5 + ' g';
+    if (unit === 'ml') return q >= 1000 ? (Math.round(q / 100) / 10 + ' l').replace('.', ',') : Math.round(q / 5) * 5 + ' ml';
+    const r = Math.round(q * 2) / 2; return String(r).replace('.', ',') + (unit ? ' ' + unit : '');
+  };
+  FS.spisak = (J, startIso, days) => {
+    const R = FS.RECEPTI_V || [], map = {}, extra = new Set();
+    for (let i = 0; i < days; i++) {
+      const d = (J.dani || {})[FS.addDays(startIso, i)]; if (!d) continue;
+      Object.values(d).forEach((e) => {
+        const r = R.find((x) => x.id === e.id); if (!r) return;
+        (r.sast || []).forEach((line) => {
+          const p = FS.parseSast(line);
+          if (p.q == null) { extra.add(p.text.toLowerCase()); return; }
+          if (!p.name) return;
+          const key = p.unit + '|' + p.name;
+          (map[key] = map[key] || { unit: p.unit, name: p.name, q: 0 }).q += p.q * (e.por || 1);
+        });
+      });
+    }
+    const items = Object.entries(map).map(([key, o]) => ({ key, text: fmtQ(o.q, o.unit) + ' ' + o.name })).sort((a, b) => a.text.replace(/^[\d, ]+(kg|g|ml|l|dl)?\s*/, '').localeCompare(b.text.replace(/^[\d, ]+(kg|g|ml|l|dl)?\s*/, ''), 'hr'));
+    return { items, extra: [...extra].filter((x) => x.length < 90).sort() };
   };
 
   /* više dana odjednom; ne ponavlja iste recepte uzastopno */
