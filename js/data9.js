@@ -42,4 +42,8 @@
       { naziv: 'Faza 3 · Gornji dio B (prsa i ramena)', vj: [M('bench', 3, '6–10', 'Klasični bench press'), M('kosibucice', 3, '8–12', 'Teže'), M('ramena', 3, '8–10', 'Military press bučicama'), S('bocno', 4, '8–20'), S('tricepskabl', 4, '8–15', 'Sa konopom'), S('reversepec', 2, '10–12'), S('veslanjekabl', 2, '8–12')] }
     ]
   });
+
+  /* u prodaji ostaju samo tri programa (kuća, teretana srednji, teretana napredni) + vodič za ishranu; ostali se i dalje mogu dodijeliti klijenticama */
+  const PRODAJA = ['kuca', 'sculpt', 'napredni5', 'vodic-ishrana'];
+  FS.GOTOVI.forEach((g) => { if (g.uShopu && !PRODAJA.includes(g.id)) g.uShopu = false; });
 })();
