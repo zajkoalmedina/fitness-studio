@@ -282,6 +282,14 @@
   const owned = (u, p) => !!u && FS.access(u, p).on;
 
   FS.buySheet = (prog) => buySheet(prog);
+  /* podaci za uplatu na račun (iz FS.config.uplata) */
+  const uplataBox = (prog, u) => {
+    const U = config.uplata || {};
+    if (!U.racun) return h`<p class="small muted mt-s">Trenerica će ti javiti kako da uplatiš.</p>`;
+    const svrha = prog.naziv + ' – ' + u.ime;
+    const red = (l, v) => v ? h`<div class="row between" style="padding:6px 0;border-top:1px solid rgba(255,255,255,.08)"><div><div class="small muted">${l}</div><b style="overflow-wrap:anywhere">${v}</b></div><button class="btn sm" data-act="cp" data-t="${v}">Kopiraj</button></div>` : '';
+    return h`<div class="card mt-s"><b>Uplata na račun</b>${red('Primalac', U.primalac)}${red('Račun (IBAN)', U.racun)}${red('Banka', U.banka)}${red('Iznos', prog.cijena + ' ' + config.valuta)}${red('Svrha uplate', svrha)}${U.napomena ? h`<p class="small muted" style="margin:8px 0 0">${U.napomena}</p>` : ''}</div>`;
+  };
   function buySheet(prog) {
     const u = Auth.user();
     if (!u) { toast('Prijavi se za kupovinu.'); go('#/prijava'); return; }
@@ -290,10 +298,12 @@
       const pend = (Store.db.zahtjevi || []).find((z) => z.userId === u.id && z.programId === prog.id && z.status === 'novo');
       openSheet(h`<h2>${prog.naziv}</h2>
         <div class="kv"><span>Cijena</span><b>${prog.cijena} ${config.valuta}</b></div>
-        ${pend ? h`<div class="card note mt-s">Tvoj zahtjev je poslan. Trenerica će otključati program čim potvrdi uplatu.</div>` : h`<p class="small mt-s">Pošalji zahtjev za kupovinu. Trenerica ti javlja kako da uplatiš, a program se otključava čim potvrdi uplatu.${prog.sedmica ? ' Pristup programu traje ' + prog.sedmica + ' sedmica od otključavanja.' : ''}</p>`}
+        ${uplataBox(prog, u)}
+        ${pend ? h`<div class="card note mt-s">Tvoj zahtjev je poslan. Trenerica će otključati program čim potvrdi uplatu.</div>` : h`<p class="small mt-s">Uplati na račun i pošalji zahtjev, ili prvo pošalji zahtjev. Program se otključava čim trenerica potvrdi uplatu.${prog.sedmica ? ' Pristup programu traje ' + prog.sedmica + ' sedmica od otključavanja.' : ''}</p>`}
         <div class="row mt"><button class="btn grow" data-act="no">${pend ? 'Zatvori' : 'Odustani'}</button>${pend ? '' : h`<button class="btn primary grow" data-act="yes">Pošalji zahtjev</button>`}</div>`,
       (s) => bind(s, {
         'click:no': () => closeSheet(),
+        'click:cp': (b) => { try { navigator.clipboard.writeText(b.dataset.t); toast('Kopirano.'); } catch (e) { toast('Označi i kopiraj ručno.'); } },
         'click:yes': () => {
           (Store.db.zahtjevi = Store.db.zahtjevi || []).push({ id: uid(), userId: u.id, programId: prog.id, iznos: prog.cijena, datum: today(), ts: Date.now(), status: 'novo' });
           Store.save(); closeSheet(); toast('Zahtjev poslan trenerici.');
