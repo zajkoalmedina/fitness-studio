@@ -43,7 +43,7 @@
     ]
   });
 
-  /* u prodaji ostaju samo tri programa (kuća, teretana srednji, teretana napredni) + vodič za ishranu; ostali se i dalje mogu dodijeliti klijenticama */
-  const PRODAJA = ['kuca', 'sculpt', 'napredni5', 'vodic-ishrana'];
+  /* u prodaji ostaju četiri programa (kuća, početnici, teretana srednji, teretana napredni) + vodič za ishranu; ostali se i dalje mogu dodijeliti klijenticama */
+  const PRODAJA = ['kuca', 'pocetnice3', 'sculpt', 'napredni5', 'vodic-ishrana'];
   FS.GOTOVI.forEach((g) => { if (g.uShopu && !PRODAJA.includes(g.id)) g.uShopu = false; });
 })();
