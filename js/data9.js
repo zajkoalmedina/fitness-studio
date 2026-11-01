@@ -44,6 +44,10 @@
   });
 
   /* u prodaji ostaju četiri programa (kuća, početnici, teretana srednji, teretana napredni) + vodič za ishranu; ostali se i dalje mogu dodijeliti klijenticama */
+  Object.assign(FS.GOTOVI.find((g) => g.id === 'pocetnice3'), {
+    naziv: 'Snažni temelji · početnici · 3 dana',
+    opis: 'Devet sedmica za sve koji tek počinju u teretani, žene i muškarce. Tri treninga sedmično za cijelo tijelo: prve tri sedmice samo na spravama zbog kontrole pokreta, zatim jednostavne bučice, a na kraju zahtjevnije slobodne varijante.'
+  });
   const PRODAJA = ['kuca', 'pocetnice3', 'sculpt', 'napredni5', 'vodic-ishrana'];
   FS.GOTOVI.forEach((g) => { if (g.uShopu && !PRODAJA.includes(g.id)) g.uShopu = false; });
 })();
