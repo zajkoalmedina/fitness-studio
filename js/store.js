@@ -91,7 +91,8 @@
     exercises() {
       const mod = Store.db.vjezbeMod || {};
       const gi = (e) => { const i = FS.GRUPE.indexOf(e.grupa); return i < 0 ? 99 : i; }, ni = (e) => { const i = FS.NIVOI.indexOf(e.nivo); return i < 0 ? 9 : i; };
-      return FS.EXERCISES.map((e) => (mod[e.id] ? { ...e, ...mod[e.id] } : e)).map((e) => (FS.VIDEOS && FS.VIDEOS[e.id] ? { ...e, video: FS.VIDEOS[e.id] } : e)).concat(Store.db.vjezbeNove || [])
+      return FS.EXERCISES.map((e) => (mod[e.id] ? { ...e, ...mod[e.id] } : e)).concat(Store.db.vjezbeNove || [])
+        .map((e) => { const v = (FS.VIDEOS && FS.VIDEOS[e.id]) || (FS.VIDEOS_NAZIV && FS.VIDEOS_NAZIV[String(e.naziv).trim().toLowerCase()]); return v ? { ...e, video: v } : e; })
         .sort((a, b) => gi(a) - gi(b) || ni(a) - ni(b) || String(a.naziv).localeCompare(String(b.naziv), 'bs'));
     },
     ex(id) { return Store.exercises().find((e) => e.id === id); },
