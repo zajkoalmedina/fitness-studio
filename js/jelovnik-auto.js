@@ -29,7 +29,7 @@
 
   /* jedan dan: kombinira obroke tako da se poklope i kalorije i makroi; vraća { dorucak: {id, por}, ... } */
   FS.autoDay = (target, seed, used, M, left, pref) => {
-    const R = FS.RECEPTI_V || [], rand = rnd(hash(String(seed))), G = macros(target, M), SPLIT = target >= 2000 ? SPLIT5 : SPLIT4, slots = Object.keys(SPLIT), NC = slots.length > 4 ? 9 : 14;
+    const R = (FS.RECEPTI_V || []).filter((r) => !(pref && pref.J && FS.alergMatch && FS.alergMatch(r, pref.J).length)), rand = rnd(hash(String(seed))), G = macros(target, M), SPLIT = target >= 2000 ? SPLIT5 : SPLIT4; let slots = Object.keys(SPLIT); const NC = slots.length > 4 ? 9 : 14;
     const cand = {};
     slots.forEach((slot) => {
       const goal = target * SPLIT[slot], list = [];
@@ -44,6 +44,7 @@
       }));
       cand[slot] = list.sort((a, b) => a.sc - b.sc).slice(0, NC);
     });
+    slots = slots.filter((sl) => cand[sl].length);
     let best = null;
     const pick = [];
     const rec = (i, k, p, u, m, sc) => {
@@ -53,7 +54,7 @@
         return;
       }
       let list = cand[slots[i]];
-      if (left && slots[i] === 'vecera') { const rr = pick[1].r; list = POR.map((f) => ({ r: rr, f, sc: 0.05 * Math.abs(f - 1) - 0.2, ostatak: true })); } // večera = ostatak ručka
+      if (left && slots[i] === 'vecera' && slots[1] === 'rucak') { const rr = pick[1].r; list = POR.map((f) => ({ r: rr, f, sc: 0.05 * Math.abs(f - 1) - 0.2, ostatak: true })); } // večera = ostatak ručka
       list.forEach((c) => { pick[i] = c; rec(i + 1, k + c.r.kcal * c.f, p + c.r.p * c.f, u + c.r.uh * c.f, m + c.r.m * c.f, sc + c.sc); });
     };
     rec(0, 0, 0, 0, 0, 0);
@@ -110,7 +111,7 @@
     let used = new Set(), prev = new Set();
     for (let i = 0; i < days; i++) {
       const iso = FS.addDays(startIso, i);
-      const d = FS.autoDay(target, iso + ':' + (J.autoSeed = (J.autoSeed || 0)), prev, M || J.makro, J.ostaci === 'svaki' || (J.ostaci !== 'ne' && [0, 2, 4].includes(i % 7)), { voli: J.voli || [], ne: J.ne || [] });
+      const d = FS.autoDay(target, iso + ':' + (J.autoSeed = (J.autoSeed || 0)), prev, M || J.makro, J.ostaci === 'svaki' || (J.ostaci !== 'ne' && [0, 2, 4].includes(i % 7)), { voli: J.voli || [], ne: J.ne || [], J });
       J.dani[iso] = d; prev = new Set(Object.values(d).map((x) => x.id));
       used = new Set([...used, ...prev]);
     }

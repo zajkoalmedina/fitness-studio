@@ -161,6 +161,7 @@
         <div class="row mt-s"><select data-act="assignsel" class="grow"><option value="">Dodijeli program…</option>${assignable.map((x) => h`<option value="${x.id}">${x.naziv}</option>`)}</select><button class="btn sm" data-act="assign">Dodaj</button></div>
         <a class="btn sm block mt-s" href="#/trener/program/novi?za=${u.id}">+ Napravi individualni program</a></div>
       ${FS.planCard(u)}
+      ${FS.alergijeCard ? FS.alergijeCard(u.jelovnik, true) : ''}
       ${FS.fotoCard ? FS.fotoCard(u, true) : ''}
       <div class="card"><h3>Težina</h3>${FS.lineChart(wpts, { label: 'Težina' })}</div>
       ${FS.mjTable(mj)}

@@ -48,8 +48,14 @@
         <a class="btn sm block mt-s" href="#/alati?tab=kalorije">Izračunaj i dnevne kalorije</a></form>
       <a class="card" href="#/suplementi" style="display:block"><b>Suplementi</b><div class="small muted">Šta ima smisla, a šta ne</div></a>`;
 
-    const R = () => FS.RECEPTI_V || [];
-    const rid = (id) => R().find((x) => x.id === id);
+    const ALL = () => FS.RECEPTI_V || [];
+    const klijentica = () => !!u && u.role !== 'trener';
+    const JJ = () => (u && u.jelovnik) || {};
+    const R = () => (klijentica() && FS.imaAlergije && FS.imaAlergije(JJ()) ? ALL().filter((r) => !FS.alergMatch(r, JJ()).length) : ALL());
+    const sakriveno = () => ALL().length - R().length;
+    const rid = (id) => ALL().find((x) => x.id === id);
+    const algCard = () => (klijentica() && has() && FS.alergijeCard ? FS.alergijeCard(JJ()) : '');
+    const sadrzi = (r) => { const a = (FS.recAlergeni ? FS.recAlergeni(r) : []).map(FS.alergLabel); return a.length ? h`<p class="small muted mt-s" style="margin:0">Sadrži: ${a.join(', ')}</p>` : ''; };
     const makro = (r) => h`<div class="row wrap mt-s"><span class="pill">${r.kcal} kcal</span><span class="pill">P ${fx(r.p)} g</span><span class="pill">UH ${fx(r.uh)} g</span><span class="pill">M ${fx(r.m)} g</span></div>`;
     const lockBox = () => h`<div class="card note"><div class="row"><span style="width:26px">${icon('lock')}</span><div class="grow"><b>${prod().naziv}</b><div class="small">${R().length} recepata (i bosanska jela, voće) sa sastojcima i pripremom + Moj dnevni jelovnik sa automatskim izborom obroka. Cijena ${prod().cijena} ${FS.config.valuta}.</div></div></div><button class="btn primary block mt-s" data-act="buy">Kupi vodič</button></div>`;
     const kartica = (r, open) => h`<details class="card" ${open === false ? '' : 'open'}><summary style="cursor:pointer"><div class="row between"><b>${r.naziv}</b><span class="badge">${r.bos ? '🇧🇦 ' : ''}${r.obrok}</span></div>
@@ -58,13 +64,14 @@
       <div class="row wrap mt-s"><span class="pill">${r.kcal} kcal</span><span class="pill">P ${fx(r.p)} g</span><span class="pill">UH ${fx(r.uh)} g</span><span class="pill">M ${fx(r.m)} g</span>${r.v != null ? h`<span class="pill">vlakna ${fx(r.v)} g</span>` : ''}</div>
       <h3 class="mt-s">Sastojci (1 porcija)</h3><ul class="dots">${r.sast.map((x) => h`<li>${x}</li>`)}</ul>
       <h3>Kako se pravi</h3><p style="margin:0">${r.priprema || 'Pripremi prema popisu sastojaka.'}</p>
-      ${r.okvir ? h`<p class="small mt-s">Makroi su okvirna procjena za pretpostavljenu porciju.</p>` : ''}${r.v != null ? h`<p class="small mt-s">Ugljikohidrati uključuju vlakna. Vlakna daju oko 2 kcal/g, zato zbir 4/4/9 može biti malo viši od navedenih kalorija.</p>` : ''}${r.jogurt100 ? h`<p class="small mt-s">Podaci po 100 g proizvoda, provjeri etiketu pakovanja.</p>` : ''}</details>`;
+      ${r.okvir ? h`${sadrzi(r)}<p class="small mt-s">Makroi su okvirna procjena za pretpostavljenu porciju.</p>` : ''}${r.v != null ? h`<p class="small mt-s">Ugljikohidrati uključuju vlakna. Vlakna daju oko 2 kcal/g, zato zbir 4/4/9 može biti malo viši od navedenih kalorija.</p>` : ''}${r.jogurt100 ? h`<p class="small mt-s">Podaci po 100 g proizvoda, provjeri etiketu pakovanja.</p>` : ''}</details>`;
     const SAMPLE = ['r01', 'r07', 'r13'];
     const FILT = [['sve', 'Sve'], ['bos', '🇧🇦 Bosanska jela'], ['Doručak', 'Doručak'], ['Ručak', 'Ručak'], ['Večera', 'Večera'], ['Užina', 'Užina'], ['Voće', 'Voće']];
     let rf = 'sve';
     const recepti = () => {
       const g = has(), all = R().filter((r) => rf === 'sve' || (rf === 'bos' ? r.bos : r.obrok === rf));
       return h`<p class="muted">${R().length} recepata i namirnica sa kalorijama, makroima i vlaknima po porciji. Vrijednosti su okvirne i zavise od namirnica i veličine porcije.</p>
+        ${algCard()}${sakriveno() ? h`<div class="card note small">Zbog tvojih alergija sakriveno je ${sakriveno()} recepata.</div>` : ''}
         <div class="row wrap mb">${FILT.map(([k, l]) => h`<button class="btn sm ${rf === k ? 'primary' : ''}" data-act="rf" data-k="${k}">${l}</button>`)}</div>
         ${g ? '' : lockBox()}
         ${g ? all.map((r) => kartica(r)) : all.map((r) => SAMPLE.includes(r.id) ? kartica(r) : h`<div class="card"><div class="row between"><b>${r.naziv}</b><span class="badge">${r.obrok}</span></div><div class="row between small"><span>${r.kcal} kcal · P ${fx(r.p)} g</span><span>${icon('lock')}</span></div></div>`)}`;
@@ -84,7 +91,7 @@
         return h`<div class="card flat"><div class="eyebrow" style="margin:0">${label}</div>
           <select data-act="rec" data-k="${key}" aria-label="${label}"><option value="">Izaberi recept</option>${ord.map((gr) => h`<optgroup label="${gr}">${R().filter((r) => r.obrok === gr).map((r) => h`<option value="${r.id}" ${e.id === r.id ? 'selected' : ''}>${r.naziv} (${r.kcal} kcal)</option>`)}</optgroup>`)}</select>
           ${e.ostatak && key === 'vecera' ? h`<div class="badge ok mt-s">ostatak od ručka: skuhaj odmah veću količinu</div>` : ''}${rid(e.id) ? h`<div class="row between mt-s"><span class="small">${Math.round(rid(e.id).kcal * (e.por || 1))} kcal · P ${fx(rid(e.id).p * (e.por || 1))} g</span><label class="small">Porcija <select data-act="por" data-k="${key}" style="width:auto;min-height:36px">${POR.map((x) => h`<option value="${x}" ${(e.por || 1) === x ? 'selected' : ''}>${fx(x)}</option>`)}</select></label></div>` : ''}</div>`; };
-      return h`<div class="card"><div class="row between"><button class="icon-btn" data-act="dd" data-d="-1" aria-label="Prethodni dan">‹</button><input type="date" data-act="dt" value="${datum}" style="width:auto"><button class="icon-btn" data-act="dd" data-d="1" aria-label="Sljedeći dan">›</button></div>
+      return h`${algCard()}<div class="card"><div class="row between"><button class="icon-btn" data-act="dd" data-d="-1" aria-label="Prethodni dan">‹</button><input type="date" data-act="dt" value="${datum}" style="width:auto"><button class="icon-btn" data-act="dd" data-d="1" aria-label="Sljedeći dan">›</button></div>
         <label class="field mt-s"><span>Dnevni cilj (kcal)</span><input data-act="cilj" inputmode="numeric" value="${J.cilj || ''}" placeholder="npr. 1800"></label>
         <a class="small" href="#/alati?tab=kalorije">Izračunaj svoj cilj u kalkulatoru</a>
 </div>
@@ -111,6 +118,11 @@
     const pitanja = () => h`${FAQ.map(([a, b]) => h`<details class="card"><summary style="cursor:pointer;font-weight:600">${a}</summary><p class="muted mt-s" style="margin:0">${b}</p></details>`)}
       <div class="card flat center"><p class="muted">Želiš plan ishrane prilagođen sebi? Dostupan je uz coaching pakete.</p><a class="btn sm" href="#/paketi">Pogledaj pakete</a></div>`;
 
+    const algSave = (J) => {
+      const n = FS.alergPurge ? FS.alergPurge(J) : 0; Store.save();
+      FS.toast(n ? 'Sačuvano. Iz jelovnika je izbačeno obroka: ' + n + '. Napravi jelovnik ponovo.' : 'Alergije su sačuvane.');
+      const y = window.scrollY; draw(); window.scrollTo(0, y);
+    };
     draw();
     if (q.pref && tab === 'jelovnik') { const c = $('#prefcard', el); if (c) setTimeout(() => c.scrollIntoView({ block: 'start' }), 50); }
     bind(el, {
@@ -133,6 +145,8 @@
         FS.autoMenu(u, +J.cilj, datum, n, J.makro); FS.toast(n > 1 ? 'Jelovnik za 7 dana je spreman.' : 'Jelovnik je spreman.'); draw();
       },
       'click:buy': () => FS.buySheet(prod()),
+      'change:alg': (t) => { const J = dnevnik(); J.alergije = (J.alergije || []).filter((x) => x !== t.dataset.k); if (t.checked) J.alergije.push(t.dataset.k); algSave(J); },
+      'change:algo': (t) => { const J = dnevnik(); J.alergijeOstalo = t.value.trim().slice(0, 120); algSave(J); },
       'change:rec': (t) => { const d = dnevnik().dani[datum] = dnevnik().dani[datum] || {}; if (t.value) d[t.dataset.k] = { id: t.value, por: (d[t.dataset.k] || {}).por || 1 }; else delete d[t.dataset.k]; Store.save(); draw(); },
       'change:por': (t) => { const d = dnevnik().dani[datum]; if (d && d[t.dataset.k]) { d[t.dataset.k].por = +t.value; Store.save(); draw(); } },
       'change:cilj': (t) => { const v = Math.round(num(t.value)); if (v >= 800 && v <= 6000) { if (dnevnik().cilj !== v) delete dnevnik().makro; dnevnik().cilj = v; Store.save(); } else FS.toast('Unesi cilj između 800 i 6000 kcal.'); draw(); },
