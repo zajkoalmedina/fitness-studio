@@ -125,6 +125,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--beige);box-shadow:0 0
 .ex .ph svg{width:26px;height:26px;stroke:var(--beige)}
 .video{position:relative;aspect-ratio:16/9;border-radius:var(--r);overflow:hidden;background:linear-gradient(135deg,var(--navy-3),var(--navy));border:1px solid var(--line);display:grid;place-items:center;text-align:center;margin-bottom:14px}
 .video iframe,.video video{position:absolute;inset:0;width:100%;height:100%;border:0}
+.video.tall{aspect-ratio:9/16;max-width:340px;margin-left:auto;margin-right:auto}.video.tall video{object-fit:contain;background:#000}
 .video .play{width:64px;height:64px;border-radius:50%;border:2px solid var(--beige);display:grid;place-items:center;margin:0 auto 8px}
 .video .play svg{width:28px;height:28px;stroke:var(--beige);fill:var(--beige)}
 ol.steps{padding-left:0;margin:0;list-style:none;counter-reset:s}

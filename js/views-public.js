@@ -216,6 +216,7 @@
   /* ================= VJEŽBE ================= */
   function videoEmbed(url) {
     if (url && /^fs:vid\//.test(url)) return h`<video data-fsvid="${url.slice(3)}" controls playsinline preload="metadata" style="width:100%;border-radius:12px"></video><div class="small muted" data-fsmsg="1">Učitavam video…</div>`;
+    if (url && /^videos\/[\w.-]+\.mp4$/.test(url)) return h`<video src="${url}" controls playsinline preload="metadata"></video>`;
     if (!url || !/^https:\/\//i.test(url)) return '';
     let m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/);
     if (m) return h`<iframe src="https://www.youtube-nocookie.com/embed/${m[1]}" title="Video uputa" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
@@ -262,7 +263,7 @@
     const e = Store.ex(p.id);
     if (!e) { el.innerHTML = h`<div class="empty">Vježba nije pronađena.</div><a class="btn block" href="#/vjezbe">Sve vježbe</a>`; return; }
     el.innerHTML = h`<div class="eyebrow">${e.grupa} · ${e.nivo}</div><h1>${e.naziv}</h1>
-      <div class="video">${e.video ? videoEmbed(e.video) : h`<div><div class="play">${icon('play')}</div><div class="small" style="max-width:26ch;margin:auto">Videouputa uskoro. Trenerica je može dodati u trenerskom panelu.</div></div>`}</div>
+      <div class="video${e.video && /^videos\//.test(e.video) ? ' tall' : ''}">${e.video ? videoEmbed(e.video) : h`<div><div class="play">${icon('play')}</div><div class="small" style="max-width:26ch;margin:auto">Videouputa uskoro. Trenerica je može dodati u trenerskom panelu.</div></div>`}</div>
       ${FS.hasFigure && FS.hasFigure(e.id) ? h`<div class="card figcard"><div class="row" style="gap:8px"><div class="fstill big">${FS.raw(FS.figureSVG(e.id, 0, 'Početni položaj'))}<span class="small">1 · Početak</span></div><div class="fstill big">${FS.raw(FS.figureSVG(e.id, 1, 'Završni položaj'))}<span class="small">2 · Kraj</span></div></div></div>` : ''}
       ${(() => { const m = FS.muskulChips ? FS.muskulChips(e.id) : { p: [], s: [] }; return m.p.length || m.s.length ? h`<div class="card"><h3>Koji mišići rade</h3>
         ${m.p.length ? h`<div class="mb"><b>Primarni (glavni):</b> ${m.p.join(', ')}</div>` : ''}
