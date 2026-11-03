@@ -91,7 +91,11 @@
         return h`<div class="card flat"><div class="eyebrow" style="margin:0">${label}</div>
           <select data-act="rec" data-k="${key}" aria-label="${label}"><option value="">Izaberi recept</option>${ord.map((gr) => h`<optgroup label="${gr}">${R().filter((r) => r.obrok === gr).map((r) => h`<option value="${r.id}" ${e.id === r.id ? 'selected' : ''}>${r.naziv} (${r.kcal} kcal)</option>`)}</optgroup>`)}</select>
           ${e.ostatak && key === 'vecera' ? h`<div class="badge ok mt-s">ostatak od ručka: skuhaj odmah veću količinu</div>` : ''}${rid(e.id) ? h`<div class="row between mt-s"><span class="small">${Math.round(rid(e.id).kcal * (e.por || 1))} kcal · P ${fx(rid(e.id).p * (e.por || 1))} g</span><label class="small">Porcija <select data-act="por" data-k="${key}" style="width:auto;min-height:36px">${POR.map((x) => h`<option value="${x}" ${(e.por || 1) === x ? 'selected' : ''}>${fx(x)}</option>`)}</select></label></div>` : ''}</div>`; };
-      return h`${algCard()}<div class="card"><div class="row between"><button class="icon-btn" data-act="dd" data-d="-1" aria-label="Prethodni dan">‹</button><input type="date" data-act="dt" value="${datum}" style="width:auto"><button class="icon-btn" data-act="dd" data-d="1" aria-label="Sljedeći dan">›</button></div>
+      const DAN = ['Ned', 'Pon', 'Uto', 'Sri', 'Čet', 'Pet', 'Sub'];
+      const sedmica = Array.from({ length: 7 }, (_, i) => addDays(today(), i)).map((d) => { const e = J.dani[d] || {}; let kc = 0, br = 0; Object.values(e).forEach((x) => { const r = rid(x.id); if (r) { kc += r.kcal * (x.por || 1); br++; } }); return [d, kc, br]; });
+      return h`${algCard()}<div class="card"><h3 style="margin-top:0">Moja sedmica</h3><div class="row wrap">${sedmica.map(([d, kc, br]) => h`<button class="btn sm ${d === datum ? 'primary' : ''}" data-act="dj" data-d="${d}" style="flex:1 1 28%;padding:8px 4px"><b>${DAN[new Date(d + 'T12:00:00').getDay()]} ${(+d.slice(8)) + '.' + (+d.slice(5, 7)) + '.'}</b><br><span class="small" style="color:inherit;opacity:.8">${br ? Math.round(kc) + ' kcal' : 'nema plana'}</span></button>`)}</div>
+          <label class="check mt-s" style="display:flex;gap:10px"><input type="checkbox" data-act="autoon" ${J.auto !== false ? 'checked' : ''}><span>Plan se sam obnavlja svake sedmice prema mojim podacima (ne moram ništa ponovo unositi)</span></label></div>
+        <div class="card"><div class="row between"><button class="icon-btn" data-act="dd" data-d="-1" aria-label="Prethodni dan">‹</button><input type="date" data-act="dt" value="${datum}" style="width:auto"><button class="icon-btn" data-act="dd" data-d="1" aria-label="Sljedeći dan">›</button></div>
         <label class="field mt-s"><span>Dnevni cilj (kcal)</span><input data-act="cilj" inputmode="numeric" value="${J.cilj || ''}" placeholder="npr. 1800"></label>
         <a class="small" href="#/alati?tab=kalorije">Izračunaj svoj cilj u kalkulatoru</a>
 </div>
@@ -118,6 +122,10 @@
     const pitanja = () => h`${FAQ.map(([a, b]) => h`<details class="card"><summary style="cursor:pointer;font-weight:600">${a}</summary><p class="muted mt-s" style="margin:0">${b}</p></details>`)}
       <div class="card flat center"><p class="muted">Želiš plan ishrane prilagođen sebi? Dostupan je uz coaching pakete.</p><a class="btn sm" href="#/paketi">Pogledaj pakete</a></div>`;
 
+    /* sedmični plan se sam obnavlja: dani bez plana se popune prema već spremljenim podacima (cilj, namirnice, alergije) */
+    if (klijentica() && has() && u.jelovnik && (u.jelovnik.planOd || Object.keys(u.jelovnik.dani || {}).length) && u.jelovnik.auto !== false && FS.autoFill) {
+      const n = FS.autoFill(u, today(), 7); if (n) setTimeout(() => FS.toast('Plan ishrane za narednih 7 dana je obnovljen automatski.'), 400);
+    }
     const algSave = (J) => {
       const n = FS.alergPurge ? FS.alergPurge(J) : 0; Store.save();
       FS.toast(n ? 'Sačuvano. Iz jelovnika je izbačeno obroka: ' + n + '. Napravi jelovnik ponovo.' : 'Alergije su sačuvane.');
@@ -142,9 +150,11 @@
         if (!(+J.cilj >= 800)) { FS.toast('Prvo upiši dnevni cilj (kcal) ili ga izračunaj u kalkulatoru.'); return; }
         const dan = J.dani[datum] || {};
         if (Object.keys(dan).length && !(await FS.confirmSheet({ title: 'Napraviti novi jelovnik?', text: n > 1 ? 'Zamijenit će obroke za idućih 7 dana.' : 'Zamijenit će izabrane obroke za ovaj dan.', ok: 'Napravi' }))) return;
-        FS.autoMenu(u, +J.cilj, datum, n, J.makro); FS.toast(n > 1 ? 'Jelovnik za 7 dana je spreman.' : 'Jelovnik je spreman.'); draw();
+        FS.autoMenu(u, +J.cilj, datum, n, J.makro); if (n > 1) J.planOd = datum; Store.save(); FS.toast(n > 1 ? 'Jelovnik za 7 dana je spreman.' : 'Jelovnik je spreman.'); draw();
       },
       'click:buy': () => FS.buySheet(prod()),
+      'click:dj': (t) => { datum = t.dataset.d; draw(); },
+      'change:autoon': (t) => { const J = dnevnik(); J.auto = !!t.checked; if (J.auto && !J.planOd && Object.keys(J.dani || {}).length) J.planOd = today(); Store.save(); FS.toast(J.auto ? 'Plan će se obnavljati sam.' : 'Automatsko obnavljanje je isključeno.'); },
       'change:alg': (t) => { const J = dnevnik(); J.alergije = (J.alergije || []).filter((x) => x !== t.dataset.k); if (t.checked) J.alergije.push(t.dataset.k); algSave(J); },
       'change:algo': (t) => { const J = dnevnik(); J.alergijeOstalo = t.value.trim().slice(0, 120); algSave(J); },
       'change:rec': (t) => { const d = dnevnik().dani[datum] = dnevnik().dani[datum] || {}; if (t.value) d[t.dataset.k] = { id: t.value, por: (d[t.dataset.k] || {}).por || 1 }; else delete d[t.dataset.k]; Store.save(); draw(); },

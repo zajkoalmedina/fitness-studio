@@ -105,6 +105,20 @@
   };
 
   /* više dana odjednom; ne ponavlja iste recepte uzastopno */
+  /* popunjava samo dane bez plana (za sedmični plan koji se sam obnavlja); vraća broj popunjenih dana */
+  FS.autoFill = (u, startIso, days) => {
+    const J = u.jelovnik; if (!J || !(+J.cilj >= 800)) return 0;
+    let prev = new Set(), n = 0;
+    for (let i = 0; i < days; i++) {
+      const iso = FS.addDays(startIso, i), ex = (J.dani = J.dani || {})[iso];
+      if (ex && Object.keys(ex).length) { prev = new Set(Object.values(ex).map((x) => x.id)); continue; }
+      const d = FS.autoDay(+J.cilj, iso + ':' + (J.autoSeed || 0), prev, J.makro, J.ostaci === 'svaki' || (J.ostaci !== 'ne' && [0, 2, 4].includes(i % 7)), { voli: J.voli || [], ne: J.ne || [], J });
+      if (Object.keys(d).length) { J.dani[iso] = d; prev = new Set(Object.values(d).map((x) => x.id)); n++; }
+    }
+    if (n) FS.Store.save();
+    return n;
+  };
+
   FS.autoMenu = (u, target, startIso, days, M) => {
     const J = (u.jelovnik = u.jelovnik || { cilj: target, dani: {} });
     J.cilj = Math.round(target); if (M) J.makro = M;
