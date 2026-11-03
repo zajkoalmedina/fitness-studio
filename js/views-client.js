@@ -6,7 +6,7 @@
   const { h, icon, bind, formData, opts, toast, openSheet, closeSheet, confirmSheet, Store, Auth, config, num, r1, fmtDate, today, uid, $, addDays, weekStart } = FS;
   const go = (hash) => { location.hash = hash; };
 
-  const subnav = (tab) => h`<div class="seg">${[['pregled', 'Pregled'], ['trening', 'Treninzi'], ['napredak', 'Napredak'], ['poruke', 'Poruke']].map(([k, l]) => h`<a href="#/moj?tab=${k}" class="${tab === k ? 'on' : ''}">${l}</a>`)}</div>`;
+  const subnav = (tab) => h`<div class="seg">${[['pregled', 'Pregled'], ['trening', 'Treninzi'], ['napredak', 'Napredak'], ['poruke', 'Poruke']].filter(([k]) => !(k === 'poruke' && FS.jeKupac && FS.jeKupac(Auth.user()))).map(([k, l]) => h`<a href="#/moj?tab=${k}" class="${tab === k ? 'on' : ''}">${l}</a>`)}</div>`;
 
   function passSheet(u, forced) {
     openSheet(h`<h2>${forced ? 'Postavi svoju lozinku' : 'Promjena lozinke'}</h2>${forced ? h`<p class="muted">Račun ti je napravila trenerica s privremenom lozinkom. Postavi svoju.</p>` : ''}
@@ -23,7 +23,8 @@
   /* ================= MOJ PROSTOR ================= */
   V.moj = (el, p, q) => {
     const u = Auth.user();
-    const tab = ['pregled', 'trening', 'napredak', 'poruke'].includes(q.tab) ? q.tab : 'pregled';
+    const kupac = !!(FS.jeKupac && FS.jeKupac(u));
+    const tab = ['pregled', 'trening', 'napredak', 'poruke'].includes(q.tab) && !(kupac && q.tab === 'poruke') ? q.tab : 'pregled';
     const logs = Store.logsOf(u.id), mj = Store.mjereOf(u.id);
     const first = u.ime.split(' ')[0];
     let body = '';
@@ -33,12 +34,13 @@
       const progs = Store.userPrograms(u);
       const last = mj[mj.length - 1];
       body = h`
-        ${FS.upitnikBanner ? FS.upitnikBanner(u) : ''}
+        ${FS.upitnikBanner && !kupac ? FS.upitnikBanner(u) : ''}
         ${u.mora_promijeniti ? h`<div class="card note"><b>Postavi svoju lozinku.</b><button class="btn sm mt-s" data-act="pw">Promijeni lozinku</button></div>` : ''}
-        <div class="card cream"><div class="eyebrow" style="color:var(--beige-2)">Tvoj paket</div>
+        ${kupac ? FS.kupacCard(u) : ''}
+        ${kupac ? '' : h`<div class="card cream"><div class="eyebrow" style="color:var(--beige-2)">Tvoj paket</div>
           ${u.paket ? h`<div class="row between"><h2 style="margin:0">${u.paket}</h2><span class="small">${ciljN} treninga sedmično</span></div>
             <div class="progress mt-s" role="progressbar" aria-valuenow="${wc}" aria-valuemax="${ciljN}"><i style="width:${Math.min(100, (wc / ciljN) * 100)}%"></i></div>
-            <div class="small mt-s">Ove sedmice: <b>${wc}</b> od ${ciljN}</div>` : h`<p class="muted" style="margin:0 0 8px">Trenutno nemaš aktivan coaching paket.</p><a class="btn dark sm" href="#/paketi">Pogledaj pakete</a>`}</div>
+            <div class="small mt-s">Ove sedmice: <b>${wc}</b> od ${ciljN}</div>` : h`<p class="muted" style="margin:0 0 8px">Trenutno nemaš aktivan coaching paket.</p><a class="btn dark sm" href="#/paketi">Pogledaj pakete</a>`}</div>`}
         ${FS.podsjetnikCard ? FS.podsjetnikCard(u) : ''}
         ${FS.rasporedCard ? FS.rasporedCard(u) : ''}
         <a class="btn primary block mb" href="#/trening/novi">${icon('plus')} Započni trening</a>
@@ -46,7 +48,7 @@
         ${FS.vodaCard ? FS.vodaCard(u) : ''}
         <h3>Moji programi</h3>
         ${progs.length ? progs.map((pr) => h`<a class="ex" href="#/program/${pr.id}"><div class="ph">${icon('clipboard')}</div><div class="grow"><b>${pr.naziv}</b><div class="small">${FS.accessLabel(pr, u)} · ${pr.dani.length} dana</div></div></a>`) : h`<div class="card flat center"><p class="muted">Još nemaš programa.</p><a class="btn sm" href="#/programi">Pogledaj programe</a></div>`}
-        <a class="ex" href="#/kondicija"><div class="ph">${icon('flame')}</div><div class="grow"><b>Kondicija: EMOM, HIIT, AMRAP</b><div class="small">Intenzivni treninzi s tajmerom</div></div></a>
+        ${kupac ? '' : h`<a class="ex" href="#/kondicija"><div class="ph">${icon('flame')}</div><div class="grow"><b>Kondicija: EMOM, HIIT, AMRAP</b><div class="small">Intenzivni treninzi s tajmerom</div></div></a>`}
         <a class="ex" href="#/ishrana"><div class="ph">${icon('flame')}</div><div class="grow"><b>Vodič za ishranu</b><div class="small">Principi, recepti, primjer dana</div></div></a>
         <a class="ex" href="#/dijastaza"><div class="ph">${icon('heart')}</div><div class="grow"><b>Kućni program za dijastazu</b><div class="small">Besplatno · 4 faze</div></div></a>
         ${FS.igCard ? FS.igCard('Treba ti pomoć ili promjena plana?', 'Piši mi direktno na Instagramu.') : ''}
@@ -74,6 +76,7 @@
         <div class="card"><h3>Treninga po sedmici</h3>${FS.barChart(wk, lb, { label: 'Treninga po sedmici' })}</div>
         <div class="card"><h3>Lični rekordi</h3>${bl.length ? bl.map(([id, b]) => h`<div class="kv"><span>${(Store.ex(id) || { naziv: id }).naziv}</span><b>${b.kg} kg × ${b.rep}</b></div>`) : h`<p class="muted">Rekordi se pojavljuju kad upišeš treninge s tegovima.</p>`}</div>
         ${FS.mjTable(mj)}
+        <a class="card" href="#/mjerenje" style="display:block"><b>Kako se mjeriti</b><div class="small muted">Vaganje, obim struka, kukova i fotografije: kada i kako</div></a>
         <div class="card"><h3>Novo mjerenje</h3>${FS.mjForm()}</div>
         ${FS.fotoCard ? FS.fotoCard(u) : ''}
         <h3>Historija mjerenja</h3>

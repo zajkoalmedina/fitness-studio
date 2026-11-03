@@ -67,7 +67,7 @@
     const sm = seedLogs(maja.id, 'kuca');
     const db = {
       v: 1, users: [trener, ana, maja, lejla], programi: [progAna], logs: [...sa.logs, ...sm.logs.slice(0, 5)], mjere: [...sa.mj, ...sm.mj.slice(0, 4)],
-      kupovine: [{ id: uid(), userId: maja.id, programId: 'kuca', datum: addDays(today(), -20), iznos: 39, demo: true }],
+      pristup: [], kupovine: [{ id: uid(), userId: maja.id, programId: 'kuca', datum: addDays(today(), -20), iznos: 39, demo: true }],
       poruke: [{ id: uid(), userId: lejla.id, tip: 'upit', tekst: 'Zanima me može li se plan prilagoditi za rad od kuće bez opreme.', datum: addDays(today(), -1), status: 'novo', odgovor: '' }],
       prijave: [{ id: uid(), ime: 'Sara (demo)', kontakt: '@sara.demo', paket: 'START', tekst: 'Počinjem od nule.', datum: addDays(today(), -2), status: 'novo' }],
       vjezbeMod: {}, vjezbeNove: []
@@ -131,7 +131,7 @@
   const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   const Auth = {
     session() { try { const s = JSON.parse(ls.get(SKEY)); return s && s.exp > Date.now() ? s : null; } catch (e) { return null; } },
-    user() { const s = Auth.session(); if (!s || !Store.db) return null; const u = Store.user(s.uid); return u && u.aktivan !== false ? u : null; },
+    user() { const s = Auth.session(); if (!s || !Store.db) return null; const u = Store.user(s.uid); return u && u.aktivan !== false && !(FS.accountExpired && FS.accountExpired(u)) ? u : null; },
     is(role) { const u = Auth.user(); return !!u && u.role === role; },
     logout() { ls.del(SKEY); Store.draft.clear(); },
     passOk(p) { return typeof p === 'string' && p.length >= 8 && /[A-Za-z]/.test(p) && /\d/.test(p); },
@@ -141,6 +141,7 @@
       const u = Store.db.users.find((x) => x.email === String(email).trim().toLowerCase());
       let ok = false;
       if (u && u.aktivan !== false) ok = same(await hashPw(pass, u.salt), u.hash);
+      if (ok && FS.accountExpired && FS.accountExpired(u)) throw new Error('Tvoj pristup je istekao (2 mjeseca od kupovine). Javi se trenerici za produženje.');
       else await hashPw(pass || 'x', newSalt()); // izjednačavanje vremena
       if (!ok) {
         a.n = (a.n || 0) + 1;

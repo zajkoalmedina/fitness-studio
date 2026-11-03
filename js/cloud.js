@@ -9,7 +9,7 @@
   const { Store, Auth, uid, today, toast } = FS;
   const BASE = cfg.url.replace(/\/$/, ''), KEY = cfg.key;
   const SK = 'fs_sb_session';
-  const COLLS = ['logs', 'mjere', 'poruke', 'chat', 'kupovine', 'prijave', 'programi', 'zahtjevi', 'upitnici', 'raspored', 'uplate', 'pozivnice'];
+  const COLLS = ['logs', 'mjere', 'poruke', 'chat', 'kupovine', 'prijave', 'programi', 'zahtjevi', 'upitnici', 'raspored', 'uplate', 'pozivnice', 'pristup'];
   const CONFIGS = ['vjezbeMod', 'vjezbeNove', 'programMod', 'cijene', 'pdfVodic', 'postavke', 'recFoto'];
   const PROF = ['ime', 'telefon', 'programi', 'pstart', 'paket', 'jelovnik', 'aktivan', 'mora_promijeniti', 'dob', 'saglasnost'];
   const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -22,7 +22,7 @@
   let sess = null;                      // { access_token, refresh_token, expires_at, user: { id, email } }
   let snap = new Map(), onServer = new Set(), profSnap = new Map(), since = '', timer = null, saving = false, again = false, saveTimer = null;
 
-  const emptyDb = () => ({ v: 2, users: [], programi: [], logs: [], mjere: [], kupovine: [], poruke: [], prijave: [], chat: [], zahtjevi: [], upitnici: [], raspored: [], uplate: [], pozivnice: [], vjezbeMod: {}, vjezbeNove: [], programMod: {}, cijene: {}, pdfVodic: {}, postavke: {} });
+  const emptyDb = () => ({ v: 2, users: [], programi: [], logs: [], mjere: [], kupovine: [], poruke: [], prijave: [], chat: [], zahtjevi: [], upitnici: [], raspored: [], uplate: [], pozivnice: [], pristup: [], vjezbeMod: {}, vjezbeNove: [], programMod: {}, cijene: {}, pdfVodic: {}, postavke: {} });
 
   /* ---------- niski sloj: pozivi prema serveru ---------- */
   function saveSess(s) { sess = s; if (s) store.set(SK, JSON.stringify(s)); else store.del(SK); }
@@ -258,7 +258,7 @@
 
   /* ---------- Auth ---------- */
   Auth.session = () => (sess ? { uid: sess.user.id } : null);
-  Auth.user = () => { if (!sess || !Store.db) return null; const u = Store.user(sess.user.id); return u && u.aktivan !== false ? u : null; };
+  Auth.user = () => { if (!sess || !Store.db) return null; const u = Store.user(sess.user.id); return u && u.aktivan !== false && !(FS.accountExpired && FS.accountExpired(u)) ? u : null; };
   Auth.logout = () => {
     api('/auth/v1/logout', { method: 'POST' }).catch(() => {});
     saveSess(null); stopPolling(); Store.draft.clear();
@@ -274,7 +274,7 @@
     } catch (e) { throw new Error(nice(e)); }
     await loadAll();
     const u = Auth.user();
-    if (!u) { saveSess(null); throw new Error('Račun nije aktivan. Javi se trenerici.'); }
+    if (!u) { const eu = Store.user(sess && sess.user && sess.user.id); const ex = eu && FS.accountExpired && FS.accountExpired(eu); saveSess(null); throw new Error(ex ? 'Tvoj pristup je istekao (2 mjeseca od kupovine). Javi se trenerici za produženje.' : 'Račun nije aktivan. Javi se trenerici.'); }
     startPolling();
     return u;
   };

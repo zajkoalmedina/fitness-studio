@@ -317,7 +317,7 @@
     (s) => bind(s, {
       'click:no': () => closeSheet(),
       'click:yes': () => {
-        if (!owned(u, prog)) { if (!u.programi.includes(prog.id)) u.programi.push(prog.id); (u.pstart = u.pstart || {})[prog.id] = today(); Store.db.kupovine.push({ id: uid(), userId: u.id, programId: prog.id, datum: today(), iznos: prog.cijena, demo: true }); Store.save(); }
+        if (!owned(u, prog)) { if (!u.programi.includes(prog.id)) u.programi.push(prog.id); (u.pstart = u.pstart || {})[prog.id] = today(); Store.db.kupovine.push({ id: uid(), userId: u.id, programId: prog.id, datum: today(), iznos: prog.cijena, demo: true }); if (FS.poKupovini) FS.poKupovini(u, prog); Store.save(); }
         closeSheet(); toast('Otključano.'); go(prog.id === 'vodic-ishrana' ? '#/ishrana?tab=jelovnik' : '#/program/' + prog.id); setTimeout(() => FS.rerender && FS.rerender(), 50);
       }
     }));

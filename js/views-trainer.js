@@ -15,7 +15,7 @@
   V.trener = (el, p, q) => {
     const tab = TABS.some(([k]) => k === q.tab) ? q.tab : 'pregled';
     const kl = Store.klijentice();
-    let body = '';
+    let body = '', vc = null;
 
     if (tab === 'pregled') {
       const wk = weekStart(today()), wkEnd = FS.addDays(wk, 6);
@@ -33,8 +33,9 @@
     if (tab === 'klijentice') {
       body = h`<button class="btn primary block mb" data-act="newc">${icon('plus')} ${FS.cloud ? 'Pozovi klijenta / klijenticu' : 'Novi klijent / klijentica'}</button>
         ${FS.cloud && FS.pozivnicePending ? FS.pozivnicePending() : ''}
-        ${kl.length ? kl.map((u) => { const last = Store.logsOf(u.id)[0], target = u.paket ? config.ciljPoPaketu[u.paket] : null;
-          return h`<a class="ex" href="#/trener/klijentica/${u.id}"><div class="avatar" style="width:46px;height:46px">${FS.initials(u.ime)}</div><div class="grow"><b>${u.ime}</b><div class="small">${u.paket || 'bez paketa'}${FS.payTag(u)}${u.aktivan === false ? ' · neaktivan/na' : ''} · ${last ? 'zadnji trening ' + fmtDate(last.datum) : 'nema treninga'}</div></div>${target ? h`<span class="badge">${Store.weekCount(u.id)}/${target}</span>` : ''}</a>`; }) : h`<div class="empty">Još nema klijentica.</div>`}`;
+        ${(() => { vc = FS.vrstaChips ? FS.vrstaChips(kl, q.v || 'sve') : null; return vc ? vc.chips : ''; })()}
+        ${(vc ? kl.filter(vc.filter) : kl).length ? (vc ? kl.filter(vc.filter) : kl).map((u) => { const last = Store.logsOf(u.id)[0], target = u.paket ? config.ciljPoPaketu[u.paket] : null;
+          return h`<a class="ex" href="#/trener/klijentica/${u.id}"><div class="avatar" style="width:46px;height:46px">${FS.initials(u.ime)}</div><div class="grow"><b>${u.ime}</b><div class="small">${FS.vrstaTag ? FS.vrstaTag(u) : (u.paket || 'bez paketa')}${FS.payTag(u)}${u.aktivan === false ? ' · neaktivan/na' : ''} · ${last ? 'zadnji trening ' + fmtDate(last.datum) : 'nema treninga'}</div></div>${target ? h`<span class="badge">${Store.weekCount(u.id)}/${target}</span>` : ''}</a>`; }) : h`<div class="empty">Još nema klijentica.</div>`}`;
     }
 
     if (tab === 'uplate') body = FS.uplateTab();
@@ -84,7 +85,7 @@
           <p class="err" id="cerr" hidden></p><button class="btn primary block" type="submit">Napravi račun</button></form>`, (s) => bind(s, {
         'submit:addc': async (f) => { try { await Auth.createClient(formData(f)); closeSheet(); toast('Račun napravljen. Podijeli e-mail i privremenu lozinku s klijenticom.'); rr(); } catch (e) { const er = $('#cerr', s); er.textContent = e.message; er.hidden = false; } }
       })),
-      'click:zok': (b) => { const z = Store.db.zahtjevi.find((x) => x.id === b.dataset.id), cu = Store.user(z.userId); if (cu) { if (!cu.programi.includes(z.programId)) cu.programi.push(z.programId); (cu.pstart = cu.pstart || {})[z.programId] = today(); Store.db.kupovine.push({ id: uid(), userId: z.userId, programId: z.programId, datum: today(), iznos: z.iznos }); } z.status = 'odobreno'; Store.save(); toast('Program otključan.'); rr(); },
+      'click:zok': (b) => { const z = Store.db.zahtjevi.find((x) => x.id === b.dataset.id), cu = Store.user(z.userId); if (cu) { if (!cu.programi.includes(z.programId)) cu.programi.push(z.programId); (cu.pstart = cu.pstart || {})[z.programId] = today(); Store.db.kupovine.push({ id: uid(), userId: z.userId, programId: z.programId, datum: today(), iznos: z.iznos }); if (FS.poKupovini) FS.poKupovini(cu, Store.program(z.programId)); } z.status = 'odobreno'; Store.save(); toast('Program otključan.'); rr(); },
       'click:zno': (b) => { const z = Store.db.zahtjevi.find((x) => x.id === b.dataset.id); z.status = 'odbijeno'; Store.save(); rr(); },
       'click:lead-done': (b) => { Store.db.prijave.find((x) => x.id === b.dataset.id).status = 'obradjeno'; Store.save(); rr(); },
       'click:lead-del': async (b) => { if (await confirmSheet({ title: 'Obrisati prijavu?', text: 'Ne može se vratiti.', ok: 'Obriši', danger: true })) { Store.db.prijave = Store.db.prijave.filter((x) => x.id !== b.dataset.id); Store.save(); rr(); } },
@@ -154,6 +155,7 @@
       <div class="user-chip mb mt-s"><div class="avatar">${FS.initials(u.ime)}</div><div class="grow"><h1 style="margin:0;font-size:26px">${u.ime}</h1><div class="small">${u.email} · od ${fmtDate(u.kreirano)}${u.dob === '16-17' ? ' · 16–17 god. (saglasnost: ' + (u.saglasnost ? 'da' : 'ne') + ')' : ''}</div></div></div>
       <div class="card"><div class="grid2"><label class="field" style="margin:0"><span>Paket</span><select data-act="paket">${opts([['', 'Bez paketa'], 'START', 'ACTIVE', 'STRONG'], u.paket || '')}</select></label>
         <label class="field" style="margin:0"><span>Status računa</span><select data-act="status">${opts([['1', 'Aktivna'], ['0', 'Neaktivna (bez prijave)']], u.aktivan === false ? '0' : '1')}</select></label></div></div>
+      ${FS.pristupCard ? FS.pristupCard(u) : ''}
       <div class="stats"><div class="stat"><b>${logs.length}</b><span>treninga</span></div><div class="stat"><b>${Store.weekCount(u.id)}</b><span>ove sedmice</span></div><div class="stat"><b>${wpts.length ? wpts[wpts.length - 1].y : '–'}</b><span>težina (kg)</span></div></div>
       <div class="card"><h3>Programi klijenta / klijentice</h3>
         ${Store.userPrograms(u).map((x) => h`<div class="row between" style="padding:6px 0"><a href="#/program/${x.id}" class="grow"><b style="color:var(--cream)">${x.naziv}</b><div class="small">${FS.accessLabel(x, u)}</div></a>${FS.access(u, x).trajno ? '' : h`<button class="btn sm" data-act="renew" data-id="${x.id}">Produži</button>`}<button class="icon-btn" data-act="unassign" data-id="${x.id}" aria-label="Ukloni">${icon('trash')}</button></div>`)}

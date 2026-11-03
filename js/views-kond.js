@@ -107,7 +107,7 @@
   }
   const buzz = (ms) => { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) { /* ignoriši */ } };
 
-  const canKond = () => { const u = FS.Auth.user(); return !!u; };
+  const canKond = () => { const u = FS.Auth.user(); return !!u && !(FS.jeKupac && FS.jeKupac(u)); };
   const lockCard = () => h`<div class="card note"><div class="row"><div class="grow">Treninzi s tajmerom su dostupni klijenticama. Prijavi se ili se javi trenerici za pristup.</div></div><a class="btn primary block mt-s" href="#/prijava">Prijava</a> <a class="btn block mt-s" href="#/paketi">Online coaching paketi</a></div>`;
   V.kondicija = (el) => {
     el.innerHTML = h`<div class="eyebrow">Kondicija</div><h1>Intenzivni treninzi</h1>

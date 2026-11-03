@@ -641,7 +641,7 @@
       <a class="btn block mb" href="#/programi">Svi programi →</a><div class="eyebrow mt">Prije početka</div>
       <a class="card" href="#/upitnik" style="display:block"><b>Upitnik za nove klijente</b><div class="small muted">Preuzmi ili popuni online prije početka coachinga.</div></a>`;
     anchor.insertAdjacentHTML('beforebegin', sec.s);
-    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 73</p>');
+    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 74</p>');
   };
 
   /* Kalkulatori: veza na suplemente */
@@ -649,6 +649,7 @@
   V.alati = (el, p, q) => {
     alati0(el, p, q);
     const wrap = document.createElement('div'); wrap.innerHTML = h`<a class="card" href="#/trcanje" style="display:block"><b>Trčanje: planovi 5 km i 10 km + kalkulator tempa</b><div class="small muted">Za početnice, korak po korak</div></a><a class="card" href="#/suplementi" style="display:block"><b>Suplementi</b><div class="small muted">Praktične smjernice: šta ima smisla, a šta ne</div></a>`.s;
+    wrap.insertAdjacentHTML('afterbegin', '<a class="card" href="#/mjerenje" style="display:block"><b>Kako se mjeriti</b><div class="small muted">Vaganje, obim struka i fotografije: kada i kako</div></a>');
     while (wrap.firstChild) el.appendChild(wrap.firstChild);
   };
 })();
