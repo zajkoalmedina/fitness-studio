@@ -33,8 +33,8 @@
       opis: 'Krugovi gornjeg dijela tijela, balans uz treninge za noge i gluteuse.',
       lista: [['Sklek', '8'], ['Veslanje jednom bučicom', '8 po strani'], ['Potisak bučicama iznad glave', '8'], ['Planka', '30 s']],
       savjet: 'Kvalitet ponavljanja je važniji od broja krugova.' },
-    { id: 'tabata-core', naziv: 'Tabata 20/10 – 4 bloka', tip: 'TABATA', rad: 20, odmor: 10, krugova: 8, nivo: 'srednji', oprema: 'Bez opreme',
-      opis: 'Svaki blok je jedna vježba, 8 puta po 20 sekundi rada i 10 sekundi odmora (4 minute). Poslije bloka 1 minuta odmora.',
+    { id: 'tabata-core', naziv: 'Tabata 20/10 – 4 vježbe, 8 rundi', tip: 'TABATA', rad: 20, odmor: 10, krugova: 8, nivo: 'srednji', oprema: 'Bez opreme',
+      opis: 'Četiri vježbe jedna za drugom, bez serija: 20 sekundi rada, 10 sekundi odmora, 8 rundi kroz sve četiri vježbe (oko 16 minuta).',
       stanice: ['Skok iz čučnja ili čučanj', 'Glute bridge', 'Alpinisti', 'Bočna planka (naizmjenično)'],
       savjet: 'Ovo je kratko, ali jako. Ne preskači zagrijavanje.' },
     { id: 'piramida-5', naziv: 'Piramida – 5 krugova (trčanje, bicikl, girja)', tip: 'PIRAMIDA', krugova: 5, nivo: 'napredni', oprema: 'Traka za trčanje, sobni bicikl, girja',
@@ -72,20 +72,20 @@
     const S = [];
     if (k.tip === 'EMOM') {
       const n = k.min_lista.length;
-      for (let m = 0; m < k.min; m++) { const [nm, r] = k.min_lista[m % n]; S.push({ dur: 60, kind: 'rad', title: nm, sub: r, tag: `Minuta ${m + 1} od ${k.min}`, next: (k.min_lista[(m + 1) % n] || [''])[0] }); }
+      for (let m = 0; m < k.min; m++) { const [nm, r] = k.min_lista[m % n]; S.push({ dur: 60, kind: 'rad', title: nm, sub: r + ' · čim završiš, odmori do kraja minute', tag: `Minuta ${m + 1} od ${k.min}`, next: m < k.min - 1 ? k.min_lista[(m + 1) % n][0] + ' (' + k.min_lista[(m + 1) % n][1] + ')' : '' }); }
     } else if (k.tip === 'INTERVALI') {
       for (let r = 0; r < k.krugova; r++) k.stanice.forEach((st, i) => {
-        S.push({ dur: k.rad, kind: 'rad', title: st, sub: `${k.rad} s rada`, tag: `Krug ${r + 1}/${k.krugova} · stanica ${i + 1}/${k.stanice.length}`, next: k.stanice[(i + 1) % k.stanice.length] });
+        S.push({ dur: k.rad, kind: 'rad', title: st, sub: `${k.rad} s rada`, tag: `Krug ${r + 1}/${k.krugova} · stanica ${i + 1}/${k.stanice.length}`, next: (r === k.krugova - 1 && i === k.stanice.length - 1) ? '' : k.stanice[(i + 1) % k.stanice.length] });
         const last = r === k.krugova - 1 && i === k.stanice.length - 1;
         if (!last) S.push({ dur: k.odmor, kind: 'odmor', title: 'Odmor', sub: 'Prelaz na: ' + k.stanice[(i + 1) % k.stanice.length], tag: `Krug ${r + 1}/${k.krugova}`, next: k.stanice[(i + 1) % k.stanice.length] });
       });
     } else if (k.tip === 'TABATA') {
-      k.stanice.forEach((st, b) => {
-        for (let r = 0; r < k.krugova; r++) {
-          S.push({ dur: k.rad, kind: 'rad', title: st, sub: `${k.rad} s rada`, tag: `Blok ${b + 1}/${k.stanice.length} · runda ${r + 1}/${k.krugova}`, next: st });
-          if (r < k.krugova - 1) S.push({ dur: k.odmor, kind: 'odmor', title: 'Odmor', sub: st, tag: `Blok ${b + 1}/${k.stanice.length}`, next: st });
-        }
-        if (b < k.stanice.length - 1) S.push({ dur: 60, kind: 'odmor', title: 'Odmor između blokova', sub: 'Sljedeći: ' + k.stanice[b + 1], tag: `Blok ${b + 1}/${k.stanice.length}`, next: k.stanice[b + 1] });
+      /* vježbe se smjenjuju jedna za drugom (ne rade se u serijama) */
+      const n = k.stanice.length;
+      for (let r = 0; r < k.krugova; r++) k.stanice.forEach((st, i) => {
+        const last = r === k.krugova - 1 && i === n - 1, nx = k.stanice[(i + 1) % n];
+        S.push({ dur: k.rad, kind: 'rad', title: st, sub: `${k.rad} s rada`, tag: `Runda ${r + 1}/${k.krugova} · vježba ${i + 1}/${n}`, next: last ? '' : nx });
+        if (!last) S.push({ dur: k.odmor, kind: 'odmor', title: 'Odmor', sub: 'Sljedeće: ' + nx, tag: `Runda ${r + 1}/${k.krugova}`, next: nx });
       });
     } else if (k.tip === 'AMRAP') {
       S.push({ dur: k.min * 60, kind: 'rad', title: 'AMRAP ' + k.min + ' min', sub: 'Dodirni "+ krug" kad završiš cijeli krug', tag: 'Što više krugova', next: '', amrap: true });
@@ -123,7 +123,7 @@
     const S = segments(k), u = Auth.user();
     const lista = k.min_lista || k.lista || (k.stanice || []).map((x) => [x, '']);
     const pir = k.tip === 'PIRAMIDA';
-    let i = -1, left = 0, elapsed = 0, running = false, timer = null, rounds = 0, started = false, done = false, wake = null, lastTick = 0;
+    let i = -1, left = 0, elapsed = 0, running = false, timer = null, rounds = 0, started = false, done = false, wake = null, lastBeep = 0, segEnd = 0, remMs = 0, t0 = 0, elBase = 0;
 
     const draw = () => {
       const seg = S[Math.max(0, i)] || S[0];
@@ -157,11 +157,13 @@
 
     const stop = () => { clearInterval(timer); timer = null; if (wake) { try { wake.release(); } catch (e) { /* ignoriši */ } wake = null; } };
     FS.onLeave(stop);
+    const vis = () => { if (document.visibilityState === 'visible') { if (running) tick(); } };
+    document.addEventListener('visibilitychange', vis); FS.onLeave(() => document.removeEventListener('visibilitychange', vis));
 
-    const setSeg = (n) => {
-      i = n;
+    const setSeg = (n, carry) => {
+      i = n; carry = carry || 0;
       if (i >= S.length) { finish(); return; }
-      left = S[i].dur; lastTick = 0;
+      left = Math.ceil(S[i].dur - carry); lastBeep = 0; segEnd = Date.now() + (S[i].dur - carry) * 1000; t0 = Date.now(); elBase = 0; remMs = (S[i].dur - carry) * 1000;
       beep(S[i].kind === 'rad' ? 880 : 520, 220); buzz(S[i].kind === 'rad' ? 200 : 80);
       if (!S[i].up) paint(true);
       draw();
@@ -173,23 +175,32 @@
       const bar = $('#tbar', el); if (bar && seg.dur) bar.style.width = Math.min(100, ((seg.dur - left) / seg.dur) * 100) + '%';
     };
     const tick = () => {
-      const seg = S[i]; if (!seg) return;
-      if (seg.up) { elapsed += 1; paint(); return; }
-      left -= 1;
-      if (left <= 3 && left > 0) beep(700, 80);
-      if (left <= 0) { setSeg(i + 1); return; }
+      const seg = S[i]; if (!seg || !running) return;
+      const now = Date.now();
+      if (seg.up) { elapsed = Math.floor(elBase + (now - t0) / 1000); paint(); return; }
+      const rem = (segEnd - now) / 1000;
+      if (rem <= 0) {
+        /* ako je ekran bio ugašen, preskoči segmente koji su u međuvremenu prošli */
+        let over = -rem, n = i + 1;
+        while (n < S.length && S[n].dur <= over) { over -= S[n].dur; n++; }
+        if (n >= S.length) { finish(); return; }
+        setSeg(n, over); return;
+      }
+      left = Math.ceil(rem);
+      if (left <= 3 && left > 0 && left !== lastBeep) { beep(700, 80); lastBeep = left; }
       paint();
     };
     const begin = async () => {
-      if (!started) { started = true; setSeg(0); } else draw();
-      running = true; draw(); stop(); timer = setInterval(tick, 1000);
+      if (!started) { started = true; setSeg(0); }
+      if (S[i] && S[i].up) { elBase = elapsed; t0 = Date.now(); } else { segEnd = Date.now() + remMs; }
+      running = true; draw(); stop(); timer = setInterval(tick, 250);
       try { if (navigator.wakeLock) wake = await navigator.wakeLock.request('screen'); } catch (e) { /* ignoriši */ }
     };
     draw();
     bind(el, {
       'click:start': () => { begin(); },
-      'click:pause': () => { stop(); running = false; draw(); },
-      'click:reset': () => { stop(); i = -1; running = false; started = false; done = false; rounds = 0; elapsed = 0; draw(); },
+      'click:pause': () => { if (S[i] && !S[i].up) remMs = Math.max(0, segEnd - Date.now()); stop(); running = false; draw(); },
+      'click:reset': () => { stop(); elBase = 0; remMs = 0; i = -1; running = false; started = false; done = false; rounds = 0; elapsed = 0; draw(); },
       'click:rp': () => { rounds += 1; draw(); },
       'click:rm': () => { rounds = Math.max(0, rounds - 1); draw(); },
       'click:fin': () => { finish(); },
