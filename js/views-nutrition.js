@@ -52,12 +52,12 @@
     const rid = (id) => R().find((x) => x.id === id);
     const makro = (r) => h`<div class="row wrap mt-s"><span class="pill">${r.kcal} kcal</span><span class="pill">P ${fx(r.p)} g</span><span class="pill">UH ${fx(r.uh)} g</span><span class="pill">M ${fx(r.m)} g</span></div>`;
     const lockBox = () => h`<div class="card note"><div class="row"><span style="width:26px">${icon('lock')}</span><div class="grow"><b>${prod().naziv}</b><div class="small">${R().length} recepata (i bosanska jela, voće) sa sastojcima i pripremom + Moj dnevni jelovnik sa automatskim izborom obroka. Cijena ${prod().cijena} ${FS.config.valuta}.</div></div></div><button class="btn primary block mt-s" data-act="buy">Kupi vodič</button></div>`;
-    const kartica = (r, open) => h`<details class="card" ${open ? 'open' : ''}><summary style="cursor:pointer"><div class="row between"><b>${r.naziv}</b><span class="badge">${r.bos ? '🇧🇦 ' : ''}${r.obrok}</span></div>
+    const kartica = (r, open) => h`<details class="card" ${open === false ? '' : 'open'}><summary style="cursor:pointer"><div class="row between"><b>${r.naziv}</b><span class="badge">${r.bos ? '🇧🇦 ' : ''}${r.obrok}</span></div>
       <div class="small">${r.kcal} kcal · P ${fx(r.p)} · UH ${fx(r.uh)} · M ${fx(r.m)}${r.v != null ? ' · vlakna ' + fx(r.v) : ''}${r.cilj ? ' · ' + r.cilj : ''}</div></summary>
       ${FS.recFoto ? FS.recFoto(r.id) : ''}
-      ${r.v != null ? h`<div class="row wrap mt-s"><span class="pill">${r.kcal} kcal</span><span class="pill">P ${fx(r.p)} g</span><span class="pill">UH ${fx(r.uh)} g</span><span class="pill">M ${fx(r.m)} g</span><span class="pill">vlakna ${fx(r.v)} g</span></div>` : ''}
+      <div class="row wrap mt-s"><span class="pill">${r.kcal} kcal</span><span class="pill">P ${fx(r.p)} g</span><span class="pill">UH ${fx(r.uh)} g</span><span class="pill">M ${fx(r.m)} g</span>${r.v != null ? h`<span class="pill">vlakna ${fx(r.v)} g</span>` : ''}</div>
       <h3 class="mt-s">Sastojci (1 porcija)</h3><ul class="dots">${r.sast.map((x) => h`<li>${x}</li>`)}</ul>
-      <h3>Priprema</h3><p style="margin:0">${r.priprema || 'Pripremi prema popisu sastojaka.'}</p>
+      <h3>Kako se pravi</h3><p style="margin:0">${r.priprema || 'Pripremi prema popisu sastojaka.'}</p>
       ${r.okvir ? h`<p class="small mt-s">Makroi su okvirna procjena za pretpostavljenu porciju.</p>` : ''}${r.v != null ? h`<p class="small mt-s">Ugljikohidrati uključuju vlakna. Vlakna daju oko 2 kcal/g, zato zbir 4/4/9 može biti malo viši od navedenih kalorija.</p>` : ''}${r.jogurt100 ? h`<p class="small mt-s">Podaci po 100 g proizvoda, provjeri etiketu pakovanja.</p>` : ''}</details>`;
     const SAMPLE = ['r01', 'r07', 'r13'];
     const FILT = [['sve', 'Sve'], ['bos', '🇧🇦 Bosanska jela'], ['Doručak', 'Doručak'], ['Ručak', 'Ručak'], ['Večera', 'Večera'], ['Užina', 'Užina'], ['Voće', 'Voće']];
