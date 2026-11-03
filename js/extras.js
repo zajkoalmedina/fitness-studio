@@ -151,7 +151,7 @@
     const u = Auth.user(), cur = u && u.role === 'klijentica' ? myUp(u.id) : null, a = (cur && cur.odg) || {};
     el.innerHTML = h`<div class="eyebrow">Novi klijent / klijentica</div><h1>Upitnik</h1>
       <p class="muted">Upitnik za personalni / online coaching. Popuni ga prije početka programa da bih ti mogla prilagoditi trening.</p>
-      <a class="btn block mb" href="${FILE}" download>Preuzmi upitnik (Word), za ispis ili slanje</a>
+      <div class="row mb" style="gap:8px"><a class="btn grow" href="${FILE}" download>Preuzmi Word</a><a class="btn grow" href="${FILE.replace('.docx', '.pdf')}" download>Preuzmi PDF</a></div>
       ${u && u.role === 'klijentica' ? h`
         <div class="card note small">Odgovore vidi samo trenerica. ${cur ? 'Upitnik si već popunila ' + fmtDate(cur.datum) + '. Možeš ga urediti i ponovo sačuvati.' : ''}</div>
         <form data-act="upit" novalidate>
@@ -641,7 +641,7 @@
       <a class="btn block mb" href="#/programi">Svi programi →</a><div class="eyebrow mt">Prije početka</div>
       <a class="card" href="#/upitnik" style="display:block"><b>Upitnik za nove klijente</b><div class="small muted">Preuzmi ili popuni online prije početka coachinga.</div></a>`;
     anchor.insertAdjacentHTML('beforebegin', sec.s);
-    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 91</p>');
+    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 92</p>');
   };
 
   /* Kalkulatori: veza na suplemente */
