@@ -7,7 +7,7 @@
   FS.EXERCISES.push({ id: 'sidelegabd', naziv: 'Bočna abdukcija jedne noge na kablu', grupa: 'Gluteusi', nivo: 'početni', oprema: 'Kabl s manžetom oko gležnja', dij: 'kasnije',
     koraci: ['Postavi kabl nisko i manžetu oko gležnja noge koja radi.', 'Stani bočno uz sprave, drži se za oslonac, trup uspravan.', 'Podigni nogu u stranu, bez nagiba trupa, do visine kuka.', 'Zadrži 1 s i polako vrati nogu.'], savjeti: ['Pokret ide iz kuka, ne iz leđa.', 'Prsti stopala gledaju naprijed ili malo dolje.', 'Radi isto serija s obje noge.'], greske: ['Naginjanje trupa u stranu.', 'Zamah umjesto kontrole.'], video: '' });
   FS.EXTRA_POSES = FS.EXTRA_POSES || {}; FS.EXTRA_MUSKUL = FS.EXTRA_MUSKUL || {};
-  FS.EXTRA_POSES.sidelegabd = null; FS.EXTRA_MUSKUL.sidelegabd = { p: ['glutei (gluteus medius)'], s: ['gluteus minimus', 'tensor fasciae latae'] };
+  FS.EXTRA_POSES.sidelegabd = null; FS.EXTRA_MUSKUL.sidelegabd = { p: ['gluteus medius'], s: ['gluteus minimus', 'tensor fasciae latae'] };
   FS.ENG = FS.ENG || {};
   const EN = {
     cucanj: 'Bodyweight squat', goblet: 'Goblet squat', rdl: 'Dumbbell Romanian deadlift', iskorak: 'Reverse lunge', sidelift: 'Side-lying leg raise',

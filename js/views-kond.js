@@ -25,7 +25,7 @@
       opis: 'Pola minute rada, pola minute odmora, šest stanica, četiri kruga. Blaži HIIT za početak.',
       stanice: ['Skakanje u mjestu (jumping jacks)', 'Čučanj', 'Alpinisti (mountain climbers)', 'Iskoraci unazad (naizmjenično)', 'Sklekovi na koljenima', 'Visoka koljena u mjestu'],
       savjet: 'Možeš odraditi lakšu varijantu bez skokova. Ravnomjeran tempo je bolji od početnog sprinta.' },
-    { id: 'amrap-noge', naziv: 'AMRAP 15 – noge i glutei', tip: 'AMRAP', min: 15, nivo: 'srednji', oprema: 'Bučice',
+    { id: 'amrap-noge', naziv: 'AMRAP 15 – noge i gluteus', tip: 'AMRAP', min: 15, nivo: 'srednji', oprema: 'Bučice',
       opis: 'Koliko krugova stigneš u 15 minuta. Zapiši broj krugova i pokušaj ga nadmašiti sljedeći put.',
       lista: [['Goblet čučanj', '10'], ['Iskorak u hodu', '10 po nozi'], ['Glute bridge s bučicom', '15'], ['Skok iz čučnja', '8']],
       savjet: 'Biraj težinu s kojom bez problema odradiš 15 ponavljanja.' },

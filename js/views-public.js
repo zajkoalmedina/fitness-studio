@@ -207,7 +207,7 @@
           <div class="kv"><span>Održavanje (TDEE)</span><b>${Math.round(tdee)} kcal</b></div>
           <div class="divider"></div><div class="eyebrow">Orijentacioni makronutrijenti</div>
           <div class="stats" style="margin:0"><div class="stat"><b>${Math.round(prot)}</b><span>g proteina</span></div><div class="stat"><b>${Math.round(carb)}</b><span>g ugljikohidrata</span></div><div class="stat"><b>${Math.round(fat)}</b><span>g masti</span></div></div>
-          ${Auth.user() && Auth.user().role === 'klijentica' ? h`<button class="btn primary block mt-s" data-act="mkjel" data-k="${Math.round(kcal)}" data-p="${Math.round(prot)}" data-u="${Math.round(carb)}" data-m="${Math.round(fat)}">Izaberi namirnice i napravi jelovnik (${Math.round(kcal)} kcal)</button>` : (!Auth.user() ? h`<a class="btn block mt-s" href="#/prijava">Prijavi se da dobiješ jelovnik</a>` : '')}
+          ${Auth.user() && Auth.user().role === 'klijentica' ? h`<button class="btn primary block mt-s" data-act="mkjel" data-k="${Math.round(kcal)}" data-p="${Math.round(prot)}" data-u="${Math.round(carb)}" data-m="${Math.round(fat)}">Izaberi namirnice i napravi plan ishrane (${Math.round(kcal)} kcal)</button>` : (!Auth.user() ? h`<a class="btn block mt-s" href="#/prijava">Prijavi se da dobiješ plan ishrane</a>` : '')}
           <p class="small mt-s">Za trudnice, dojilje, osobe s zdravstvenim stanjima ili poremećajima ishrane potreban je individualan plan stručnjaka.</p></div>${FS.igCard ? FS.igCard('Želiš plan ishrane prilagođen sebi?', 'Javi mi se na Instagramu, napisaću ti plan.') : ''}`.s;
       }
     });
@@ -279,7 +279,7 @@
   V.vjezba = (el, p) => { vjezba0(el, p); loadFsVideos(el); };
 
   /* ================= PROGRAMI (prodaja) ================= */
-  const lvl = (p) => p.tip === 'vodic' ? 'e-vodič · 42 recepta · dnevni jelovnik' : `${p.nivo} · ${p.sedmica} sedmica · ${p.dana}× sedmično`;
+  const lvl = (p) => p.tip === 'vodic' ? 'e-vodič · 42 recepta · dnevni plan ishrane' : `${p.nivo} · ${p.sedmica} sedmica · ${p.dana}× sedmično`;
   const owned = (u, p) => !!u && FS.access(u, p).on;
 
   FS.buySheet = (prog) => buySheet(prog);

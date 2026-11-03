@@ -1,4 +1,4 @@
-/* Alergije i intolerancije: klijentica označi šta ne smije jesti, a aplikacija takve recepte sakrije i izbaci iz jelovnika */
+/* Alergije i intolerancije: klijentica označi šta ne smije jesti, a aplikacija takve recepte sakrije i izbaci iz plana ishrane */
 (function () {
   const FS = (window.FS = window.FS || {});
   const { h } = FS;
@@ -30,7 +30,7 @@
   FS.imaAlergije = (J) => !!J && ((J.alergije || []).length > 0 || rijeci(J).length > 0);
   FS.alergLabel = (id) => (FS.ALERGENI.find((x) => x[0] === id) || [, id])[1].replace(/ \(.*\)$/, '');
 
-  /* uklanja iz planiranog jelovnika (od danas nadalje) obroke koji sadrže alergen; vraća broj uklonjenih */
+  /* uklanja iz planiranih obroka (od danas nadalje) obroke koji sadrže alergen; vraća broj uklonjenih */
   FS.alergPurge = (J) => {
     let n = 0; const t = FS.today();
     Object.keys(J.dani || {}).forEach((d) => {
@@ -52,7 +52,7 @@
       return h`<div class="card ${sel.length || r.length ? 'alert' : ''}"><h3 style="margin-top:0">Alergije i intolerancije</h3>${sel.length || r.length ? h`<p style="margin:0"><b>${[...sel.map(FS.alergLabel), ...r].join(', ')}</b></p>` : h`<p class="muted" style="margin:0">Klijentica nije označila alergije.</p>`}</div>`;
     }
     return h`<div class="card ${sel.length ? 'alert' : ''}"><h3 style="margin-top:0">Alergije i intolerancije</h3>
-      <p class="small muted">Označi šta ne smiješ jesti. Takvi recepti se sakriju, a iz tvog jelovnika se automatski izbace.</p>
+      <p class="small muted">Označi šta ne smiješ jesti. Takvi recepti se sakriju, a iz tvog plana ishrane se automatski izbace.</p>
       <div class="row wrap mb">${FS.ALERGENI.map(([id, l]) => h`<label class="btn sm ${sel.includes(id) ? 'primary' : ''}" style="cursor:pointer"><input type="checkbox" data-act="alg" data-k="${id}" ${sel.includes(id) ? 'checked' : ''} style="display:none">${sel.includes(id) ? '✕ ' : ''}${l}</label>`)}</div>
       <label class="field"><span>Još nešto na šta si alergična (odvoji zarezom)</span><input data-act="algo" value="${J.alergijeOstalo || ''}" maxlength="120" placeholder="npr. celer, kivi, gljive"></label>
       <p class="small muted" style="margin-bottom:0">Provjera se radi po nazivu i popisu sastojaka. Uvijek pročitaj sastojke i ne oslanjaj se samo na aplikaciju, a kod teške alergije posavjetuj se s ljekarom.</p></div>`;

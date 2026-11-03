@@ -9,7 +9,7 @@
       ['Dlanovi su nešto šire od ramena, tijelo u ravnoj liniji od glave do pete.', 'Spuštaj grudi prema podu uz laktove pod uglom oko 45° od tijela.', 'Odgurni se do ispruženih ruku.', 'Ako je pretežak, radi ga na koljenima ili s rukama na klupi.'],
       ['Trbuh i gluteusi su blago stegnuti.', 'Izdahni pri odgurivanju.'], ['Kukovi propadaju ili se dižu.', 'Laktovi su razmaknuti u stranu pod 90°.']),
     E('bench', 'Potisak šipkom na ravnoj klupi', 'Prsa', 'srednji', 'Šipka, klupa', 'kasnije',
-      ['Lezi tako da su oči ispod šipke, lopatice stisnute i spuštene, stopala čvrsto na podu.', 'Skini šipku i spusti je kontrolisano do donjeg dijela grudi.', 'Potisni šipku gore do ispruženih ruku.', 'Prvi put vježbaj uz pomoć osobe koja te čuva.'],
+      ['Leži tako da su oči ispod šipke, lopatice stisnute i spuštene, stopala čvrsto na podu.', 'Skini šipku i spusti je kontrolisano do donjeg dijela grudi.', 'Potisni šipku gore do ispruženih ruku.', 'Prvi put vježbaj uz pomoć osobe koja te čuva.'],
       ['Zglobovi ruku ostaju iznad laktova.', 'Spuštanje traje oko 2 sekunde.'], ['Odbijanje šipke od grudi.', 'Podizanje kukova s klupe.']),
     E('kosibucice', 'Kosi potisak bučicama', 'Prsa', 'srednji', 'Bučice, kosa klupa (30°)', 'kasnije',
       ['Klupa je pod uglom 30° do 45°, bučice su u visini ramena.', 'Potisni bučice gore i lagano ih približi iznad grudi.', 'Spusti polako do istezanja u prsima.', 'Zadrži lopatice stisnute uz klupu.'],
@@ -66,10 +66,10 @@
       ['Osloni gornji dio leđa na klupu, jedno stopalo na podu, druga noga savijena.', 'Podigni kukove do ravne linije.', 'Stisni gluteus, spusti kontrolisano.', 'Radi isti broj ponavljanja na obje strane.'],
       ['Brada blizu grudi.', 'Kukovi ostaju vodoravni.'], ['Kukovi se okreću.', 'Prevelik luk u leđima.']),
     E('frogpump', 'Frog pump', 'Gluteusi', 'početni', 'Bez opreme', 'kasnije',
-      ['Lezi na leđa, stopala spojena, koljena otvorena prema van.', 'Podigni kukove stezanjem gluteusa.', 'Zadrži 1 sekundu na vrhu.', 'Spusti i ponovi, obično više ponavljanja (20 do 30).'],
+      ['Leži na leđa, stopala spojena, koljena otvorena prema van.', 'Podigni kukove stezanjem gluteusa.', 'Zadrži 1 sekundu na vrhu.', 'Spusti i ponovi, obično više ponavljanja (20 do 30).'],
       ['Odlična završna vježba za gluteuse.', 'Gura se kroz stopala.'], ['Izvijanje leđa.', 'Prebrz tempo.']),
     E('curlloptom', 'Fleksija zadnje lože na lopti', 'Noge', 'srednji', 'Pilates lopta', 'kasnije',
-      ['Lezi na leđa, listovi ili pete na lopti, kukovi podignuti.', 'Priteži loptu prema gluteusima uz podignute kukove.', 'Ispruži noge uz zadržane kukove.', 'Za lakši oblik radi bez podizanja kukova.'],
+      ['Leži na leđa, listovi ili pete na lopti, kukovi podignuti.', 'Priteži loptu prema gluteusima uz podignute kukove.', 'Ispruži noge uz zadržane kukove.', 'Za lakši oblik radi bez podizanja kukova.'],
       ['Kukovi ostaju visoko cijelo vrijeme.', 'Polagan tempo.'], ['Kukovi propadaju.', 'Prebrz tempo.']),
     E('reversepec', 'Zadnja ramena (reverse pec deck / letenje u pretklonu)', 'Ramena', 'početni', 'Sprava ili bučice', 'kasnije',
       ['Sjedni prsima uz jastuk ili se nagni naprijed s bučicama.', 'Razmakni ruke u stranu do visine ramena.', 'Lopatice se stežu uz kraj pokreta.', 'Vrati polako.'],
@@ -86,19 +86,19 @@
   );
 
   /* mišićna grupa po vježbi: [primarna, sekundarna]. Računaju se samo direktne (primarne) serije. */
-  FS.MISICI = ['leđa', 'grudi', 'kvadriceps', 'glutei', 'zadnja loža', 'ramena', 'biceps', 'triceps', 'listovi', 'core'];
+  FS.MISICI = ['leđa', 'grudi', 'kvadriceps', 'gluteus', 'zadnja loža', 'ramena', 'biceps', 'triceps', 'listovi', 'core'];
   FS.MUSCLE = {
-    cucanj: ['kvadriceps', 'glutei'], goblet: ['kvadriceps', 'glutei'], rdl: ['zadnja loža', 'glutei'], iskorak: ['kvadriceps', 'glutei'],
-    bridge: ['glutei', 'zadnja loža'], hipthrust: ['glutei'], sidelift: ['glutei'], veslanje: ['leđa', 'biceps'], lat: ['leđa', 'biceps'],
+    cucanj: ['kvadriceps', 'gluteus'], goblet: ['kvadriceps', 'gluteus'], rdl: ['zadnja loža', 'gluteus'], iskorak: ['kvadriceps', 'gluteus'],
+    bridge: ['gluteus', 'zadnja loža'], hipthrust: ['gluteus'], sidelift: ['gluteus'], veslanje: ['leđa', 'biceps'], lat: ['leđa', 'biceps'],
     sklekzid: ['grudi', 'triceps'], potisakb: ['grudi', 'triceps'], ramena: ['ramena', 'triceps'], bocno: ['ramena'], biceps: ['biceps'], triceps: ['triceps'],
     planka: ['core'], crunch: ['core'], twist: ['core'], deadbug: ['core'], birddog: ['core'], tva: ['core'], zdjelica: ['core'], heel: ['core'], vakuum: ['core'],
     sklek: ['grudi', 'triceps'], bench: ['grudi', 'triceps'], kosibucice: ['grudi', 'ramena'], veslanjekabl: ['leđa', 'biceps'], veslanjesipka: ['leđa', 'biceps'],
-    legpress: ['kvadriceps', 'glutei'], legcurl: ['zadnja loža'], legext: ['kvadriceps'], abdukcija: ['glutei'], abdgumom: ['glutei'], backext: ['glutei', 'zadnja loža'],
-    frontcucanj: ['kvadriceps', 'glutei'], cucanjsipka: ['kvadriceps', 'glutei'], rdlsipka: ['zadnja loža', 'glutei'], bugarski: ['kvadriceps', 'glutei'],
-    iskorakhod: ['glutei', 'kvadriceps'], stepup: ['kvadriceps', 'glutei'], pullthrough: ['glutei', 'zadnja loža'], kickback: ['glutei'], hipthrust1: ['glutei'],
-    frogpump: ['glutei'], curlloptom: ['zadnja loža'], reversepec: ['ramena'], potisaksipka: ['ramena', 'triceps'], tricepskabl: ['triceps'], listovi: ['listovi']
+    legpress: ['kvadriceps', 'gluteus'], legcurl: ['zadnja loža'], legext: ['kvadriceps'], abdukcija: ['gluteus'], abdgumom: ['gluteus'], backext: ['gluteus', 'zadnja loža'],
+    frontcucanj: ['kvadriceps', 'gluteus'], cucanjsipka: ['kvadriceps', 'gluteus'], rdlsipka: ['zadnja loža', 'gluteus'], bugarski: ['kvadriceps', 'gluteus'],
+    iskorakhod: ['gluteus', 'kvadriceps'], stepup: ['kvadriceps', 'gluteus'], pullthrough: ['gluteus', 'zadnja loža'], kickback: ['gluteus'], hipthrust1: ['gluteus'],
+    frogpump: ['gluteus'], curlloptom: ['zadnja loža'], reversepec: ['ramena'], potisaksipka: ['ramena', 'triceps'], tricepskabl: ['triceps'], listovi: ['listovi']
   };
-  const GRUPA_MISIC = { Noge: 'kvadriceps', Gluteusi: 'glutei', Leđa: 'leđa', Prsa: 'grudi', Ramena: 'ramena', Ruke: 'biceps', Core: 'core' };
+  const GRUPA_MISIC = { Noge: 'kvadriceps', Gluteusi: 'gluteus', Leđa: 'leđa', Prsa: 'grudi', Ramena: 'ramena', Ruke: 'biceps', Core: 'core' };
   FS.primMisic = (id) => {
     if (FS.MUSCLE[id]) return FS.MUSCLE[id][0];
     if (FS.EXTRA_MUSKUL && FS.EXTRA_MUSKUL[id]) return FS.EXTRA_MUSKUL[id].p[0];
@@ -137,13 +137,13 @@
         { naziv: 'Trening 2', vj: [ex('hipthrust', 3, '12–15', 'S gumom oko koljena'), ex('bench', 3, '10–12'), ex('rdl', 3, '12', 'B-stance (jedna noga unaprijed)'), ex('veslanjekabl', 3, '12'), ex('stepup', 3, '12 po nozi'), ex('abdgumom', 2, '25', 'Sjedeći, trup nagnut naprijed')] },
         { naziv: 'Trening 3', vj: [ex('bridge', 3, '15–20', 'S šipkom i gumom oko koljena'), ex('ramena', 3, '8–10', 'Stojeći'), ex('frontcucanj', 3, '8–10'), ex('lat', 3, '10', 'Široki hvat'), ex('backext', 2, '12–15', 'S bučicom, naglasak na gluteusu'), ex('abdgumom', 2, '25', 'Stojeći')] },
         { naziv: 'Trening 4', vj: [ex('hipthrust', 3, '6–8', 'Sa šipkom, teže'), ex('potisakb', 3, '10–12'), ex('bugarski', 3, '10 po nozi', 'S bučicama'), ex('veslanjesipka', 3, '10–12'), ex('rdlsipka', 3, '10–12'), ex('abdgumom', 2, '20', 'Lateralni hod')] }] },
-    { id: 'napredni5', naziv: 'Napredni nivo – glutei, 5× sedmično', opis: 'Osam sedmica, pet treninga: lower, upper, lower, upper + glute, lower. Tačno planiran volumen po mišićnim grupama.', nivo: 'napredni', sedmica: 8, dana: 5, cijena: 79, tip: 'gotov', uShopu: true,
+    { id: 'napredni5', naziv: 'Napredni nivo – gluteus, 5× sedmično', opis: 'Osam sedmica, pet treninga: lower, upper, lower, upper + glute, lower. Tačno planiran volumen po mišićnim grupama.', nivo: 'napredni', sedmica: 8, dana: 5, cijena: 79, tip: 'gotov', uShopu: true,
       per: { tip: 'blok', deload: 4 },
       bilj: NAPOMENE_KNJIGA.concat(['Volumen je poravnat s tvojom bilješkom: oko 15 serija leđa, 14 grudi, 15 kvadricepsa, 20 glutea i 12 ramena sedmično.', 'U odnosu na original, izbačeni su prednji letovi za ramena (prednja ramena već dobijaju posao u potiscima), a gornji dio je dobio vježbe za grudi.']),
       dani: [
         { naziv: '1. Lower (kvadriceps)', vj: [ex('frontcucanj', 4, '5–6'), ex('rdlsipka', 3, '8'), ex('legcurl', 3, '12–15'), ex('legext', 3, '12'), ex('abdukcija', 4, '20–30')] },
         { naziv: '2. Upper', vj: [ex('ramena', 3, '10', 'Sjedeći potisak'), ex('lat', 4, '10', 'Uski obrnuti hvat'), ex('veslanjekabl', 4, '10–12'), ex('bench', 4, '6–8'), ex('kosibucice', 3, '8–10'), ex('bocno', 3, '15')] },
-        { naziv: '3. Lower (glutei)', vj: [ex('hipthrust', 4, '8–12', 'Zadnja serija 20 ponavljanja s 30 % manje kilaže'), ex('pullthrough', 3, '12'), ex('kickback', 3, '15'), ex('planka', 3, '30–45 s')] },
+        { naziv: '3. Lower (gluteus)', vj: [ex('hipthrust', 4, '8–12', 'Zadnja serija 20 ponavljanja s 30 % manje kilaže'), ex('pullthrough', 3, '12'), ex('kickback', 3, '15'), ex('planka', 3, '30–45 s')] },
         { naziv: '4. Upper + gluteus', vj: [ex('lat', 4, '10', 'Široki hvat'), ex('veslanje', 3, '10 po strani'), ex('kosibucice', 4, '12'), ex('potisakb', 3, '10–12'), ex('reversepec', 3, '15'), ex('bocno', 3, '15'), ex('biceps', 3, '12'), ex('tricepskabl', 3, '12')] },
         { naziv: '5. Lower (miks)', vj: [ex('bugarski', 4, '10 po nozi'), ex('legpress', 4, '12'), ex('backext', 3, '15', 'Naglasak na gluteusu'), ex('abdgumom', 3, '20', 'Lateralni hod'), ex('curlloptom', 3, '12')] }] }
   );

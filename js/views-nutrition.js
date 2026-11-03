@@ -25,7 +25,7 @@
     let datum = today();
     const draw = () => {
       el.innerHTML = h`<div class="eyebrow">Vodič</div><h1>Ishrana</h1>
-         <div class="seg"><button data-act="tab" data-t="vodic" class="${tab === 'vodic' ? 'on' : ''}">Vodič</button><button data-act="tab" data-t="principi" class="${tab === 'principi' ? 'on' : ''}">Principi</button><button data-act="tab" data-t="recepti" class="${tab === 'recepti' ? 'on' : ''}">Recepti</button><button data-act="tab" data-t="jelovnik" class="${tab === 'jelovnik' ? 'on' : ''}">Jelovnik</button><button data-act="tab" data-t="pitanja" class="${tab === 'pitanja' ? 'on' : ''}">Pitanja</button></div>
+         <div class="seg"><button data-act="tab" data-t="vodic" class="${tab === 'vodic' ? 'on' : ''}">Vodič</button><button data-act="tab" data-t="principi" class="${tab === 'principi' ? 'on' : ''}">Principi</button><button data-act="tab" data-t="recepti" class="${tab === 'recepti' ? 'on' : ''}">Recepti</button><button data-act="tab" data-t="jelovnik" class="${tab === 'jelovnik' ? 'on' : ''}">Plan ishrane</button><button data-act="tab" data-t="pitanja" class="${tab === 'pitanja' ? 'on' : ''}">Pitanja</button></div>
         ${tab === 'vodic' ? (has() ? FS.pdfTab() : lockBox()) : ''}${tab === 'principi' ? principi() : ''}${tab === 'recepti' ? recepti() : ''}${tab === 'jelovnik' ? jelovnik() : ''}${tab === 'pitanja' ? pitanja() : ''}
         <div class="card alert mt"><b>Važno:</b> ovaj vodič je opšta edukacija i ne zamjenjuje savjet ljekara ili nutricioniste. Ako imaš zdravstvene tegobe, poremećaj ishrane, trudnoća ili dojenje, ili ti je ishrana izvor straha ili brige, javi se stručnoj osobi.</div>`;
       if (tab === 'vodic' && has() && FS.pdfMount) FS.pdfMount(el);
@@ -57,7 +57,7 @@
     const algCard = () => (klijentica() && has() && FS.alergijeCard ? FS.alergijeCard(JJ()) : '');
     const sadrzi = (r) => { const a = (FS.recAlergeni ? FS.recAlergeni(r) : []).map(FS.alergLabel); return a.length ? h`<p class="small muted mt-s" style="margin:0">Sadrži: ${a.join(', ')}</p>` : ''; };
     const makro = (r) => h`<div class="row wrap mt-s"><span class="pill">${r.kcal} kcal</span><span class="pill">P ${fx(r.p)} g</span><span class="pill">UH ${fx(r.uh)} g</span><span class="pill">M ${fx(r.m)} g</span></div>`;
-    const lockBox = () => h`<div class="card note"><div class="row"><span style="width:26px">${icon('lock')}</span><div class="grow"><b>${prod().naziv}</b><div class="small">${R().length} recepata (i bosanska jela, voće) sa sastojcima i pripremom + Moj dnevni jelovnik sa automatskim izborom obroka. Cijena ${prod().cijena} ${FS.config.valuta}.</div></div></div>${FS.gratisBanner ? FS.gratisBanner() : ''}<button class="btn primary block mt-s" data-act="buy">Kupi vodič</button></div>`;
+    const lockBox = () => h`<div class="card note"><div class="row"><span style="width:26px">${icon('lock')}</span><div class="grow"><b>${prod().naziv}</b><div class="small">${R().length} recepata (i bosanska jela, voće) sa sastojcima i pripremom + Moj dnevni plan ishrane sa automatskim izborom obroka. Cijena ${prod().cijena} ${FS.config.valuta}.</div></div></div>${FS.gratisBanner ? FS.gratisBanner() : ''}<button class="btn primary block mt-s" data-act="buy">Kupi vodič</button></div>`;
     const kartica = (r, open) => h`<details class="card" ${open === false ? '' : 'open'}><summary style="cursor:pointer"><div class="row between"><b>${r.naziv}</b><span class="badge">${r.bos ? '🇧🇦 ' : ''}${r.obrok}</span></div>
       <div class="small">${r.kcal} kcal · P ${fx(r.p)} · UH ${fx(r.uh)} · M ${fx(r.m)}${r.v != null ? ' · vlakna ' + fx(r.v) : ''}${r.cilj ? ' · ' + r.cilj : ''}</div></summary>
       ${FS.recFoto ? FS.recFoto(r.id) : ''}
@@ -79,9 +79,9 @@
 
     const dnevnik = () => { u.jelovnik = u.jelovnik || { cilj: 1800, dani: {} }; return u.jelovnik; };
     const jelovnik = () => {
-      if (!u) return h`<div class="card note">Moj dnevni jelovnik je dostupan klijenticama. <a class="btn primary block mt-s" href="#/prijava">Prijava</a></div>`;
-      if (!has()) return h`<div class="card"><h3>Moj dnevni jelovnik</h3><p class="muted">Izaberi recept za svaki obrok. Aplikacija sama računa kalorije, proteine, ugljikohidrate i masti, pokazuje koliko ti je ostalo do cilja i pravi popis namirnica za taj dan.</p></div>${lockBox()}`;
-      if (u.role === 'trener') return h`<div class="card">Jelovnik koriste klijentice. Ti vidiš cijelu kolekciju u kartici Recepti.</div>`;
+      if (!u) return h`<div class="card note">Moj dnevni plan ishrane je dostupan klijenticama. <a class="btn primary block mt-s" href="#/prijava">Prijava</a></div>`;
+      if (!has()) return h`<div class="card"><h3>Moj dnevni plan ishrane</h3><p class="muted">Izaberi recept za svaki obrok. Aplikacija sama računa kalorije, proteine, ugljikohidrate i masti, pokazuje koliko ti je ostalo do cilja i pravi popis namirnica za taj dan.</p></div>${lockBox()}`;
+      if (u.role === 'trener') return h`<div class="card">Plan ishrane je namijenjen klijenticama. Ti vidiš cijelu kolekciju u kartici Recepti.</div>`;
       const J = dnevnik(), dan = (J.dani[datum] = J.dani[datum] || {});
       let k = 0, p = 0, uh = 0, m = 0; const izabrani = [];
       SLOTS.forEach(([key]) => { const e = dan[key], r = e && rid(e.id); if (r) { const f = e.por || 1; k += r.kcal * f; p += r.p * f; uh += r.uh * f; m += r.m * f; const ex = izabrani.find((x) => x[1].id === r.id); if (ex) ex[2] += f; else izabrani.push([key, r, f]); } });
@@ -99,13 +99,13 @@
         <label class="field mt-s"><span>Dnevni cilj (kcal)</span><input data-act="cilj" inputmode="numeric" value="${J.cilj || ''}" placeholder="npr. 1800"></label>
         <a class="small" href="#/alati?tab=kalorije">Izračunaj svoj cilj u kalkulatoru</a>
 </div>
-        <div class="card" id="prefcard" style="${q.pref ? 'border-color:var(--beige)' : ''}"><h3 style="margin-top:0">Napravi moj jelovnik</h3>
+        <div class="card" id="prefcard" style="${q.pref ? 'border-color:var(--beige)' : ''}"><h3 style="margin-top:0">Napravi moj plan ishrane</h3>
           <p class="small muted">1) Izaberi namirnice. Dodirni jednom ako ih <b>voliš</b> (✓), dvaput ako ih <b>ne jedeš</b> (✕), treći put poništi.</p>
-          <div class="row mb"><button class="btn sm ${['piletina', 'curetina', 'junetina', 'riba'].every((k) => (J.ne || []).includes(k)) ? 'primary' : ''}" data-act="vege">🌱 Vegetarijanski jelovnik (bez mesa i ribe)</button></div>
+          <div class="row mb"><button class="btn sm ${['piletina', 'curetina', 'junetina', 'riba'].every((k) => (J.ne || []).includes(k)) ? 'primary' : ''}" data-act="vege">🌱 Vegetarijanski plan ishrane (bez mesa i ribe)</button></div>
           <div class="row wrap mb">${(FS.NAMIRNICE || []).map(([k, l]) => { const st = (J.voli || []).includes(k) ? 'v' : (J.ne || []).includes(k) ? 'n' : ''; return h`<button class="btn sm ${st === 'v' ? 'primary' : st === 'n' ? 'danger' : ''}" data-act="nm" data-k="${k}">${st === 'v' ? '✓ ' : st === 'n' ? '✕ ' : ''}${l}</button>`; })}</div>
           <label class="field mt-s"><span>Večera od ostataka ručka (štedi vrijeme i novac)</span><select data-act="ost">${[['neki', 'Povremeno (oko 3 dana sedmično)'], ['svaki', 'Svaki dan'], ['ne', 'Ne, svaki obrok posebno']].map(([k, l]) => h`<option value="${k}" ${(J.ostaci || 'neki') === k ? 'selected' : ''}>${l}</option>`)}</select></label>
-          <div class="row mt-s"><button class="btn sm primary grow" data-act="auto" data-n="7">Napravi jelovnik za 7 dana</button><button class="btn sm grow" data-act="auto" data-n="1">Samo za ovaj dan</button></div>
-          <p class="small muted mt-s">Jelovnik se slaže prema tvom dnevnom cilju i namirnicama koje voliš. Poslije možeš sama zamijeniti bilo koji obrok ili porciju.</p></div>
+          <div class="row mt-s"><button class="btn sm primary grow" data-act="auto" data-n="7">Napravi plan ishrane za 7 dana</button><button class="btn sm grow" data-act="auto" data-n="1">Samo za ovaj dan</button></div>
+          <p class="small muted mt-s">Plan ishrane se slaže prema tvom dnevnom cilju i namirnicama koje voliš. Poslije možeš sama zamijeniti bilo koji obrok ili porciju.</p></div>
         ${SLOTS.map(sel)}
         <div class="card cream"><div class="eyebrow" style="color:var(--beige-2)">Ukupno danas</div>
           <div class="stats"><div class="stat"><b>${Math.round(k)}</b><span>kcal</span></div><div class="stat"><b>${fx(p)}</b><span>proteini g</span></div><div class="stat"><b>${fx(uh)}</b><span>UH g</span></div><div class="stat"><b>${fx(m)}</b><span>masti g</span></div></div>
@@ -128,7 +128,7 @@
     }
     const algSave = (J) => {
       const n = FS.alergPurge ? FS.alergPurge(J) : 0; Store.save();
-      FS.toast(n ? 'Sačuvano. Iz jelovnika je izbačeno obroka: ' + n + '. Napravi jelovnik ponovo.' : 'Alergije su sačuvane.');
+      FS.toast(n ? 'Sačuvano. Iz plana ishrane je izbačeno obroka: ' + n + '. Napravi plan ishrane ponovo.' : 'Alergije su sačuvane.');
       const y = window.scrollY; draw(); window.scrollTo(0, y);
     };
     draw();
@@ -149,8 +149,8 @@
         const J = dnevnik(), n = +t.dataset.n;
         if (!(+J.cilj >= 800)) { FS.toast('Prvo upiši dnevni cilj (kcal) ili ga izračunaj u kalkulatoru.'); return; }
         const dan = J.dani[datum] || {};
-        if (Object.keys(dan).length && !(await FS.confirmSheet({ title: 'Napraviti novi jelovnik?', text: n > 1 ? 'Zamijenit će obroke za idućih 7 dana.' : 'Zamijenit će izabrane obroke za ovaj dan.', ok: 'Napravi' }))) return;
-        FS.autoMenu(u, +J.cilj, datum, n, J.makro); if (n > 1) J.planOd = datum; Store.save(); FS.toast(n > 1 ? 'Jelovnik za 7 dana je spreman.' : 'Jelovnik je spreman.'); draw();
+        if (Object.keys(dan).length && !(await FS.confirmSheet({ title: 'Napraviti novi plan ishrane?', text: n > 1 ? 'Zamijenit će obroke za idućih 7 dana.' : 'Zamijenit će izabrane obroke za ovaj dan.', ok: 'Napravi' }))) return;
+        FS.autoMenu(u, +J.cilj, datum, n, J.makro); if (n > 1) J.planOd = datum; Store.save(); FS.toast(n > 1 ? 'Plan ishrane za 7 dana je spreman.' : 'Plan ishrane je spreman.'); draw();
       },
       'click:buy': () => FS.buySheet(prod()),
       'click:dj': (t) => { datum = t.dataset.d; draw(); },
