@@ -24,5 +24,7 @@
   });
   FS.VIDEOS = { cucanj: 'videos/cucanj.mp4', goblet: 'videos/goblet.mp4', jednorodl: 'videos/jednorodl.mp4', rdl: 'videos/rdl.mp4', kbswing: 'videos/kbswing.mp4', rdlkickstand: 'videos/rdlkickstand.mp4', gorillarow: 'videos/gorillarow.mp4',  legpress: 'videos/legpress.mp4', lateralnilunge: 'videos/bocniiskorak.mp4', stepup: 'videos/stepup.mp4', bocnaplankabasic: 'videos/bocnaplanka.mp4', goodmorningbw: 'videos/goodmorningbw.mp4' };
   /* vježbe koje je trenerica sama dodala u aplikaciji: video se veže po nazivu */
+  /* vježbe koje trenerica sama doda: video se veže i ako naziv samo sadrži ovaj izraz */
+  FS.VIDEOS_SADRZI = [['clean and press', 'videos/kbcleanpress.mp4']];
   FS.VIDEOS_NAZIV = { 'single leg press': 'videos/legpress1.mp4', 'kb clean and press – nabačaj i potisak girje': 'videos/kbcleanpress.mp4', 'kb clean and press - nabačaj i potisak girje': 'videos/kbcleanpress.mp4' };
 })();
