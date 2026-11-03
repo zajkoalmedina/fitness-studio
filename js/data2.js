@@ -47,7 +47,7 @@
     E('rdlsipka', 'Rumunsko mrtvo dizanje sa šipkom', 'Gluteusi', 'srednji', 'Šipka', 'kasnije',
       ['Drži šipku ispred bedara, koljena blago savijena.', 'Potiskuj kukove unazad, šipka klizi uz noge.', 'Spusti do istezanja u zadnjoj lozi (ispod koljena ili malo niže).', 'Stisni gluteuse i vrati se uspravno.'],
       ['Leđa ravna, pogled nekoliko metara ispred.', 'Šipka cijelo vrijeme dodiruje noge.'], ['Zaobljena leđa.', 'Spuštanje savijanjem leđa umjesto kukova.']),
-    E('bugarski', 'Bugarski iskorak', 'Noge', 'srednji', 'Klupa, bučice', 'kasnije',
+    E('bugarski', 'Bugarski čučanj', 'Noge', 'srednji', 'Klupa, bučice', 'kasnije',
       ['Stražnje stopalo (nazuvica) osloni na klupu, prednje stopalo je jedan veliki korak ispred.', 'Spusti stražnje koljeno prema podu.', 'Odgurni se prednjom nogom.', 'Za više glutea nagni trup lagano naprijed, za više kvadricepsa ostani uspravna.'],
       ['Prednje koljeno prati stopalo.', 'Počni bez tereta, pa dodaj bučice.'], ['Prednje stopalo je preblizu klupi.', 'Gubitak ravnoteže zbog prevelikog tereta.']),
     E('iskorakhod', 'Iskorak u hodu', 'Gluteusi', 'srednji', 'Bez opreme ili bučice/šipka', 'kasnije',
@@ -131,7 +131,7 @@
         { naziv: '4. Lower', vj: [ex('rdlsipka', 3, '8'), ex('legpress', 3, '8–10'), ex('legext', 3, '12'), ex('legcurl', 3, '12')] }] },
     { id: 'glutefb4', naziv: 'Srednji nivo – full body s akcentom na gluteuse', opis: 'Osam sedmica, četiri treninga sedmično, gluteusi se treniraju svaki dan uz zadržan rad za cijelo tijelo.', nivo: 'srednji', sedmica: 8, dana: 4, cijena: 69, tip: 'gotov', uShopu: true,
       per: { tip: 'linearna', deload: 4 },
-      bilj: NAPOMENE_KNJIGA.concat(['Gluteusi dobijaju oko 20 direktnih serija sedmično, što je gornja granica korisnog volumena. Ako ti se oporavak pogorša, izbaci po jednu seriju abdukcija. Bugarski iskorak je u originalu bio bez tereta i 3×20, ovdje je s bučicama i 8 do 12 ponavljanja po nozi.']),
+      bilj: NAPOMENE_KNJIGA.concat(['Gluteusi dobijaju oko 20 direktnih serija sedmično, što je gornja granica korisnog volumena. Ako ti se oporavak pogorša, izbaci po jednu seriju abdukcija. Bugarski čučanj je u originalu bio bez tereta i 3×20, ovdje je s bučicama i 8 do 12 ponavljanja po nozi.']),
       dani: [
         { naziv: 'Trening 1', vj: [ex('bridge', 2, '10', 'Zagrijavanje i aktivacija glutea'), ex('potisaksipka', 4, '5–6'), ex('cucanjsipka', 4, '6'), ex('lat', 3, '8–12', 'Uski hvat, zadnja serija do otkaza'), ex('legcurl', 3, '12–15', 'Ležeća sprava'), ex('abdukcija', 3, '20–30')] },
         { naziv: 'Trening 2', vj: [ex('hipthrust', 3, '12–15', 'S gumom oko koljena'), ex('bench', 3, '10–12'), ex('rdl', 3, '12', 'B-stance (jedna noga unaprijed)'), ex('veslanjekabl', 3, '12'), ex('stepup', 3, '12 po nozi'), ex('abdgumom', 2, '25', 'Sjedeći, trup nagnut naprijed')] },
