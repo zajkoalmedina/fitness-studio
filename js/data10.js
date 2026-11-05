@@ -121,17 +121,17 @@
   const NAME = { kardio_traka: 'Hodanje na traci (nivo 1, najlakše)', kardio_bicikl: 'Sobni bicikl (nivo 2)', kardio_stepenice: 'Stepenice (nivo 3, najteže)' };
   const ZAM = { kardio_traka: 'sobnim biciklom', kardio_bicikl: 'hodanjem na traci', kardio_stepenice: 'sobnim biciklom' };
   const INT = {
-    lagani: 'LAGAN intenzitet (3–4 od 10): možeš voditi običan razgovor bez zadihanosti.',
-    umjeren: 'UMJEREN intenzitet (5–6 od 10): disanje je ubrzano, možeš govoriti u kratkim rečenicama, ali ne pjevati.'
+    lagani: 'Lagan tempo (3–4 od 10): možeš pričati bez zadihanosti.',
+    umjeren: 'Umjeren tempo (5–6 od 10): možeš govoriti u kratkim rečenicama.'
   };
   const RAZLOG = { teski: 'Težak trening nogu, zato lagan kardio za oporavak. ', deload: 'Deload sedmica, zato lagan kardio. ', lagan: 'Lakši trening snage, zato umjeren kardio. ' };
-  const NOTA = (id, inten, razlog) => 'Kardio na kraju: ' + NAME[id] + '. ' + RAZLOG[razlog] + INT[inten] + ' Slobodno zamijeni ' + ZAM[id] + '.';
+  const NOTA = (id, inten) => INT[inten] + ' Možeš zamijeniti ' + ZAM[id] + '.';
   /* vrsta po sedmicama: 1 hodanje, 2 bicikl, 3 stepenice, 4 hodanje (deload), 5 bicikl, 6 i 7 stepenice, 8 hodanje (deload);
      intenzitet: poslije teškog treninga nogu lagan, poslije lakšeg treninga snage umjeren, a u deload sedmicama (4. i 8.) uvijek lagan */
   const VRSTE = ['kardio_traka', 'kardio_bicikl', 'kardio_stepenice', 'kardio_traka', 'kardio_bicikl', 'kardio_stepenice', 'kardio_stepenice', 'kardio_traka'];
   const ljestvica = (teski) => VRSTE.map((id, w) => {
     const deload = (w + 1) % 4 === 0;
-    return deload ? { id, n: NOTA(id, 'lagani', 'deload') } : teski ? { id, n: NOTA(id, 'lagani', 'teski') } : { id, n: NOTA(id, 'umjeren', 'lagan') };
+    return deload ? { id, n: NOTA(id, 'lagani') } : teski ? { id, n: NOTA(id, 'lagani') } : { id, n: NOTA(id, 'umjeren') };
   });
   const dodaj = (id, plan) => {
     const g = (FS.GOTOVI || []).find((x) => x.id === id);
@@ -141,9 +141,32 @@
       const lj = ljestvica(plan[i][1]);
       d.vj.push({ id: 'kardio_traka', s: 1, r: plan[i][0] + ' min', n: lj[0].n, p: 0, fix: true, kw: lj });
     });
-    g.bilj = (g.bilj || []).concat(['Kardio na kraju treninga radiš dva puta sedmično (na dva dana označena u programu), ne mora poslije svakog treninga. Vrsta se mijenja po sedmicama: 1. hodanje na traci, 2. sobni bicikl, 3. stepenice, 4. hodanje, 5. bicikl, 6. i 7. stepenice, 8. hodanje.', 'Intenzitet prati težinu treninga: poslije teškog treninga nogu kardio je lagan (3–4 od 10), poslije lakšeg treninga snage umjeren (5–6 od 10), a u deload sedmicama (4. i 8.) uvijek lagan. Trajanje je prilagođeno dužini treninga, tako da cijeli trening ostaje okvirno do 1 sat i 10 minuta.']);
+    g.bilj = (g.bilj || []).concat(['Kardio na kraju treninga radiš dva puta sedmično (na dva dana označena u programu), ne mora poslije svakog treninga. Vrsta se mijenja po sedmicama: 1. hodanje na traci, 2. sobni bicikl, 3. stepenice, 4. hodanje, 5. bicikl, 6. i 7. stepenice, 8. hodanje.', 'Intenzitet kardija je naznačen uz vježbu: lagan (3–4 od 10) ili umjeren (5–6 od 10). Trajanje je prilagođeno dužini treninga, tako da cijeli trening ostaje okvirno do 1 sat i 10 minuta.']);
   };
   dodaj('gluteus', { 1: [20, false], 3: [20, false] });
   dodaj('glutefb4', { 0: [10, true], 2: [15, true] });
   dodaj('napredni5', { 1: [15, false], 3: [15, false] });
+})();
+
+/* Glute programi: u 5. sedmici dvije vježbe prelaze u srodnu varijantu (isti pokret, drugi alat ili kut); nota za hip thrust */
+(function () {
+  const FS = (window.FS = window.FS || {});
+  const G = (id) => (FS.GOTOVI || []).find((g) => g.id === id);
+  const IME = { abdgumom: 'abdukcija / lateralni hod s gumom', iskorak: 'iskorak unazad', stepup: 'penjanje na klupu', lateralnilunge: 'bočni iskorak', abdukcija: 'abdukcija na spravi', curtsy: 'curtsy iskorak', bugarski: 'bugarski čučanj' };
+  const zamjene = (id, lista) => {
+    const g = G(id); if (!g) return;
+    const opis = [];
+    lista.forEach(([di, staro, novo, nota]) => {
+      const x = g.dani[di] && g.dani[di].vj.find((v) => v.id === staro);
+      if (!x || x.kw) return;
+      const prije = { id: staro, n: x.n || '' }, poslije = { id: novo, n: nota || '' };
+      x.kw = [prije, prije, prije, prije, poslije, poslije, poslije, poslije];
+      opis.push(IME[staro] + ' → ' + IME[novo]);
+    });
+    if (opis.length) g.bilj = (g.bilj || []).concat(['Od 5. sedmice dvije vježbe prelaze u srodnu varijantu (isti pokret, drugačiji alat ili kut), a serije i ponavljanja ostaju ista: ' + opis.join('; ') + '.']);
+  };
+  zamjene('gluteus', [[0, 'abdukcija', 'abdgumom', 'Lateralni hod'], [2, 'stepup', 'iskorak']]);
+  zamjene('glutefb4', [[1, 'stepup', 'iskorak'], [3, 'curtsy', 'lateralnilunge']]);
+  zamjene('napredni5', [[0, 'abdukcija', 'abdgumom', 'Lateralni hod'], [2, 'bugarski', 'stepup']]);
+  const gl = G('gluteus'); const ht = gl && gl.dani[0].vj.find((v) => v.id === 'hipthrust'); if (ht && !ht.n) ht.n = 'Na vrhu zadrži 1–2 s i stisni gluteuse.';
 })();
