@@ -53,9 +53,15 @@
   const shiftReps = (r, d, min) => String(r).replace(/\d+/g, (m) => String(Math.max(min, parseInt(m, 10) + d))).replace(/^(\d+)[–-]\1\b/, '$1');
 
   /* primjenjuje sedmicu i dan na jednu vježbu iz programa; vraća {s, r, n, pct} */
-  FS.applyWeek = (p, week, dayIdx, x) => {
-    if (x.kw && x.kw.length) { const k = x.kw[(Math.max(1, week | 0) - 1) % x.kw.length]; return { s: x.s, r: x.r, pct: null, tag: '', id: k.id, n: k.n, skip: !!k.skip }; }   /* kardio: vrsta se mijenja po sedmicama */
-    if (x.fix) return { s: x.s, r: x.r, pct: null, tag: '' };   /* HIIT cirkuiti: broj krugova i trajanje se ne mijenjaju po sedmici */
+  FS.applyWeek = (p, week, dayIdx, x0) => {
+    let x = x0, ov = {};
+    if (x0.kw && x0.kw.length) {   /* vježba se po sedmicama mijenja (vrsta kardija, teža varijanta pokreta) */
+      const k = x0.kw[(Math.max(1, week | 0) - 1) % x0.kw.length];
+      if (k.skip) return { s: x0.s, r: x0.r, pct: null, tag: '', skip: true };
+      x = { ...x0, id: k.id, n: k.n || '', r: k.r || x0.r };
+      ov = { id: x.id, n: x.n };
+    }
+    if (x.fix) return { s: x.s, r: x.r, pct: null, tag: '', ...ov };   /* cirkuiti i kardio: serije i trajanje se ne mijenjaju po sedmici */
     const wi = FS.weekInfo(p, week), loaded = isLoaded(x.id);
     let s = x.s, r = x.r, pct = null, tag = '';
     if (wi.deload) {
@@ -72,7 +78,7 @@
       if (x.s <= 2) s = x.s;
       if (loaded) { if (!hasTimeUnit(r) && wi.repShift) r = shiftReps(r, wi.repShift, 5); pct = wi.loadPct; }
     }
-    return { s, r, pct: pct && pct !== 100 ? pct : null, tag };
+    return { s, r, pct: pct && pct !== 100 ? pct : null, tag, ...ov };
   };
 
   FS.weekDays = (p, week) => (p.dani || []).map((d, di) => ({ naziv: d.naziv, vj: d.vj.map((x) => ({ ...x, ...FS.applyWeek(p, week, di, x) })).filter((x) => !x.skip) }));

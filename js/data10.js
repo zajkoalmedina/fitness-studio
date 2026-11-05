@@ -85,10 +85,10 @@
       { naziv: '5. HIIT A · sedmice 1 i 5 (opcionalno)', vj: A },
       { naziv: '5. HIIT B · sedmice 2 i 6 (opcionalno)', vj: B },
       { naziv: '5. HIIT C · sedmice 3 i 7 (opcionalno)', vj: C },
-      { naziv: '5. HIIT D · sedmice 4 i 8, lakši (opcionalno)', vj: lagani() }]);
+      { naziv: '5. HIIT D · sedmice 4 i 8 (opcionalno)', vj: srednji() }]);
     n5.opis = 'Osam sedmica: četiri treninga snage (lower, upper, lower, upper) i peti trening, opcionalni HIIT, koji se mijenja svake sedmice. Tačno planiran volumen po mišićnim grupama.';
     n5.bilj = n5.bilj.map((b) => b.replace('15 kvadricepsa', '13 kvadricepsa'))
-      .concat(['Peti trening je HIIT (oko 11 do 21 minuta) i nije obavezan. Mijenja se svake sedmice: A, B, C, pa lakši D u deload sedmici. Radi ga na dan bez teškog treninga nogu. Ako si umorna, preskoči ga: trening snage ima prednost.']);
+      .concat(['Peti trening je HIIT (oko 11 do 21 minuta) i nije obavezan. Mijenja se svake sedmice: A, B, C i D. Radi ga na dan bez teškog treninga nogu. Ako si umorna, preskoči ga: trening snage ima prednost.']);
   }
 
   /* ---- ostali programi: jedan opcionalni HIIT dan na kraju ---- */
@@ -124,15 +124,11 @@
     lagani: 'Lagan tempo (3–4 od 10): možeš pričati bez zadihanosti.',
     umjeren: 'Umjeren tempo (5–6 od 10): možeš govoriti u kratkim rečenicama.'
   };
-  const RAZLOG = { teski: 'Težak trening nogu, zato lagan kardio za oporavak. ', deload: 'Deload sedmica, zato lagan kardio. ', lagan: 'Lakši trening snage, zato umjeren kardio. ' };
   const NOTA = (id, inten) => INT[inten] + ' Možeš zamijeniti ' + ZAM[id] + '.';
-  /* vrsta po sedmicama: 1 hodanje, 2 bicikl, 3 stepenice, 4 hodanje (deload), 5 bicikl, 6 i 7 stepenice, 8 hodanje (deload);
-     intenzitet: poslije teškog treninga nogu lagan, poslije lakšeg treninga snage umjeren, a u deload sedmicama (4. i 8.) uvijek lagan */
+  /* vrsta po sedmicama: 1 hodanje, 2 bicikl, 3 stepenice, 4 hodanje, 5 bicikl, 6 i 7 stepenice, 8 hodanje;
+     intenzitet: poslije teškog treninga nogu lagan, poslije lakšeg treninga snage umjeren */
   const VRSTE = ['kardio_traka', 'kardio_bicikl', 'kardio_stepenice', 'kardio_traka', 'kardio_bicikl', 'kardio_stepenice', 'kardio_stepenice', 'kardio_traka'];
-  const ljestvica = (teski) => VRSTE.map((id, w) => {
-    const deload = (w + 1) % 4 === 0;
-    return deload ? { id, n: NOTA(id, 'lagani') } : teski ? { id, n: NOTA(id, 'lagani') } : { id, n: NOTA(id, 'umjeren') };
-  });
+  const ljestvica = (teski) => VRSTE.map((id) => ({ id, n: NOTA(id, teski ? 'lagani' : 'umjeren') }));
   const dodaj = (id, plan) => {
     const g = (FS.GOTOVI || []).find((x) => x.id === id);
     if (!g) return;
@@ -148,25 +144,66 @@
   dodaj('napredni5', { 1: [15, false], 3: [15, false] });
 })();
 
-/* Glute programi: u 5. sedmici dvije vježbe prelaze u srodnu varijantu (isti pokret, drugi alat ili kut); nota za hip thrust */
+
+/* Glute programi (Glute balans, Glute fokus, Glute Pro): bez deloada. Svake sedmice dio vježbi prelazi u težu varijantu istog pokreta;
+   u sedmicama 5–8 iste varijante rade se težom tehnikom (pauza ili sporo spuštanje). Glavne vježbe (hip thrust, čučnjevi, potisci) ostaju iste. */
 (function () {
   const FS = (window.FS = window.FS || {});
   const G = (id) => (FS.GOTOVI || []).find((g) => g.id === id);
-  const IME = { abdgumom: 'abdukcija / lateralni hod s gumom', iskorak: 'iskorak unazad', stepup: 'penjanje na klupu', lateralnilunge: 'bočni iskorak', abdukcija: 'abdukcija na spravi', curtsy: 'curtsy iskorak', bugarski: 'bugarski čučanj' };
-  const zamjene = (id, lista) => {
-    const g = G(id); if (!g) return;
-    const opis = [];
-    lista.forEach(([di, staro, novo, nota]) => {
-      const x = g.dani[di] && g.dani[di].vj.find((v) => v.id === staro);
-      if (!x || x.kw) return;
-      const prije = { id: staro, n: x.n || '' }, poslije = { id: novo, n: nota || '' };
-      x.kw = [prije, prije, prije, prije, poslije, poslije, poslije, poslije];
-      opis.push(IME[staro] + ' → ' + IME[novo]);
-    });
-    if (opis.length) g.bilj = (g.bilj || []).concat(['Od 5. sedmice dvije vježbe prelaze u srodnu varijantu (isti pokret, drugačiji alat ili kut), a serije i ponavljanja ostaju ista: ' + opis.join('; ') + '.']);
+  const L = (id, suf) => ({ id, suf: suf || '' });
+  const LADDER = {
+    /* abdukcije: od najlakše do najteže */
+    A: { cue: 'Pauza 2 s u kontrakciji.', v: [L('clamshell', 'po strani'), L('firehydrant', 'po strani'), L('abdgumom'), L('abdukcija')] },
+    /* hinge */
+    H: { cue: 'Spuštanje 3 s.', v: [L('rdl'), L('rdlkickstand', 'po nozi'), L('jednorodl', 'po nozi'), L('rdlsipka')] },
+    /* jednonožni pokreti za noge i gluteuse */
+    U: { cue: 'Spuštanje 3 s.', v: [L('iskorak', 'po nozi'), L('iskorakhod', 'po nozi'), L('stepup', 'po nozi'), L('curtsy', 'po nozi')] },
+    LB: { cue: 'Spuštanje 3 s.', v: [L('stepup', 'po nozi'), L('iskorakhod', 'po nozi'), L('curtsy', 'po nozi'), L('bugarski', 'po nozi')] },
+    /* veslanja */
+    ROW: { cue: 'Pauza 1 s uz stisak lopatica, spuštanje 3 s.', v: [L('veslanjekabl'), L('veslanje', 'po strani'), L('veslanjesipka'), L('gorillarow', 'po strani')] },
+    /* potisak iznad glave */
+    RS: { cue: 'Spuštanje 3 s.', v: [L('ramenaspr'), L('ramena'), L('arnold'), L('zpotisak')] },
+    /* podizanje kukova */
+    B: { cue: 'Pauza 2 s na vrhu.', v: [L('bridge'), L('frogpump'), L('singlebridge', 'po nozi'), L('hipthrust1', 'po nozi')] },
+    /* core */
+    CORE: { cue: 'Zadrži 10 s duže nego prije.', v: [L('planka'), L('bocnaplankabasic', 'po strani'), L('hollow'), L('planksavijanje')] }
   };
-  zamjene('gluteus', [[0, 'abdukcija', 'abdgumom', 'Lateralni hod'], [2, 'stepup', 'iskorak']]);
-  zamjene('glutefb4', [[1, 'stepup', 'iskorak'], [3, 'curtsy', 'lateralnilunge']]);
-  zamjene('napredni5', [[0, 'abdukcija', 'abdgumom', 'Lateralni hod'], [2, 'bugarski', 'stepup']]);
-  const gl = G('gluteus'); const ht = gl && gl.dani[0].vj.find((v) => v.id === 'hipthrust'); if (ht && !ht.n) ht.n = 'Na vrhu zadrži 1–2 s i stisni gluteuse.';
+  const ocisti = (r) => String(r).replace(/\s*po (nozi|strani)\s*$/, '');
+  const IME = { A: 'abdukcije', H: 'rumunsko mrtvo dizanje', U: 'iskoraci', LB: 'jednonožni čučnjevi i iskoraci', ROW: 'veslanja', RS: 'potisak za ramena', B: 'podizanje kukova', CORE: 'core' };
+  const PLAN = {
+    gluteus: { 0: { rdl: 'H', abdukcija: 'A' }, 1: { ramena: 'RS', veslanjekabl: 'ROW' }, 2: { stepup: 'U' }, 3: { veslanje: 'ROW', planka: 'CORE' } },
+    glutefb4: { 0: { abdukcija: 'A', planka: 'CORE' }, 1: { stepup: 'U', rdl: 'H', veslanjekabl: 'ROW' }, 2: { ramena: 'RS', bridge: 'B' }, 3: { curtsy: 'U', rdlsipka: 'H', veslanjesipka: 'ROW' } },
+    napredni5: { 0: { rdlsipka: 'H', abdukcija: 'A' }, 1: { ramena: 'RS', veslanjekabl: 'ROW' }, 2: { bugarski: 'LB', planka: 'CORE' }, 3: { veslanje: 'ROW' } }
+  };
+  Object.keys(PLAN).forEach((pid) => {
+    const g = G(pid); if (!g || g.rotirano) return;
+    const koristi = new Set();
+    Object.keys(PLAN[pid]).forEach((di) => {
+      const d = g.dani[+di]; if (!d) return;
+      Object.keys(PLAN[pid][di]).forEach((slot) => {
+        const x = d.vj.find((v) => v.id === slot && !v.kw); if (!x) return;
+        const lad = LADDER[PLAN[pid][di][slot]], base = ocisti(x.r);
+        const tjedni = (w) => {
+          const v = lad.v[(w - 1) % 4], teze = w > 4;
+          const r = v.suf ? base + ' ' + v.suf : base;
+          const n = teze ? lad.cue : (v.id === slot ? x.n || '' : '');
+          return { id: v.id, r, n };
+        };
+        x.kw = [1, 2, 3, 4, 5, 6, 7, 8].map(tjedni);
+        koristi.add(PLAN[pid][di][slot]);
+      });
+    });
+    g.rotirano = true;
+    g.bilj = (g.bilj || []).filter((b) => !/^Deload/.test(b)).concat([
+      'Bez deload sedmice: svake sedmice dio vježbi (' + [...koristi].map((k) => IME[k]).join(', ') + ') prelazi u težu varijantu istog pokreta. U sedmicama 5 do 8 iste varijante radiš težom tehnikom (pauza ili sporo spuštanje). Glavne vježbe, kao hip thrust, čučnjevi i potisci, ostaju iste, a napreduješ težinom.'
+    ]);
+    g.per = { tip: g.per && g.per.tip ? g.per.tip : 'nema', deload: 0 };
+  });
+  const gl = G('gluteus');
+  if (gl) {
+    gl.opis = gl.opis.replace(' Deload svake 4. sedmice.', ' Svake sedmice dio vježbi prelazi u težu varijantu.');
+    const ht = gl.dani[0].vj.find((v) => v.id === 'hipthrust'); if (ht && !ht.n) ht.n = 'Na vrhu zadrži 1–2 s i stisni gluteuse.';
+  }
+  const k = G('kuca'); if (k && k.per) k.per = { tip: k.per.tip, deload: 0 };
+  const sc = G('sculpt'); if (sc) sc.bilj = (sc.bilj || []).map((b) => b.replace('Poslije sedmice 6: jedna lakša sedmica (oko pola serija sa istim težinama), pa ponovo od Faze 1 sa težim težinama.', 'Poslije sedmice 6 ponovo počni od Faze 1 sa težim težinama.'));
 })();
