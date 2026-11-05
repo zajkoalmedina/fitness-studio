@@ -61,7 +61,7 @@
       <div class="eyebrow mt">Istraži</div>
       <div class="tiles">
         <a class="tile" href="#/vjezbe">${icon('dumbbell')}<b>Vježbe</b><small>Biblioteka s videouputama</small></a>
-        <a class="tile" href="#/programi">${icon('list')}<b>Programi</b><small>Gotovi planovi · uskoro</small></a>
+        <a class="tile" href="#/programi">${icon('list')}<b>Programi</b><small>Vodič za ishranu i trčanje</small></a>
         <a class="tile" href="#/alati">${icon('calc')}<b>BMI i kalorije</b><small>Brzi kalkulatori</small></a>
         <a class="tile" href="#/ishrana">${icon('flame')}<b>Ishrana</b><small>Vodič, recepti, primjer dana</small></a>
         <a class="tile" href="#/prica">${icon('heart')}<b>Moja priča</b><small>Kron, operacije, povratak</small></a>
@@ -326,9 +326,8 @@
     const u = Auth.user();
     const draw = () => {
       el.innerHTML = h`<h1>Programi</h1>${demoBar()}
-        <div class="eyebrow mt">Gotovi planovi treninga</div>
-        <div class="pcard c0" style="text-align:center;padding:34px 20px"><span class="pc-zn">Uskoro</span><div class="pc-t">Gotovi planovi treninga</div><p class="pc-o" style="margin:10px 0 0">Pripremamo nove programe za žene početnice, trening kod kuće i trening u teretani. Uskoro u aplikaciji.</p></div>
 
+        <div class="eyebrow mt">Vodič za ishranu</div>
         ${Store.shop().filter((p) => p.id === 'vodic-ishrana').map((p) => h`<div class="pcard c1"><div class="pc-t">${p.naziv}</div><div class="pc-m">e-vodič · 80+ recepata</div><p class="pc-o">${p.opis}</p>
           <div class="pc-pr"><b>${p.cijena} ${config.valuta}</b></div>
           <div class="pc-b"><a class="btn" href="#/ishrana?tab=recepti">${owned(u, p) ? 'Otvori' : 'Pregled'}</a>${owned(u, p) ? h`<span class="badge ok">Tvoj vodič</span>` : h`<button class="btn primary" data-act="buy" data-id="${p.id}">Kupi</button>`}</div></div>`)}
