@@ -328,6 +328,10 @@
       el.innerHTML = h`<h1>Programi</h1>${demoBar()}
         <div class="eyebrow mt">Gotovi planovi treninga</div>
         <div class="pcard c0" style="text-align:center;padding:34px 20px"><span class="pc-zn">Uskoro</span><div class="pc-t">Gotovi planovi treninga</div><p class="pc-o" style="margin:10px 0 0">Pripremamo nove programe za žene početnice, trening kod kuće i trening u teretani. Uskoro u aplikaciji.</p></div>
+
+        ${Store.shop().filter((p) => p.id === 'vodic-ishrana').map((p) => h`<div class="pcard c1"><div class="pc-t">${p.naziv}</div><div class="pc-m">e-vodič · 80+ recepata</div><p class="pc-o">${p.opis}</p>
+          <div class="pc-pr"><b>${p.cijena} ${config.valuta}</b></div>
+          <div class="pc-b"><a class="btn" href="#/ishrana?tab=recepti">${owned(u, p) ? 'Otvori' : 'Pregled'}</a>${owned(u, p) ? h`<span class="badge ok">Tvoj vodič</span>` : h`<button class="btn primary" data-act="buy" data-id="${p.id}">Kupi</button>`}</div></div>`)}
         ${[['5k', 'Trčanje: od 0 do 5 km', 'početni · 8 sedmica · 3× sedmično', 'Izmjena trčanja i hodanja, korak po korak do 30 minuta trčanja ili 5 km.'], ['10k', 'Trčanje: od 5 do 10 km', 'početni+ · 10 sedmica · 3× sedmično', 'Lagana trčanja, brže dionice i dugo trčanje do 10 km, uz sedmice rasterećenja.']].map(([k, n, l2, o]) => h`<div class="card"><div class="row between"><h3 style="margin:0">${n}</h3><span class="badge ok">Besplatno za klijentice</span></div><div class="small mt-s">${l2}</div><p class="muted mt-s">${o}</p><div class="row"><a class="btn sm grow" href="#/trcanje?tab=${k}">Otvori plan</a><a class="btn sm grow" href="#/trcanje?tab=kalk">Kalkulator tempa</a></div></div>`)}
         <div class="card flat center"><p class="muted" style="margin:0 0 8px">Želiš program samo za sebe?</p><a class="btn sm" href="#/paketi">Online coaching paketi</a></div>`;
     };
