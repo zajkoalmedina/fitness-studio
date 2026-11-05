@@ -43,7 +43,7 @@
         const dan = prog.dani[i % prog.dani.length];
         logs.push({
           id: uid(), userId, datum: addDays(wk, d), programId: progId, dan: dan.naziv, trajanje: 45 + (i * 5), rpe: 6 + (i % 3), biljeska: '',
-          vjezbe: dan.vj.filter((e) => e.id !== 'hodanje').map((e) => ({ id: e.id, serije: Array.from({ length: e.s }, () => ({ kg: ['sklekzid', 'bridge', 'tva', 'bocno', 'deadbug', 'cucanj'].includes(e.id) ? 0 : Math.round(8 + (7 - w) * 0.8 + i), rep: parseInt(e.r, 10) || 10, ok: true })) }))
+          vjezbe: dan.vj.filter((e) => e.id !== 'hodanje' && !/^kardio_/.test(e.id)).map((e) => ({ id: e.id, serije: Array.from({ length: e.s }, () => ({ kg: ['sklekzid', 'bridge', 'tva', 'bocno', 'deadbug', 'cucanj'].includes(e.id) ? 0 : Math.round(8 + (7 - w) * 0.8 + i), rep: parseInt(e.r, 10) || 10, ok: true })) }))
         });
       });
     }

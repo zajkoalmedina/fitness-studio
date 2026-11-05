@@ -105,3 +105,31 @@
   dodaj('pocetnice3', 'Opcionalno · HIIT (bez skokova)', lagani(), OPC(11, true));
   dodaj('upperlower4', 'Opcionalno · HIIT (bez skokova)', lagani(), OPC(11, true));
 })();
+
+/* Kardio na kraju treninga snage (glute programi): 3 nivoa težine, trajanje 10–20 min tako da trening ostane kratak */
+(function () {
+  const FS = (window.FS = window.FS || {});
+  const novi = [
+    ['kardio_traka', 'Hodanje na traci s nagibom (Incline treadmill walk)', 'početni', 'Traka', ['Postavi blagi do umjeren nagib i brzinu uz koju hodaš brzo, ali ravnomjerno.', 'Drži se za traku samo lagano ili uopće ne.', 'Disanje je ubrzano, ali još uvijek možeš govoriti u cijelim rečenicama.'], ['Nivo težine 1 od 3 (najlakše): najbolji izbor poslije teškog treninga nogu.', 'Ako nema trake, hodaj brzo vani ili uz stepenice.'], ['Naslanjanje na ručke trake.', 'Prekratak korak i naginjanje trupa naprijed.']],
+    ['kardio_bicikl', 'Sobni bicikl (Stationary bike)', 'početni', 'Sobni bicikl', ['Podesi sjedalo tako da koljeno ostane lagano savijeno na dnu pedale.', 'Okreći ravnomjerno, bez trzaja, uz umjeren otpor.', 'Tempo je takav da možeš govoriti u kratkim rečenicama.'], ['Nivo težine 2 od 3 (srednje).', 'Povećaj otpor prije brzine, uz ravnu kičmu.'], ['Prenisko ili previsoko sjedalo.', 'Pretežak otpor uz pritisak na koljena.']],
+    ['kardio_stepenice', 'Stepenice na spravi (Stair climber)', 'srednji', 'Sprava za stepenice', ['Stani uspravno, noge cijelim stopalom na stepenicama.', 'Penji se ravnomjerno, bez oslanjanja svom težinom na ručke.', 'Tempo je umjeren: možeš govoriti u kratkim rečenicama.'], ['Nivo težine 3 od 3 (najteže): bolje poslije gornjeg dijela tijela nego poslije teškog treninga nogu.', 'Počni sporije i ostani na istom tempu do kraja.'], ['Naslanjanje na ručke.', 'Penjanje na prstima.']]
+  ];
+  novi.forEach(([id, naziv, nivo, oprema, koraci, savjeti, greske]) => {
+    if (FS.EXERCISES.some((e) => e.id === id)) return;
+    FS.EXERCISES.push({ id, naziv, grupa: 'Kardio', nivo, oprema, dij: 'da', koraci, savjeti, greske, video: '' });
+  });
+  const T = 'kardio_traka', B = 'kardio_bicikl', S = 'kardio_stepenice';
+  const NAME = { [T]: 'Hodanje na traci (nivo 1, najlakše)', [B]: 'Sobni bicikl (nivo 2)', [S]: 'Stepenice (nivo 3, najteže)' };
+  const dodaj = (id, plan) => {
+    const g = (FS.GOTOVI || []).find((x) => x.id === id);
+    if (!g) return;
+    g.dani.forEach((d, i) => {
+      const pl = plan[i]; if (!pl || d.vj.some((v) => /^kardio_/.test(v.id))) return;
+      d.vj.push({ id: pl[0], s: 1, r: pl[1] + ' min', n: 'Kardio na kraju: ' + NAME[pl[0]] + '. Umjeren tempo (možeš govoriti u kratkim rečenicama). Slobodno zamijeni sa ' + (pl[0] === T ? 'sobnim biciklom' : pl[0] === B ? 'hodanjem na traci' : 'sobnim biciklom') + '.', p: 0, fix: true });
+    });
+    g.bilj = (g.bilj || []).concat(['Na kraju svakog treninga snage je kardio od 10 do 20 minuta, umjerenim tempom. Poslije teškog treninga nogu ide najlakši nivo (hodanje na traci), a poslije gornjeg dijela tijela teži (bicikl ili stepenice). Što je glavni dio duži, kardio je kraći, pa cijeli trening ostaje okvirno do 1 sat i 10 minuta.']);
+  };
+  dodaj('gluteus', [[T, 10], [S, 20], [T, 10], [S, 20]]);
+  dodaj('glutefb4', [[T, 10], [B, 10], [B, 15], [T, 10]]);
+  dodaj('napredni5', [[T, 15], [S, 15], [T, 10], [S, 10]]);
+})();
