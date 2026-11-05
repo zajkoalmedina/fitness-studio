@@ -59,7 +59,7 @@
       body = h`<a class="btn primary block mb" href="#/trening/novi">${icon('plus')} Novi trening</a>
         ${logs.length ? logs.map((l) => { const pr = l.programId === 'dijastaza' ? { naziv: 'Dijastaza' } : Store.program(l.programId); return h`<details class="card"><summary style="cursor:pointer"><div class="row between"><b>${fmtDate(l.datum)}</b><span class="small">${l.trajanje || '–'} min · RPE ${l.rpe || '–'}</span></div><div class="small">${l.dan || 'Slobodan trening'}${pr ? ' · ' + pr.naziv : ''}</div></summary>
           <div class="mt-s">${l.vjezbe.map((v) => { const e = Store.ex(v.id); return h`<div class="kv"><span>${e ? e.naziv : v.id}</span><b>${v.serije.map((s) => (s.kg ? s.kg + '×' : '') + s.rep).join(' · ')}</b></div>`; })}${l.kond ? h`<div class="kv"><span>Rezultat</span><b>${l.kond}</b></div>` : ''}</div>
-          ${l.biljeska ? h`<p class="small mt-s">${l.biljeska}</p>` : ''}<button class="btn sm danger mt-s" data-act="dellog" data-id="${l.id}">Obriši</button></details>`; }) : h`<div class="empty">Još nema zabilježenih treninga.</div>`}`;
+          ${l.biljeska ? h`<p class="small mt-s">${l.biljeska}</p>` : ''}${l.datum >= FS.addDays(today(), -2) ? h`<a class="btn sm primary mt-s" href="#/trening/novi?e=${l.id}">Dopuni trening</a> ` : ''}<button class="btn sm danger mt-s" data-act="dellog" data-id="${l.id}">Obriši</button></details>`; }) : h`<div class="empty">Još nema zabilježenih treninga.</div>`}`;
     }
 
     if (tab === 'napredak') {
@@ -132,6 +132,22 @@
     return d;
   }
 
+  /* ponovno otvaranje završenog treninga (zaboravljena vježba ili serija) */
+  function buildEdit(u, id) {
+    const log = Store.db.logs.find((l) => l.id === id && l.userId === u.id); if (!log) return null;
+    let d = null; const pr = log.programId && log.programId !== 'dijastaza' ? Store.program(log.programId) : null;
+    if (pr) { const w = FS.currentWeek(u, pr), di = FS.weekDays(pr, w).findIndex((x) => x.naziv === log.dan); if (di >= 0) d = buildDraft(u, { p: pr.id, d: di, w }); }
+    if (!d) d = { uid: u.id, start: 0, programId: log.programId || null, dan: log.dan || '', vjezbe: [], rpe: '', biljeska: '', free: !log.programId };
+    const mk = (z) => ({ kg: z.kg ? String(z.kg) : '', rep: String(z.rep || ''), ok: true });
+    log.vjezbe.forEach((v) => {
+      const i = d.vjezbe.findIndex((x) => x.id === v.id && !x._m), ser = v.serije.map(mk);
+      if (i >= 0) { d.vjezbe[i].serije = ser.concat(d.vjezbe[i].serije.slice(ser.length)); d.vjezbe[i]._m = 1; } else d.vjezbe.push({ id: v.id, extra: true, cilj: '', serije: ser, _m: 1 });
+    });
+    d.vjezbe.forEach((v) => { delete v._m; });
+    d.editId = log.id; d.start = Date.now() - (log.trajanje || 1) * 60000; d.rpe = log.rpe || ''; d.biljeska = log.biljeska || '';
+    return d;
+  }
+
   V.trening_novi = (el, p, q) => {
     const u = Auth.user();
     let d = Store.draft.get();
@@ -166,6 +182,7 @@
 
     const save = () => Store.draft.set(d);
     const run = () => {
+      if (q.e) { const nd = buildEdit(u, q.e); if (nd) { d = nd; Store.draft.set(d); clean(); draw(); toast('Dopuni što si zaboravila i sačuvaj.'); return; } }
       if (!q.p && mine && d.q && d.q.p) { const c = sourceDay(d.q.p, d.q.d, d.q.f, d.q.w); if (c && c.naziv === d.dan) q = d.q; } // nastavak: provjeri je li trenerica promijenila dan
       const src = q.p ? sourceDay(q.p, q.d, q.f, q.w || FS.currentWeek(u, Store.program(q.p))) : null;
       if (q.p && mine && d.programId === q.p && src && d.dan === src.naziv) {
@@ -222,7 +239,8 @@
         if (!vj.length) { er.textContent = 'Označi barem jednu završenu seriju (✓) s brojem ponavljanja.'; er.hidden = false; return; }
         const before = Store.best(u.id);
         const log = { id: uid(), userId: u.id, datum: today(), programId: d.programId, dan: d.dan, trajanje: Math.min(600, Math.max(1, num(x.tr) || 1)), rpe: num(x.rpe) || null, biljeska: String(x.b || '').slice(0, 500), vjezbe: vj };
-        Store.db.logs.push(log); Store.save(); Store.draft.clear(); d = null;
+        if (d.editId) { const ol = Store.db.logs.find((l) => l.id === d.editId); if (ol) { log.id = ol.id; log.datum = ol.datum; Object.assign(ol, log); } else Store.db.logs.push(log); } else Store.db.logs.push(log);
+        Store.save(); Store.draft.clear(); d = null;
         const after = Store.best(u.id), pr = Object.keys(after).filter((k) => before[k] && after[k].kg > before[k].kg);
         toast(pr.length ? `Trening sačuvan. Novi lični rekord: ${(Store.ex(pr[0]) || { naziv: pr[0] }).naziv}!` : 'Trening sačuvan. Bravo!');
         go('#/moj?tab=trening');
