@@ -21,7 +21,7 @@
       dani: [
         { naziv: 'A1 · Noge', vj: [A('iskorak', 4, '12 po nozi', 'Iskorak unazad'), x('squatjacks', 4, '12'), x('jednorodl', 4, '12 po nozi'), x('sumocucanj', 4, '12'), x('lungejump', 4, '8 po nozi', 'Zamijeni običnim iskorakom ako je pretežak'), x('frogpump', 4, '15'), A('lateralnilunge', 4, '15 po strani'), x('singlebridge', 4, '15 po nozi'), T('flutter', 3, '30 s'), T('skarice', 3, '30 s')] },
         { naziv: 'A2 · Gornji dio tijela', vj: [A('bench', 4, '12'), x('veslanje', 4, '12 po strani'), x('arnold', 4, '12'), x('lat', 4, '12', 'Podhvat (dlanovi prema tebi)'), A('ytw', 4, '15'), x('plankwalk', 4, '15 po strani'), x('farmer', 4, '1 min'), T('hollow', 3, '30 s'), T('mountainclimb', 3, '30 s')] },
-        { naziv: 'A3 · Gluteusi', vj: [x('stepup', 4, '12 po nozi', 'Atletski nakorak s podizanjem koljena'), x('hipthrust1', 4, '12 po nozi', 'Staggered stance'), x('rdlsipka', 4, '12', 'Konvencionalno mrtvo dizanje, lagano'), x('singlebridge', 4, '15 po nozi', 'Stopalo na povišenju'), x('firehydrant', 4, '15 po strani'), x('abdgumom', 1, '30-25-20-15-10-5', 'Booty finisher: piramida bez odmora', 0, true), x('cucanj', 1, '30-25-20-15-10-5', 'Booty finisher: nastavi bez odmora', 0, true), x('hipthrust1', 1, '30-25-20-15-10-5', 'Booty finisher: marching hip thrust', 60), T('bocnaplanka', 3, '30 s po strani')] },
+        { naziv: 'A3 · Gluteusi', vj: [x('stepup', 4, '12 po nozi', 'Atletski nakorak s podizanjem koljena'), x('hipthrust1', 4, '12 po nozi', 'Staggered stance'), x('rdlsipka', 4, '12'), x('singlebridge', 4, '15 po nozi', 'Stopalo na povišenju'), x('firehydrant', 4, '15 po strani'), x('abdgumom', 1, '30-25-20-15-10-5', 'Booty finisher: piramida bez odmora', 0, true), x('cucanj', 1, '30-25-20-15-10-5', 'Booty finisher: nastavi bez odmora', 0, true), x('hipthrust1', 1, '30-25-20-15-10-5', 'Booty finisher: marching hip thrust', 60), T('bocnaplanka', 3, '30 s po strani')] },
         { naziv: 'A4 · Hibrid snaga', vj: [x('hipthrust', 4, '12'), x('kangsquat', 4, '12'), x('zpotisak', 4, '12'), x('iskorak', 4, '12 po nozi', 'Iskorak s ekstenzijom'), x('birddog', 4, '12 po strani', 'Bird dog s veslanjem'), x('kickback', 4, '15 po nozi', 'Do kraja raspona'), x('woodchop', 4, '15 po strani'), x('kosibucice', 3, '12', 'Horizontalno guranje za balans')] },
         { naziv: 'A5 · HIIT', vj: [H('mountainclimb', 4, '30 s', HIIT_NOTE), H('lakatkoljeno', 4), H('skokpovisenje', 4), H('plankhops', 4), H('nevidljiva', 4), H('planksavijanje', 4), H('hollow', 4), H('squatjacks', 4)] },
 
@@ -143,7 +143,7 @@
   /* ----- Gore i dolje: prilagođeno početnicama, od sprava prema slobodnim težinama ----- */
   { const ul = FS.GOTOVI.find((g) => g.id === 'upperlower4');
     if (ul) Object.assign(ul, {
-      naziv: 'Cijelo tijelo · 4 dana', nivo: 'početni', sedmica: 9, dana: 4, per: { tip: 'nema', deload: 0 },
+      naziv: 'Gornji / donji dio · 4 dana', nivo: 'početni', sedmica: 9, dana: 4, per: { tip: 'nema', deload: 0 },
       opis: 'Devet sedmica podjele gornji/donji dio tijela, četiri puta sedmično. Prve tri sedmice na spravama zbog kontrole, zatim bučice, a na kraju slobodne težine.',
       bilj: ['Tri faze po tri sedmice: sedmice 1–3 = Faza 1 (sprave), 4–6 = Faza 2 (bučice), 7–9 = Faza 3 (slobodne težine).', 'Raspored: gornji, donji, odmor, gornji, donji (npr. pon, uto, čet, pet).', 'Počni lakim teretom i nauči pokret. Zadnja dva ponavljanja trebaju biti teža, ali čista.', 'U sljedeću fazu prelazi kad su ti vježbe iz trenutne faze sigurne.', 'Pauze između serija su napisane uz svaku vježbu (90 do 120 s).'],
       dani: [
@@ -209,7 +209,7 @@
       dani: [
         { naziv: 'Dan 1 · Početnik', vj: [F('cucanjskok', 3, '8', 'Ukupno oko 40 doskoka s idućom vježbom', 120), F('skokpovisenje', 2, '8', 'Niska kutija', 120)] },
         { naziv: 'Dan 2 · Srednji', vj: [F('skokudalj', 4, '5', '', 120), F('skaterhop', 4, '5', 'Po strani', 120)] },
-        { naziv: 'Dan 3 · Napredni', vj: [F('dubinskok', 4, '10', 'Kutija 40–100 cm. Oko 40 doskoka. Uz strunjače.', 120)] },
+        { naziv: 'Dan 3 · Napredni', vj: [F('dubinskok', 4, '10', 'Kutija 60–100 cm. Oko 40 doskoka. Uz strunjače.', 120)] },
         { naziv: 'Dan 4 · Napredni B', vj: [F('tuckjump', 4, '5', '', 120), F('lungejump', 4, '5', 'Po nozi', 120)] }]
     }
   );
