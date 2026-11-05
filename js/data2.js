@@ -137,14 +137,14 @@
         { naziv: 'Trening 2', vj: [ex('hipthrust', 3, '12–15', 'S gumom oko koljena'), ex('bench', 3, '10–12'), ex('rdl', 3, '12', 'B-stance (jedna noga unaprijed)'), ex('veslanjekabl', 3, '12'), ex('stepup', 3, '12 po nozi'), ex('abdgumom', 2, '25', 'Sjedeći, trup nagnut naprijed')] },
         { naziv: 'Trening 3', vj: [ex('bridge', 3, '15–20', 'S šipkom i gumom oko koljena'), ex('ramena', 3, '8–10', 'Stojeći'), ex('frontcucanj', 3, '8–10'), ex('lat', 3, '10', 'Široki hvat'), ex('backext', 2, '12–15', 'S bučicom, naglasak na gluteusu'), ex('abdgumom', 2, '25', 'Stojeći')] },
         { naziv: 'Trening 4', vj: [ex('hipthrust', 3, '6–8', 'Sa šipkom, teže'), ex('potisakb', 3, '10–12'), ex('bugarski', 3, '10 po nozi', 'S bučicama'), ex('veslanjesipka', 3, '10–12'), ex('rdlsipka', 3, '10–12'), ex('abdgumom', 2, '20', 'Lateralni hod')] }] },
-    { id: 'napredni5', naziv: 'Napredni nivo – gluteus, 5× sedmično', opis: 'Osam sedmica, pet treninga: lower, upper, lower, upper + glute, lower. Tačno planiran volumen po mišićnim grupama.', nivo: 'napredni', sedmica: 8, dana: 5, cijena: 79, tip: 'gotov', uShopu: true,
+    { id: 'napredni5', naziv: 'Napredni nivo – gluteus, 5× sedmično', opis: 'Osam sedmica, pet treninga: lower, upper, lower, upper, lower. Tačno planiran volumen po mišićnim grupama.', nivo: 'napredni', sedmica: 8, dana: 5, cijena: 79, tip: 'gotov', uShopu: true,
       per: { tip: 'blok', deload: 4 },
       bilj: NAPOMENE_KNJIGA.concat(['Volumen je poravnat s tvojom bilješkom: oko 15 serija leđa, 14 grudi, 15 kvadricepsa, 20 glutea i 12 ramena sedmično.', 'U odnosu na original, izbačeni su prednji letovi za ramena (prednja ramena već dobijaju posao u potiscima), a gornji dio je dobio vježbe za grudi.']),
       dani: [
         { naziv: '1. Lower (kvadriceps)', vj: [ex('frontcucanj', 4, '5–6'), ex('rdlsipka', 3, '8'), ex('legcurl', 3, '12–15'), ex('legext', 3, '12'), ex('abdukcija', 4, '20–30')] },
         { naziv: '2. Upper', vj: [ex('ramena', 3, '10', 'Sjedeći potisak'), ex('lat', 4, '10', 'Uski obrnuti hvat'), ex('veslanjekabl', 4, '10–12'), ex('bench', 4, '6–8'), ex('kosibucice', 3, '8–10'), ex('bocno', 3, '15')] },
         { naziv: '3. Lower (gluteus)', vj: [ex('hipthrust', 4, '8–12', 'Zadnja serija 20 ponavljanja s 30 % manje kilaže'), ex('pullthrough', 3, '12'), ex('kickback', 3, '15'), ex('planka', 3, '30–45 s')] },
-        { naziv: '4. Upper + gluteus', vj: [ex('lat', 4, '10', 'Široki hvat'), ex('veslanje', 3, '10 po strani'), ex('kosibucice', 4, '12'), ex('potisakb', 3, '10–12'), ex('reversepec', 3, '15'), ex('bocno', 3, '15'), ex('biceps', 3, '12'), ex('tricepskabl', 3, '12')] },
+        { naziv: '4. Upper', vj: [ex('lat', 4, '10', 'Široki hvat'), ex('veslanje', 3, '10 po strani'), ex('kosibucice', 4, '12'), ex('potisakb', 3, '10–12'), ex('reversepec', 3, '15'), ex('bocno', 3, '15'), ex('biceps', 3, '12'), ex('tricepskabl', 3, '12')] },
         { naziv: '5. Lower (miks)', vj: [ex('bugarski', 4, '10 po nozi'), ex('legpress', 4, '12'), ex('backext', 3, '15', 'Naglasak na gluteusu'), ex('abdgumom', 3, '20', 'Lateralni hod'), ex('curlloptom', 3, '12')] }] }
   );
 
