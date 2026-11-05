@@ -67,8 +67,6 @@
         <a class="tile" href="#/prica">${icon('heart')}<b>Moja priča</b><small>Kron, operacije, povratak</small></a>
         <a class="tile" href="#/dijastaza">${icon('heart')}<b>Dijastaza</b><small>Siguran kućni program</small></a>
         ${(() => { const u = FS.Auth.user(); return u && u.role === 'trener' ? h`<a class="tile" href="#/zagrijavanje">${icon('flame')}<b>Zagrijavanje</b><small>Samo za tebe</small></a>` : ''; })()}<a class="tile" href="#/trcanje">${icon('flame')}<b>Trčanje</b><small>Planovi 5 km i 10 km</small></a>
-        <a class="tile" href="#/paketi?tab=personalni">${icon('user')}<b>Personalni treninzi</b><small>Individualno i 2 na 1</small></a>
-        <a class="tile" href="#/paketi?tab=tinejdzeri">${icon('shield')}<b>Tinejdžeri</b><small>Od 16 godina</small></a>
       </div>
       ${FS.igCard ? FS.igCard('Želiš plan baš za sebe?', 'Javi mi se na Instagramu i složit ćemo trening po tvom tempu.') : ''}
       <div class="card flat mt center"><p class="muted" style="margin:0">Imaš pitanje? Prijavi se i javit ću ti se.</p><button class="btn sm mt-s" data-act="lead">Pošalji upit</button></div>`;

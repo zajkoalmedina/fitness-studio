@@ -12,6 +12,7 @@
     if (!u || !p) return { on: false, has: false };
     if (u.role === 'trener') return { on: true, has: true };
     if (!(u.programi || []).includes(p.id)) return { on: false, has: false };
+    if ((u.dodijeljeno || []).includes(p.id)) return { on: true, has: true, trajno: true, dod: true };
     if (p.tip === 'individualni' || p.tip === 'vodic' || !p.sedmica) return { on: true, has: true, trajno: true };
     const st = (u.pstart || {})[p.id];
     if (!st) return { on: true, has: true, nov: true };
@@ -20,6 +21,7 @@
   };
   FS.accessLabel = (p, u) => {
     const a = FS.access(u, p);
+    if (a.dod) return 'Tvoj program';
     if (a.trajno) return p.tip === 'individualni' ? 'Individualni program' : 'Stalni pristup';
     if (a.nov) return 'Pristup traje ' + p.sedmica + ' sedmica od prvog otvaranja';
     if (a.expired) return 'Pristup istekao ' + fmtDate(a.end);
@@ -633,15 +635,16 @@
   const home0 = V.home;
   V.home = (el, p, q) => {
     home0(el, p, q);
-    const shop = Store.shop(), anchor = el.querySelector('.eyebrow.mt');
-    if (!shop.length || !anchor) return;
-    const sec = h`<div class="eyebrow">Gotovi programi i vodič</div><h2>Za samostalan trening</h2>
-      ${shop.map((pr) => h`<a class="price-card" href="${pr.tip === 'vodic' ? '#/ishrana' : '#/program/' + pr.id}"><div class="grow"><div class="nm" style="font-size:18px">${pr.naziv}</div><div class="ds">${pr.tip === 'vodic' ? 'e-vodič · 42 recepta · dnevni plan ishrane' : pr.sedmica + ' sedmica · ' + pr.dana + '× sedmično · pristup ' + pr.sedmica + ' sedmica'}</div></div><div class="price-tag">${pr.cijena} ${config.valuta}</div></a>`)}
+    const anchor = el.querySelector('.eyebrow.mt');
+    if (!anchor) return;
+    const sec = h`<div class="eyebrow">Treninzi uživo</div><h2>Personalni i tinejdžeri</h2>
+      <a class="card" href="#/paketi?tab=personalni" style="display:block"><b>Personalni treninzi</b><div class="small muted">Individualno i 2 na 1, Extreme Sport, Stup</div></a>
+      <a class="card" href="#/paketi?tab=tinejdzeri" style="display:block"><b>Tinejdžeri od 16 godina</b><div class="small muted">Siguran, stručno vođen trening</div></a>
       <a class="card" href="#/trcanje" style="display:block"><b>Trčanje za početnice: 5 km i 10 km</b><div class="small muted">Planovi i kalkulator tempa</div></a>
       <a class="btn block mb" href="#/programi">Svi programi →</a><div class="eyebrow mt">Prije početka</div>
       <a class="card" href="#/upitnik" style="display:block"><b>Upitnik za nove klijente</b><div class="small muted">Preuzmi ili popuni online prije početka coachinga.</div></a>`;
     anchor.insertAdjacentHTML('beforebegin', sec.s);
-    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 108</p>');
+    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 109</p>');
   };
 
   /* Kalkulatori: veza na suplemente */

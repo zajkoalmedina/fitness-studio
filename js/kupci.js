@@ -135,7 +135,7 @@
 
   /* ---------- lista klijenata po vrstama ---------- */
   FS.vrstaChips = (kl, cur) => {
-    const F = [['sve', 'Svi', () => true], ['online', 'Online', (u) => FS.vrsta(u) === 'online'], ['personalni', 'Personalni', (u) => FS.vrsta(u) === 'personalni'],
+    const F = [['online', 'Online', (u) => FS.vrsta(u) === 'online'], ['personalni', 'Personalni', (u) => FS.vrsta(u) === 'personalni'], ['sve', 'Svi', () => true],
       ['program', 'Kupci programa', (u) => FS.vrsta(u) === 'program' && !FS.accountExpired(u)], ['istekli', 'Istekli', (u) => FS.accountExpired(u)], ['nerazv', 'Nerazvrstani', (u) => !FS.vrsta(u)]];
     return { chips: h`<div class="chips mb">${F.map(([k, l, fn]) => h`<a class="chip ${cur === k ? 'on' : ''}" href="#/trener?tab=klijentice&v=${k}">${l} (${kl.filter(fn).length})</a>`)}</div>`, filter: (F.find((x) => x[0] === cur) || F[0])[2] };
   };

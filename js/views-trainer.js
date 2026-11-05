@@ -33,7 +33,7 @@
     if (tab === 'klijentice') {
       body = h`<button class="btn primary block mb" data-act="newc">${icon('plus')} ${FS.cloud ? 'Pozovi klijenta / klijenticu' : 'Novi klijent / klijentica'}</button>
         ${FS.cloud && FS.pozivnicePending ? FS.pozivnicePending() : ''}
-        ${(() => { vc = FS.vrstaChips ? FS.vrstaChips(kl, q.v || 'sve') : null; return vc ? vc.chips : ''; })()}
+        ${(() => { vc = FS.vrstaChips ? FS.vrstaChips(kl, q.v || 'online') : null; return vc ? vc.chips : ''; })()}
         ${(vc ? kl.filter(vc.filter) : kl).length ? (vc ? kl.filter(vc.filter) : kl).map((u) => { const last = Store.logsOf(u.id)[0], target = u.paket ? config.ciljPoPaketu[u.paket] : null;
           return h`<a class="ex" href="#/trener/klijentica/${u.id}"><div class="avatar" style="width:46px;height:46px">${FS.initials(u.ime)}</div><div class="grow"><b>${u.ime}</b><div class="small">${FS.vrstaTag ? FS.vrstaTag(u) : (u.paket || 'bez paketa')}${FS.payTag(u)}${u.aktivan === false ? ' · neaktivan/na' : ''} · ${last ? 'zadnji trening ' + fmtDate(last.datum) : 'nema treninga'}</div></div>${target ? h`<span class="badge">${Store.weekCount(u.id)}/${target}</span>` : ''}</a>`; }) : h`<div class="empty">Još nema klijentica.</div>`}`;
     }
@@ -196,7 +196,7 @@
       'change:paket': (s) => { u.paket = s.value || null; Store.save(); toast('Paket ažuriran.'); },
       'change:status': (s) => { u.aktivan = s.value === '1'; Store.save(); toast(u.aktivan ? 'Račun je aktivan.' : 'Račun je deaktiviran.'); },
       'click:renew': (b) => { (u.pstart = u.pstart || {})[b.dataset.id] = today(); Store.save(); toast('Pristup produžen: počinje od danas.'); rr(); },
-      'click:assign': () => { const v = $('[data-act=assignsel]', el).value; if (!v) return; u.programi.push(v); (u.pstart = u.pstart || {})[v] = today(); Store.save(); toast('Program dodijeljen.'); rr(); },
+      'click:assign': () => { const v = $('[data-act=assignsel]', el).value; if (!v) return; u.programi.push(v); (u.dodijeljeno = u.dodijeljeno || []).push(v); (u.pstart = u.pstart || {})[v] = today(); Store.save(); toast('Program dodijeljen (klijentica ga vidi kao svoj program).'); rr(); },
       'click:unassign': (b) => { u.programi = u.programi.filter((x) => x !== b.dataset.id); Store.save(); rr(); },
       'click:savenote': () => { u.biljeska = $('[data-act=note]', el).value.slice(0, 1500); Store.save(); toast('Bilješka sačuvana.'); },
       'submit:reply': (f) => { const t = String(formData(f).t || '').trim(); if (t.length < 2) { toast('Napiši odgovor.'); return; } const m = Store.db.poruke.find((x) => x.id === f.dataset.id); m.odgovor = t.slice(0, 1500); m.status = 'obradjeno'; Store.save(); toast('Odgovor poslan.'); rr(); },
