@@ -120,19 +120,30 @@
   });
   const NAME = { kardio_traka: 'Hodanje na traci (nivo 1, najlakše)', kardio_bicikl: 'Sobni bicikl (nivo 2)', kardio_stepenice: 'Stepenice (nivo 3, najteže)' };
   const ZAM = { kardio_traka: 'sobnim biciklom', kardio_bicikl: 'hodanjem na traci', kardio_stepenice: 'sobnim biciklom' };
-  const NOTA = (id) => 'Kardio na kraju: ' + NAME[id] + '. Umjeren tempo (možeš govoriti u kratkim rečenicama). Slobodno zamijeni ' + ZAM[id] + '.';
-  /* po sedmicama: 1 hodanje, 2 bicikl, 3 stepenice, 4 bez kardija (deload), 5 bicikl, 6 i 7 stepenice, 8 bez kardija (deload) */
-  const LJESTVICA = ['kardio_traka', 'kardio_bicikl', 'kardio_stepenice', null, 'kardio_bicikl', 'kardio_stepenice', 'kardio_stepenice', null].map((id) => (id ? { id, n: NOTA(id) } : { id: 'kardio_traka', n: '', skip: true }));
+  const INT = {
+    lagani: 'LAGAN intenzitet (3–4 od 10): možeš voditi običan razgovor bez zadihanosti.',
+    umjeren: 'UMJEREN intenzitet (5–6 od 10): disanje je ubrzano, možeš govoriti u kratkim rečenicama, ali ne pjevati.'
+  };
+  const RAZLOG = { teski: 'Težak trening nogu, zato lagan kardio za oporavak. ', deload: 'Deload sedmica, zato lagan kardio. ', lagan: 'Lakši trening snage, zato umjeren kardio. ' };
+  const NOTA = (id, inten, razlog) => 'Kardio na kraju: ' + NAME[id] + '. ' + RAZLOG[razlog] + INT[inten] + ' Slobodno zamijeni ' + ZAM[id] + '.';
+  /* vrsta po sedmicama: 1 hodanje, 2 bicikl, 3 stepenice, 4 hodanje (deload), 5 bicikl, 6 i 7 stepenice, 8 hodanje (deload);
+     intenzitet: poslije teškog treninga nogu lagan, poslije lakšeg treninga snage umjeren, a u deload sedmicama (4. i 8.) uvijek lagan */
+  const VRSTE = ['kardio_traka', 'kardio_bicikl', 'kardio_stepenice', 'kardio_traka', 'kardio_bicikl', 'kardio_stepenice', 'kardio_stepenice', 'kardio_traka'];
+  const ljestvica = (teski) => VRSTE.map((id, w) => {
+    const deload = (w + 1) % 4 === 0;
+    return deload ? { id, n: NOTA(id, 'lagani', 'deload') } : teski ? { id, n: NOTA(id, 'lagani', 'teski') } : { id, n: NOTA(id, 'umjeren', 'lagan') };
+  });
   const dodaj = (id, plan) => {
     const g = (FS.GOTOVI || []).find((x) => x.id === id);
     if (!g) return;
     Object.keys(plan).forEach((i) => {
       const d = g.dani[+i]; if (!d || d.vj.some((v) => v.kw)) return;
-      d.vj.push({ id: 'kardio_traka', s: 1, r: plan[i] + ' min', n: LJESTVICA[0].n, p: 0, fix: true, kw: LJESTVICA });
+      const lj = ljestvica(plan[i][1]);
+      d.vj.push({ id: 'kardio_traka', s: 1, r: plan[i][0] + ' min', n: lj[0].n, p: 0, fix: true, kw: lj });
     });
-    g.bilj = (g.bilj || []).concat(['Kardio na kraju treninga radiš dva puta sedmično (na dva dana označena u programu), ne mora poslije svakog treninga. Težina raste po sedmicama: 1. sedmica hodanje na traci, 2. sobni bicikl, 3. stepenice, pa 5. bicikl, 6. i 7. stepenice. U deload sedmicama (4. i 8.) kardija nema. Tempo je umjeren, a trajanje je prilagođeno dužini treninga, tako da cijeli trening ostaje okvirno do 1 sat i 10 minuta.']);
+    g.bilj = (g.bilj || []).concat(['Kardio na kraju treninga radiš dva puta sedmično (na dva dana označena u programu), ne mora poslije svakog treninga. Vrsta se mijenja po sedmicama: 1. hodanje na traci, 2. sobni bicikl, 3. stepenice, 4. hodanje, 5. bicikl, 6. i 7. stepenice, 8. hodanje.', 'Intenzitet prati težinu treninga: poslije teškog treninga nogu kardio je lagan (3–4 od 10), poslije lakšeg treninga snage umjeren (5–6 od 10), a u deload sedmicama (4. i 8.) uvijek lagan. Trajanje je prilagođeno dužini treninga, tako da cijeli trening ostaje okvirno do 1 sat i 10 minuta.']);
   };
-  dodaj('gluteus', { 1: 20, 3: 20 });
-  dodaj('glutefb4', { 0: 10, 2: 15 });
-  dodaj('napredni5', { 1: 15, 3: 15 });
+  dodaj('gluteus', { 1: [20, false], 3: [20, false] });
+  dodaj('glutefb4', { 0: [10, true], 2: [15, true] });
+  dodaj('napredni5', { 1: [15, false], 3: [15, false] });
 })();
