@@ -54,6 +54,7 @@
 
   /* primjenjuje sedmicu i dan na jednu vježbu iz programa; vraća {s, r, n, pct} */
   FS.applyWeek = (p, week, dayIdx, x) => {
+    if (x.kw && x.kw.length) { const k = x.kw[(Math.max(1, week | 0) - 1) % x.kw.length]; return { s: x.s, r: x.r, pct: null, tag: '', id: k.id, n: k.n }; }   /* kardio: vrsta se mijenja po sedmicama */
     if (x.fix) return { s: x.s, r: x.r, pct: null, tag: '' };   /* HIIT cirkuiti: broj krugova i trajanje se ne mijenjaju po sedmici */
     const wi = FS.weekInfo(p, week), loaded = isLoaded(x.id);
     let s = x.s, r = x.r, pct = null, tag = '';

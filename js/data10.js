@@ -118,18 +118,21 @@
     if (FS.EXERCISES.some((e) => e.id === id)) return;
     FS.EXERCISES.push({ id, naziv, grupa: 'Kardio', nivo, oprema, dij: 'da', koraci, savjeti, greske, video: '' });
   });
-  const T = 'kardio_traka', B = 'kardio_bicikl', S = 'kardio_stepenice';
-  const NAME = { [T]: 'Hodanje na traci (nivo 1, najlakše)', [B]: 'Sobni bicikl (nivo 2)', [S]: 'Stepenice (nivo 3, najteže)' };
+  const NAME = { kardio_traka: 'Hodanje na traci (nivo 1, najlakše)', kardio_bicikl: 'Sobni bicikl (nivo 2)', kardio_stepenice: 'Stepenice (nivo 3, najteže)' };
+  const ZAM = { kardio_traka: 'sobnim biciklom', kardio_bicikl: 'hodanjem na traci', kardio_stepenice: 'sobnim biciklom' };
+  const NOTA = (id) => 'Kardio na kraju: ' + NAME[id] + '. Umjeren tempo (možeš govoriti u kratkim rečenicama). Slobodno zamijeni ' + ZAM[id] + '.';
+  /* po sedmicama: 1 hodanje, 2 bicikl, 3 stepenice, 4 hodanje (deload), 5 bicikl, 6 stepenice, 7 stepenice, 8 hodanje (deload) */
+  const LJESTVICA = ['kardio_traka', 'kardio_bicikl', 'kardio_stepenice', 'kardio_traka', 'kardio_bicikl', 'kardio_stepenice', 'kardio_stepenice', 'kardio_traka'].map((id) => ({ id, n: NOTA(id) }));
   const dodaj = (id, plan) => {
     const g = (FS.GOTOVI || []).find((x) => x.id === id);
     if (!g) return;
-    g.dani.forEach((d, i) => {
-      const pl = plan[i]; if (!pl || d.vj.some((v) => /^kardio_/.test(v.id))) return;
-      d.vj.push({ id: pl[0], s: 1, r: pl[1] + ' min', n: 'Kardio na kraju: ' + NAME[pl[0]] + '. Umjeren tempo (možeš govoriti u kratkim rečenicama). Slobodno zamijeni sa ' + (pl[0] === T ? 'sobnim biciklom' : pl[0] === B ? 'hodanjem na traci' : 'sobnim biciklom') + '.', p: 0, fix: true });
+    Object.keys(plan).forEach((i) => {
+      const d = g.dani[+i]; if (!d || d.vj.some((v) => v.kw)) return;
+      d.vj.push({ id: 'kardio_traka', s: 1, r: plan[i] + ' min', n: LJESTVICA[0].n, p: 0, fix: true, kw: LJESTVICA });
     });
-    g.bilj = (g.bilj || []).concat(['Na kraju svakog treninga snage je kardio od 10 do 20 minuta, umjerenim tempom. Poslije teškog treninga nogu ide najlakši nivo (hodanje na traci), a poslije gornjeg dijela tijela teži (bicikl ili stepenice). Što je glavni dio duži, kardio je kraći, pa cijeli trening ostaje okvirno do 1 sat i 10 minuta.']);
+    g.bilj = (g.bilj || []).concat(['Kardio na kraju treninga radiš dva puta sedmično (na dva dana označena u programu), ne mora poslije svakog treninga. Težina raste po sedmicama: 1. sedmica hodanje na traci, 2. sobni bicikl, 3. stepenice, 4. opet hodanje (deload), pa 5. bicikl, 6. i 7. stepenice, 8. hodanje. Tempo je umjeren, a trajanje je prilagođeno dužini treninga, tako da cijeli trening ostaje okvirno do 1 sat i 10 minuta.']);
   };
-  dodaj('gluteus', [[T, 10], [S, 20], [T, 10], [S, 20]]);
-  dodaj('glutefb4', [[T, 10], [B, 10], [B, 15], [T, 10]]);
-  dodaj('napredni5', [[T, 15], [S, 15], [T, 10], [S, 10]]);
+  dodaj('gluteus', { 1: 20, 3: 20 });
+  dodaj('glutefb4', { 0: 10, 2: 15 });
+  dodaj('napredni5', { 1: 15, 3: 15 });
 })();
