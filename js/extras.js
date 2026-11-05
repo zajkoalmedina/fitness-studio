@@ -52,7 +52,7 @@
     }
     if (!n) return bad('Unesi barem jednu vrijednost.');
     if (!d.d || d.d > today()) return bad('Datum ne može biti u budućnosti.');
-    Store.db.mjere.push(o); Store.save(); toast('Mjerenje sačuvano.');
+    o.ts = Date.now(); Store.db.mjere.push(o); Store.save(); toast('Mjerenje sačuvano.');
     return true;
   };
 
@@ -648,7 +648,7 @@
     const hero = el.querySelector('section');
     if (vc && hero) hero.insertAdjacentHTML('afterend', vc.s);
     anchor.insertAdjacentHTML('beforebegin', sec.s);
-    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 119</p>');
+    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 120</p>');
   };
 
   /* Kalkulatori: veza na suplemente */

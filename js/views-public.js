@@ -213,14 +213,14 @@
 
   /* ================= VJEŽBE ================= */
   function videoEmbed(url) {
-    if (url && /^fs:vid\//.test(url)) return h`<video data-fsvid="${url.slice(3)}" controls playsinline preload="metadata" style="width:100%;border-radius:12px"></video><div class="small muted" data-fsmsg="1">Učitavam video…</div>`;
-    if (url && /^videos\/[\w.-]+\.mp4$/.test(url)) return h`<video src="${url}" controls playsinline preload="metadata"></video>`;
+    if (url && /^fs:vid\//.test(url)) return h`<video data-fsvid="${url.slice(3)}" controls controlsList="nodownload noremoteplayback" disablepictureinpicture oncontextmenu="return false" playsinline preload="metadata" style="width:100%;border-radius:12px"></video><div class="small muted" data-fsmsg="1">Učitavam video…</div>`;
+    if (url && /^videos\/[\w.-]+\.mp4$/.test(url)) return h`<video src="${url}" controls controlsList="nodownload noremoteplayback" disablepictureinpicture oncontextmenu="return false" playsinline preload="metadata"></video>`;
     if (!url || !/^https:\/\//i.test(url)) return '';
     let m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/);
     if (m) return h`<iframe src="https://www.youtube-nocookie.com/embed/${m[1]}" title="Video uputa" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
     m = url.match(/vimeo\.com\/(\d+)/);
     if (m) return h`<iframe src="https://player.vimeo.com/video/${m[1]}" title="Video uputa" allow="picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
-    if (/\.(mp4|webm|mov)(\?.*)?$/i.test(url)) return h`<video src="${url}" controls playsinline preload="metadata"></video>`;
+    if (/\.(mp4|webm|mov)(\?.*)?$/i.test(url)) return h`<video src="${url}" controls controlsList="nodownload noremoteplayback" disablepictureinpicture oncontextmenu="return false" playsinline preload="metadata"></video>`;
     return h`<a class="btn" href="${url}" target="_blank" rel="noopener">Otvori video</a>`;
   }
   FS.videoEmbed = videoEmbed;

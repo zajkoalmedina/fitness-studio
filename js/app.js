@@ -36,7 +36,7 @@
     const acc = u ? (u.role === 'trener' ? ['#/trener', 'Panel', 'users'] : ['#/moj', 'Moj prostor', 'user']) : ['#/prijava', 'Prijava', 'user'];
     const items0 = [['#/', 'Početna', 'home', ['home']], ['#/programi', 'Programi', 'list', ['programi', 'program', 'dijastaza', 'kondicija', 'kond']], ['#/vjezbe', 'Vježbe', 'dumbbell', ['vjezbe', 'vjezba']], ['#/alati', 'Alati', 'calc', ['alati', 'ishrana', 'suplementi']], [acc[0], acc[1], acc[2], ['prijava', 'moj', 'trening_novi', 'trener', 'trener_klijentica', 'trener_program']]];
     const items = items0.filter((it) => it[0] !== '#/vjezbe' || (u && u.role === 'trener'));
-    $('#tabbar').innerHTML = h`${items.map(([href, label, ic, names]) => h`<a class="tab ${names.includes(name) ? 'on' : ''}" href="${href}" ${names.includes(name) ? 'aria-current="page"' : ''}>${icon(ic)}<span>${label}</span></a>`)}`.s;
+    $('#tabbar').innerHTML = h`${items.map(([href, label, ic, names]) => h`<a class="tab ${names.includes(name) ? 'on' : ''}" href="${href}" ${names.includes(name) ? 'aria-current="page"' : ''}>${icon(ic)}<span>${label}${href === '#/trener' && FS.obavNovo && FS.obavNovo() ? h` <b style="background:var(--rose-2);color:#fff;border-radius:99px;padding:0 6px;font-size:11px">${FS.obavNovo()}</b>` : ''}</span></a>`)}`.s;
   }
   FS.refreshNav = () => renderNav(FS.currentRoute);
 

@@ -9,7 +9,7 @@
   const nav = (tab) => h`<div class="chips">${TABS.map(([k, l]) => h`<a class="chip ${tab === k ? 'on' : ''}" href="#/trener?tab=${k}">${l}</a>`)}</div>`;
   const nameOf = (id) => { const u = Store.user(id); return u ? u.ime : '(izbrisan račun)'; };
   const isUrl = (s) => !s || /^https:\/\/[^\s]+$/i.test(s);
-  const newCount = () => FS.chat.unread('trener') + (Store.db.upitnici || []).filter((x) => !x.tip && !x.vid).length + (Store.db.zahtjevi || []).filter((z) => z.status === 'novo').length + Store.db.poruke.filter((m) => m.status === 'novo').length + Store.db.prijave.filter((m) => m.status === 'novo').length;
+  const newCount = () => (FS.obavNovo ? FS.obavNovo() : 0) + FS.chat.unread('trener') + (Store.db.upitnici || []).filter((x) => !x.tip && !x.vid).length + (Store.db.zahtjevi || []).filter((z) => z.status === 'novo').length + Store.db.poruke.filter((m) => m.status === 'novo').length + Store.db.prijave.filter((m) => m.status === 'novo').length;
 
   /* ================= PANEL ================= */
   V.trener = (el, p, q) => {

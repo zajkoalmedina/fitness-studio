@@ -238,7 +238,7 @@
         }).filter((v) => v.serije.length);
         if (!vj.length) { er.textContent = 'Označi barem jednu završenu seriju (✓) s brojem ponavljanja.'; er.hidden = false; return; }
         const before = Store.best(u.id);
-        const log = { id: uid(), userId: u.id, datum: today(), programId: d.programId, dan: d.dan, trajanje: Math.min(600, Math.max(1, num(x.tr) || 1)), rpe: num(x.rpe) || null, biljeska: String(x.b || '').slice(0, 500), vjezbe: vj };
+        const log = { id: uid(), ts: Date.now(), userId: u.id, datum: today(), programId: d.programId, dan: d.dan, trajanje: Math.min(600, Math.max(1, num(x.tr) || 1)), rpe: num(x.rpe) || null, biljeska: String(x.b || '').slice(0, 500), vjezbe: vj };
         if (d.editId) { const ol = Store.db.logs.find((l) => l.id === d.editId); if (ol) { log.id = ol.id; log.datum = ol.datum; Object.assign(ol, log); } else Store.db.logs.push(log); } else Store.db.logs.push(log);
         Store.save(); Store.draft.clear(); d = null;
         const after = Store.best(u.id), pr = Object.keys(after).filter((k) => before[k] && after[k].kg > before[k].kg);
