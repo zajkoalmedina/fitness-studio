@@ -31,3 +31,29 @@
   FS.VIDEOS_SADRZI = [['clean and press', 'videos/kbcleanpress.mp4'], ['incline push', 'videos/sklekincline.mp4'], ['incline sklek', 'videos/sklekincline.mp4']];
   FS.VIDEOS_NAZIV = { 'single leg press': 'videos/legpress1.mp4', 'kb clean and press – nabačaj i potisak girje': 'videos/kbcleanpress.mp4', 'kb clean and press - nabačaj i potisak girje': 'videos/kbcleanpress.mp4' };
 })();
+
+/* HIIT dodatak: kratki cirkuiti (3 nivoa) koje klijentica dodaje na dan bez teškog treninga nogu */
+(function () {
+  const FS = (window.FS = window.FS || {});
+  if (!FS.GOTOVI || FS.GOTOVI.some((g) => g.id === 'hiit')) return;
+  const c = (rad, rundi) => (id, n, last) => ({ id, s: rundi, r: rad + ' s', n: n || '', p: last ? 60 : 0 });
+  const P = c(30, 3), Sr = c(40, 4), N = c(45, 4);
+  const KRUG = (rad, rundi) => 'Cirkuit: svaku vježbu radiš ' + rad + ' s bez pauze, odmor 60 s tek kad završiš cijeli krug. Ukupno ' + rundi + ' kruga.';
+  FS.GOTOVI.push({
+    id: 'hiit', naziv: 'HIIT dodatak · 3 nivoa', nivo: 'početni', sedmica: 4, dana: 3, cijena: 0, tip: 'gotov', uShopu: false, samoTrener: true,
+    opis: 'Kratki HIIT cirkuiti od oko 11 do 21 minute u tri nivoa (početni bez skokova, srednji, napredni). Dodaju se uz program snage na dan bez teškog treninga nogu.',
+    per: { tip: 'nema', deload: 0 },
+    bilj: [
+      'Ovo je dodatak uz glavni program, ne zamjena za trening snage. Radi ga na dan bez teškog treninga nogu, najmanje dan prije sljedećeg lower treninga.',
+      'Dovoljno je 1 do 2 puta sedmično. Više nije bolje: oporavak je dio treninga.',
+      'Odaberi nivo prema iskustvu: Početni (bez skokova, oko 11 min), Srednji (oko 19 min), Napredni (oko 21 min).',
+      'Prije početka 3 do 5 minuta lagane šetnje ili zagrijavanja. Tempo je težak, ali tehnika ostaje čista; ako forma popusti, smanji tempo ili stani.',
+      'Ako imaš probleme s koljenima, dijastazu, ili si nakon porođaja, preskoči skokove i dogovori vježbe s trenericom ili ljekarom.'
+    ],
+    dani: [
+      { naziv: 'HIIT · Početni (bez skokova)', vj: [P('cucanj', KRUG(30, 3)), P('stolicasklek'), P('iskorak'), P('mountainclimb', 'Sporo, korak po korak'), P('highknees', 'Marširanje, bez skoka'), P('twist', '', true)] },
+      { naziv: 'HIIT · Srednji', vj: [Sr('jumpingjack', KRUG(40, 4)), Sr('cucanj'), Sr('skaterhop'), Sr('mountainclimb'), Sr('plankhops'), Sr('twist', '', true)] },
+      { naziv: 'HIIT · Napredni', vj: [N('kbswing', KRUG(45, 4)), N('burpee'), N('cucanjskok'), N('skaterhop'), N('plankhops'), N('mountainclimb', '', true)] }
+    ]
+  });
+})();
