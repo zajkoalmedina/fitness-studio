@@ -57,3 +57,51 @@
     ]
   });
 })();
+
+/* Glute Pro: peti trening je opcionalni HIIT koji se mijenja svake sedmice (A, B, C, D); HIIT opcionalno i u ostalim programima */
+(function () {
+  const FS = (window.FS = window.FS || {});
+  const G = (id) => (FS.GOTOVI || []).find((g) => g.id === id);
+  const h = (rad, rundi) => (id, n, last) => ({ id, s: rundi, r: rad + ' s', n: n || '', p: last ? 60 : 0, fix: true });
+  const krug = (rad, rundi) => 'Cirkuit: svaku vježbu radiš ' + rad + ' s bez pauze, odmor 60 s tek kad završiš cijeli krug. Ukupno ' + rundi + ' kruga.';
+  const L = h(30, 3), M = h(40, 4);
+  const lagani = () => [L('cucanj', krug(30, 3)), L('stolicasklek'), L('iskorak'), L('mountainclimb', 'Sporo, korak po korak'), L('highknees', 'Marširanje, bez skoka'), L('twist', '', true)];
+  const srednji = () => [M('jumpingjack', krug(40, 4)), M('cucanj'), M('skaterhop'), M('mountainclimb'), M('plankhops'), M('twist', '', true)];
+
+  /* ---- Glute Pro: 4 treninga snage + opcionalni HIIT ---- */
+  const n5 = G('napredni5');
+  if (n5 && n5.dani.length === 5 && !n5.dani.some((d) => /HIIT/.test(d.naziv))) {
+    const o = (id, s, r, n) => ({ id, s, r, n: n || '' });
+    const d1 = n5.dani[0], d3 = n5.dani[2];
+    d1.vj.splice(1, 0, o('legpress', 3, '10–12'));
+    const i = d3.vj.findIndex((v) => v.id === 'hipthrust');
+    d3.vj.splice(i + 1, 0, o('bugarski', 3, '10 po nozi'));
+    const r = d3.vj.findIndex((v) => v.id === 'rdlsipka' || v.id === 'pullthrough');
+    d3.vj.splice(r + 1, 0, o('backext', 3, '15', 'Naglasak na gluteusu'));
+    const A = [M('kbswing', krug(40, 4)), M('jumpingjack'), M('iskorak'), M('mountainclimb'), M('skaterhop'), M('twist', '', true)];
+    const B = [M('skokpovisenje', krug(40, 4)), M('plankhops'), M('cucanj'), M('squatjacks'), M('planksavijanje'), M('highknees', '', true)];
+    const C = [M('cucanjskok', krug(40, 4)), M('mountainclimb'), M('nevidljiva'), M('iskorak'), M('sklopke'), M('skaterhop', '', true)];
+    n5.dani = n5.dani.slice(0, 4).concat([
+      { naziv: '5. HIIT A · sedmice 1 i 5 (opcionalno)', vj: A },
+      { naziv: '5. HIIT B · sedmice 2 i 6 (opcionalno)', vj: B },
+      { naziv: '5. HIIT C · sedmice 3 i 7 (opcionalno)', vj: C },
+      { naziv: '5. HIIT D · sedmice 4 i 8, lakši (opcionalno)', vj: lagani() }]);
+    n5.opis = 'Osam sedmica: četiri treninga snage (lower, upper, lower, upper) i peti trening, opcionalni HIIT, koji se mijenja svake sedmice. Tačno planiran volumen po mišićnim grupama.';
+    n5.bilj = n5.bilj.map((b) => b.replace('15 kvadricepsa', '13 kvadricepsa'))
+      .concat(['Peti trening je HIIT (oko 11 do 21 minuta) i nije obavezan. Mijenja se svake sedmice: A, B, C, pa lakši D u deload sedmici. Radi ga na dan bez teškog treninga nogu. Ako si umorna, preskoči ga: trening snage ima prednost.']);
+  }
+
+  /* ---- ostali programi: jedan opcionalni HIIT dan na kraju ---- */
+  const dodaj = (id, naziv, vj, ime) => {
+    const p = G(id);
+    if (!p || p.dani.some((d) => /HIIT/.test(d.naziv))) return;
+    p.dani.push({ naziv, vj });
+    p.bilj = (p.bilj || []).concat([ime]);
+  };
+  const OPC = (min, bez) => 'Opcionalno: HIIT trening od oko ' + min + ' minuta, jednom sedmično, na dan bez teškog treninga nogu' + (bez ? ' (bez skokova)' : '') + '. Preskoči ga ako si umorna: glavni trening ima prednost.';
+  dodaj('gluteus', 'Opcionalno · HIIT', srednji(), OPC(19));
+  dodaj('glutefb4', 'Opcionalno · HIIT', srednji(), OPC(19));
+  dodaj('fullbody', 'Opcionalno · HIIT (bez skokova)', lagani(), OPC(11, true));
+  dodaj('pocetnice3', 'Opcionalno · HIIT (bez skokova)', lagani(), OPC(11, true));
+  dodaj('upperlower4', 'Opcionalno · HIIT (bez skokova)', lagani(), OPC(11, true));
+})();
