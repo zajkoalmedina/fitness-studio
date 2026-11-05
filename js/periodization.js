@@ -83,10 +83,31 @@
 
   FS.weekDays = (p, week) => (p.dani || []).map((d, di) => ({ naziv: d.naziv, vj: d.vj.map((x) => ({ ...x, ...FS.applyWeek(p, week, di, x) })).filter((x) => !x.skip) }));
 
+
+  /* koji se dani rade u kojoj sedmici: [{i: indeks dana, opt: opcionalni trening}] */
+  const rang = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
+  const PLAN = {
+    fullbody: () => rang(0, 3),
+    gluteus: () => rang(0, 4),
+    glutefb4: () => rang(0, 4),
+    napredni5: (w) => rang(0, 3).concat([4 + ((w - 1) % 4)]),
+    pocetnice3: (w) => { const f = Math.min(2, Math.floor((w - 1) / 3)); return rang(3 * f, 3 * f + 2).concat([9]); },
+    upperlower4: (w) => { const f = Math.min(2, Math.floor((w - 1) / 3)); return rang(4 * f, 4 * f + 3).concat([12]); },
+    oblikuj: (w) => (w <= 4 ? rang(0, 4) : rang(5, 9)),
+    sculpt: (w) => { const f = Math.min(2, Math.floor((w - 1) / 2)); return rang(5 * f, 5 * f + 4); },
+    conjugate: (w) => { const b = ((w - 1) % 3) * 4; return rang(b, b + 3); }
+  };
+  FS.weekPlan = (p, week) => {
+    const n = (p.dani || []).length, f = PLAN[p.id];
+    const idx = (f ? f(Math.max(1, week | 0)) : rang(0, n - 1)).filter((i) => i >= 0 && i < n);
+    return idx.map((i) => ({ i, opt: /opcionalno|HIIT/i.test(p.dani[i].naziv) && p.id !== 'hiit' }));
+  };
+
   /* ukupno direktnih serija po mišićnoj grupi u sedmici */
   FS.weekVolume = (p, week) => {
     const vol = {}; FS.MISICI.forEach((m) => { vol[m] = 0; });
-    FS.weekDays(p, week || 1).forEach((d) => d.vj.forEach((x) => { const m = FS.primMisic(x.id); if (m && vol[m] != null) vol[m] += x.s; }));
+    const dd = FS.weekDays(p, week || 1);
+    FS.weekPlan(p, week || 1).filter((z) => !z.opt).map((z) => dd[z.i]).forEach((d) => d.vj.forEach((x) => { const m = FS.primMisic(x.id); if (m && vol[m] != null) vol[m] += x.s; }));
     return vol;
   };
 

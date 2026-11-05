@@ -2,7 +2,7 @@
 (function () {
   const FS = (window.FS = window.FS || {});
   const M = (p, s) => ({ p, s: s || [] });
-  FS.MISIC_NAZIV = { 'grudi': 'prsni mišići', 'ramena': 'ramena', 'biceps': 'biceps', 'triceps': 'triceps', 'podlaktice': 'podlaktice (hvat)', 'leđa': 'gornji dio leđa', 'donja leđa': 'donji dio leđa', 'core': 'trbušni mišići (core)', 'gluteus': 'gluteusi', 'kvadriceps': 'prednja loža (kvadriceps)', 'zadnja loža': 'zadnja loža', 'listovi': 'listovi', 'aduktori': 'unutrašnja strana natkoljenice', 'pregibači kuka': 'pregibači kuka' };
+  FS.MISIC_NAZIV = { 'grudi': 'prsni mišići', 'ramena': 'ramena', 'biceps': 'biceps', 'triceps': 'triceps', 'podlaktice': 'podlaktice (hvat)', 'leđa': 'gornji dio leđa', 'donja leđa': 'donji dio leđa', 'core': 'trbušni mišići (core)', 'gluteus': 'gluteus', 'kvadriceps': 'prednja loža (kvadriceps)', 'zadnja loža': 'zadnja loža', 'listovi': 'listovi', 'aduktori': 'unutrašnja strana natkoljenice', 'pregibači kuka': 'pregibači kuka' };
   FS.MUSKUL = {
     cucanj: M(['kvadriceps', 'gluteus'], ['zadnja loža', 'aduktori', 'core', 'donja leđa']),
     goblet: M(['kvadriceps', 'gluteus'], ['aduktori', 'core', 'donja leđa', 'podlaktice']),
@@ -65,7 +65,7 @@
   };
   Object.assign(FS.MUSKUL, FS.EXTRA_MUSKUL || {});
   /* za vježbe koje je trenerica dodala sama: grupa vježbe daje okvirnu sliku */
-  const GR = { Noge: M(['kvadriceps', 'gluteus']), Gluteusi: M(['gluteus'], ['zadnja loža']), Leđa: M(['leđa'], ['biceps']), Prsa: M(['grudi'], ['triceps']), Ramena: M(['ramena']), Ruke: M(['biceps', 'triceps']), Core: M(['core']), Mobilnost: M(['donja leđa'], ['leđa']) };
+  const GR = { Noge: M(['kvadriceps', 'gluteus']), Gluteus: M(['gluteus'], ['zadnja loža']), Leđa: M(['leđa'], ['biceps']), Prsa: M(['grudi'], ['triceps']), Ramena: M(['ramena']), Ruke: M(['biceps', 'triceps']), Core: M(['core']), Mobilnost: M(['donja leđa'], ['leđa']) };
   FS.muskulOf = (id) => {
     if (FS.MUSKUL[id]) return FS.MUSKUL[id];
     const e = FS.Store && FS.Store.ex ? FS.Store.ex(id) : null;

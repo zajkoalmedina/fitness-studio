@@ -30,7 +30,7 @@
       lista: [['Goblet čučanj', '10'], ['Iskorak u hodu', '10 po nozi'], ['Glute bridge s bučicom', '15'], ['Skok iz čučnja', '8']],
       savjet: 'Biraj težinu s kojom bez problema odradiš 15 ponavljanja.' },
     { id: 'amrap-gornji', naziv: 'AMRAP 12 – gornji dio tijela', tip: 'AMRAP', min: 12, nivo: 'početni', oprema: 'Bučice',
-      opis: 'Krugovi gornjeg dijela tijela, balans uz treninge za noge i gluteuse.',
+      opis: 'Krugovi gornjeg dijela tijela, balans uz treninge za noge i gluteus.',
       lista: [['Sklek', '8'], ['Veslanje jednom bučicom', '8 po strani'], ['Potisak bučicama iznad glave', '8'], ['Planka', '30 s']],
       savjet: 'Kvalitet ponavljanja je važniji od broja krugova.' },
     { id: 'tabata-core', naziv: 'Tabata 20/10 – 4 vježbe, 8 rundi', tip: 'TABATA', rad: 20, odmor: 10, krugova: 8, nivo: 'srednji', oprema: 'Bez opreme',
@@ -58,8 +58,8 @@
       ['Leg press', 'Potisak s grudi na spravi', 'Veslanje na spravi', 'Čučanj s bučicom', 'Lat sprava', 'Hip thrust ili most', 'Potisak za ramena bučicama', 'Leg curl', 'Biceps s bučicama', 'Triceps na kablu', 'Planka', 'Veslački ergometar ili bicikl'], 'Prvi krug radi s malo rezerve, u drugom krugu možeš dodati težinu.'),
     KR('krug-10-kardio', 'Kružni 10 stanica · kondicija', 30, 30, 4, 'srednji', 'Bez opreme ili girja', 'Deset stanica, 4 kruga, 30 s rada i 30 s odmora. Oko 40 minuta, za dane kad hoćeš kondiciju.',
       ['Skok iz čučnja', 'Alpinisti', 'Burpee (bez skoka ako treba)', 'Skakanje vijače', 'Girja zamah', 'Visoka koljena', 'Sklek', 'Skater skokovi', 'Plank jacks', 'Penjanje na klupu'], 'Ravnomjeran tempo. Ako je prejako, skrati na 3 kruga ili prelazi na lakše varijante bez skoka.'),
-    KR('krug-9-donji', 'Kružni 9 stanica · noge i gluteusi', 45, 15, 3, 'srednji', 'Bučice, guma, klupa', 'Devet stanica, 3 kruga, 45 s rada i 15 s prelaza. Oko 27 minuta.',
-      ['Goblet čučanj', 'Hip thrust', 'Bugarski čučanj (lijeva)', 'Bugarski čučanj (desna)', 'Rumunsko mrtvo dizanje', 'Bočni koraci s gumom', 'Abdukcija s gumom', 'Wall sit', 'Skokovi na klupu'], 'Odmor između krugova 90 s. Ovo je volumen za noge i gluteuse.'),
+    KR('krug-9-donji', 'Kružni 9 stanica · noge i gluteus', 45, 15, 3, 'srednji', 'Bučice, guma, klupa', 'Devet stanica, 3 kruga, 45 s rada i 15 s prelaza. Oko 27 minuta.',
+      ['Goblet čučanj', 'Hip thrust', 'Bugarski čučanj (lijeva)', 'Bugarski čučanj (desna)', 'Rumunsko mrtvo dizanje', 'Bočni koraci s gumom', 'Abdukcija s gumom', 'Wall sit', 'Skokovi na klupu'], 'Odmor između krugova 90 s. Ovo je volumen za noge i gluteus.'),
     KR('krug-8-gornji', 'Kružni 8 stanica · gornji dio i trup', 40, 20, 3, 'početni', 'Bučice, guma', 'Osam stanica, 3 kruga, 40 s rada i 20 s prelaza. Oko 24 minute.',
       ['Sklek', 'Veslanje s gumom', 'Potisak za ramena bučicama', 'Face pull s gumom', 'Biceps s bučicama', 'Triceps iza glave', 'Planka s dodirom ramena', 'Superman'], 'Balans potiska i povlačenja: 3 potiska i 3 povlačenja, uz trup.')
   );

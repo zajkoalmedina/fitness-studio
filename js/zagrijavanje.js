@@ -7,7 +7,7 @@
   const jeT = () => { const u = FS.Auth.user(); return !!u && u.role === 'trener'; };
   FS.ZAGR = [
     { id: 'cft', naziv: 'Opće zagrijavanje po CFT 1 i 2', min: 13, za: 'Od ležećeg položaja ka stojećem: mobilnost, klečeći, potkoljenice, stojeći', vj: [
-      ['LEŽEĆI · Rotacija kukova (brisači, windshield)', 45, 'Koljena savijena, spuštaj ih lijevo–desno, ramena na podu.'], ['LEŽEĆI · Glute bridge', 40, '10–12 ponavljanja, stisni gluteuse.'], ['LEŽEĆI · Dead bug', 40, 'Donja leđa na podu, sporo.'],
+      ['LEŽEĆI · Rotacija kukova (brisači, windshield)', 45, 'Koljena savijena, spuštaj ih lijevo–desno, ramena na podu.'], ['LEŽEĆI · Glute bridge', 40, '10–12 ponavljanja, stisni gluteus.'], ['LEŽEĆI · Dead bug', 40, 'Donja leđa na podu, sporo.'],
       ['MOBILNOST · Mačka–krava', 45, 'Na sve četiri, kičma kroz cijeli raspon.'], ['MOBILNOST · Rotacija grudnog dijela (otvorena knjiga)', 60, 'Po 30 s na stranu, pogled prati ruku.'], ['MOBILNOST · Bird dog', 40, 'Naizmjenično ruka–noga, bez ljuljanja zdjelice.'],
       ['KLEČEĆI · Istezanje pregibača kuka (half-kneeling)', 60, 'Po 30 s na stranu, zdjelica podvučena.'], ['KLEČEĆI · Sjedenje na petama i dizanje (kneeling squat)', 40, 'Kontrolisano, ispravi kukove na vrhu.'],
       ['POTKOLJENICE · Koljeno ka zidu (gležanj)', 60, 'Po 30 s na stranu, peta na podu.'], ['POTKOLJENICE · Podizanje prstiju (tibialis)', 30, 'Leđa uz zid, 15–20 ponavljanja.'], ['POTKOLJENICE · Podizanje na prste (listovi)', 30, '15 ponavljanja, spuštaj sporo.'],
@@ -15,14 +15,14 @@
     { id: 'opce', naziv: 'Opće zagrijavanje', min: 6, za: 'Prije bilo kojeg treninga', vj: [
       ['Lagano hodanje ili marš u mjestu', 60, 'Podigni puls, diši mirno.'], ['Kruženje ramenima', 30, 'Naprijed pa nazad.'], ['Kruženje kukovima', 30, 'Veliki, spori krugovi.'],
       ['Mačka–krava', 40, 'Na sve četiri, savijaj i izvijaj kičmu.'], ['Svjetski najbolji istezaj (lunge s rotacijom)', 60, 'Po 30 s na svaku stranu.'], ['Čučanj tjelesnom težinom', 40, 'Kontrolisano, 10–12 ponavljanja.'], ['Glute bridge', 40, '10–12 ponavljanja.'], ['Čučanj s rukama iznad glave i širenje grudi', 40, 'Otvori prsa, ruke iznad glave.']] },
-    { id: 'noge', naziv: 'Noge i gluteusi', min: 8, za: 'Čučanj, mrtvo dizanje, hip thrust, iskoraci', vj: [
+    { id: 'noge', naziv: 'Noge i gluteus', min: 8, za: 'Čučanj, mrtvo dizanje, hip thrust, iskoraci', vj: [
       ['Lagano hodanje ili sobni bicikl', 120, 'Pulz oko 60 % maksimalnog.'], ['Kruženje kukovima', 30, 'Po 15 s u svaku stranu.'], ['Zamasi nogom naprijed–nazad', 60, 'Po 30 s na nogu, držeći se za oslonac.'], ['Bočni zamasi nogom', 60, 'Po 30 s na nogu.'],
-      ['Bočni koraci s gumom', 40, 'Guma iznad koljena.'], ['Glute bridge', 40, 'Stisni gluteuse gore.'], ['Čučanj tjelesnom težinom (spori)', 40, '3 s dolje, 1 s gore.'], ['Prvih 1–2 serije glavne vježbe sa lakim teretom', 0, 'Rampa: 50 %, pa 70 %, pa radna težina.']] },
+      ['Bočni koraci s gumom', 40, 'Guma iznad koljena.'], ['Glute bridge', 40, 'Stisni gluteus gore.'], ['Čučanj tjelesnom težinom (spori)', 40, '3 s dolje, 1 s gore.'], ['Prvih 1–2 serije glavne vježbe sa lakim teretom', 0, 'Rampa: 50 %, pa 70 %, pa radna težina.']] },
     { id: 'gornji', naziv: 'Gornji dio tijela', min: 6, za: 'Potisci, veslanja, zgibovi, ramena', vj: [
       ['Kruženje rukama', 40, 'Naprijed i nazad.'], ['Rotacija grudnog dijela (otvorena knjiga)', 60, 'Ležeći na boku, po 30 s.'], ['Guma za ramena: razmicanje i veslanje', 60, '15 ponavljanja svakog.'], ['Face pull s gumom', 40, '12–15 ponavljanja.'],
       ['Sklek uz zid ili na koljenima', 40, '10 sporih ponavljanja.'], ['Plank s dodirom ramena', 40, 'Bez ljuljanja kukova.'], ['Prvih 1–2 serije glavne vježbe sa lakim teretom', 0, 'Rampa: 50 %, pa 70 %, pa radna težina.']] },
     { id: 'kondicija', naziv: 'Kondicija, HIIT i kružni', min: 7, za: 'EMOM, AMRAP, Tabata, kružni trening', vj: [
-      ['Lagano hodanje ili trčanje u mjestu', 90, 'Postepeno ubrzaj.'], ['Jumping jacks (lakše)', 40, 'Bez skoka ako treba.'], ['Visoka koljena', 30, 'Ravan trup.'], ['Pete ka gluteusima', 30, 'Lagani tempo.'],
+      ['Lagano hodanje ili trčanje u mjestu', 90, 'Postepeno ubrzaj.'], ['Jumping jacks (lakše)', 40, 'Bez skoka ako treba.'], ['Visoka koljena', 30, 'Ravan trup.'], ['Pete ka gluteusu', 30, 'Lagani tempo.'],
       ['Čučanj + istezanje rukama', 40, 'Ruke gore pri usponu.'], ['Skater korak (lagano)', 40, 'Bočno, bez skoka.'], ['Alpinisti (sporo)', 30, 'Ravna leđa.'], ['Kratki ubrzani dio', 20, 'Zadnja stanica kao priprema.']] },
     { id: 'plio', naziv: 'Pliometrija i maksimalna snaga', min: 12, za: 'Skokovi, Conjugate, teški čučanj i mrtvo dizanje', vj: [
       ['Lagano kardio (bicikl ili veslo)', 180, 'Do blagog znojenja.'], ['Mobilnost kukova (90/90 ili duboki čučanj)', 90, 'Pomjeri kukove kroz puni raspon.'], ['Aktivacija gluteusa: bridge s gumom', 60, '15 ponavljanja, stisak 2 s.'], ['Zamasi nogom', 60, 'Po 30 s na nogu.'],

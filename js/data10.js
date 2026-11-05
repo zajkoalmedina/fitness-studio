@@ -5,18 +5,18 @@
   const nova = [
     ['bocnaplankabasic', 'Side Plank', 'Core', 'srednji', 'Bez opreme', 'ne',
       'Leži na bok, osloni se na podlakticu ili dlan ispod ramena.|Podigni kukove tako da tijelo bude u ravnoj liniji.|Gornju ruku podigni prema stropu, pogled naprijed.|Zadrži položaj, zatim promijeni stranu.',
-      'Počni na koljenu ako je pretežak.|Stisni trbuh i gluteuse.', 'Propadanje kukova.|Rotiranje trupa prema naprijed.', null, ['kosi trbušni mišići', 'core'], ['ramena', 'gluteus']],
+      'Počni na koljenu ako je pretežak.|Stisni trbuh i gluteus.', 'Propadanje kukova.|Rotiranje trupa prema naprijed.', null, ['kosi trbušni mišići', 'core'], ['ramena', 'gluteus']],
     ['gorillarow', 'Gorilla Row', 'Leđa', 'srednji', 'Dvije girje ili bučice', 'ne',
       'Stani nad dvije girje, stopala šire od kukova.|Savij kukove i ravna leđa, uhvati obje girje.|Povuci jednu girju laktom prema kuku, a drugu ostavi na podu.|Spusti je i povuci drugu, naizmjenično.',
       'Leđa ravna, trup gotovo paralelan s podom.|Povlači laktom prema kuku, ne rukom.|Kukove ne okreći.', 'Zaobljena leđa.|Zamah trupom.|Podizanje ramena prema ušima.', null, ['široki leđni mišić', 'srednji dio leđa'], ['biceps', 'zadnja loža']],
-    ['rdlkickstand', 'Romanian Deadlift – Kickstand (Kettlebell)', 'Gluteusi', 'srednji', 'Girja ili bučica', 'ne',
+    ['rdlkickstand', 'Romanian Deadlift – Kickstand (Kettlebell)', 'Gluteus', 'srednji', 'Girja ili bučica', 'ne',
       'Stani u raskoračni stav: prednje stopalo cijelo na podu, zadnje samo na prstima, malo iza.|Girju drži uz prednju nogu, savij kukove i potisni ih unazad.|Spuštaj girju uz nogu uz ravna leđa, osjeti istezanje zadnje lože prednje noge.|Stisni gluteus prednje noge i uspravi se. Zatim zamijeni stranu.',
       'Teret nosi prednja noga, zadnja je samo oslonac za ravnotežu.|Koljeno prednje noge blago savijeno.|Leđa ravna, pogled prema podu.', 'Previše težine na zadnjoj nozi.|Zaobljena leđa.|Okretanje kukova.', null, ['zadnja loža', 'gluteus'], ['donja leđa']],
     ['skleknakoljenima', 'Knee Push Up', 'Prsa', 'početni', 'Bez opreme', 'kasnije',
       'Klekni, dlanovi na podu malo šire od ramena, tijelo u liniji od koljena do glave.|Stegni trbuh i gluteus, pogled malo ispred dlanova.|Savij laktove i spusti grudi prema podu.|Odgurni se i ispruži ruke, bez propadanja kukova.',
       'Laktovi idu pod uglom od oko 45° od tijela.|Disanje: udahni dolje, izdahni dok se odgurneš.|Kad postane lako, pređi na običan sklek.', 'Propadanje kukova ili izbacivanje zadnjice.|Laktovi širom od tijela.|Spuštanje samo napola.', null, ['grudi', 'triceps'], ['ramena', 'core']],
-    ['goodmorningbw', 'Good Morning (Bodyweight)', 'Gluteusi', 'početni', 'Bez opreme', 'ne',
-      'Stani u širini kukova, koljena blago savijena, ruke iza glave.|Potisni kukove unazad uz ravna leđa i nagni trup naprijed.|Spusti trup do paralele s podom ili dokle ide bez zaokruživanja leđa.|Stisni gluteuse i uspravi se.',
+    ['goodmorningbw', 'Good Morning (Bodyweight)', 'Gluteus', 'početni', 'Bez opreme', 'ne',
+      'Stani u širini kukova, koljena blago savijena, ruke iza glave.|Potisni kukove unazad uz ravna leđa i nagni trup naprijed.|Spusti trup do paralele s podom ili dokle ide bez zaokruživanja leđa.|Stisni gluteus i uspravi se.',
       'Pokret ide iz kukova, ne iz leđa.|Pogled prema dolje, vrat u liniji s kičmom.', 'Zaobljena leđa.|Previše savijena koljena (postaje čučanj).', null, ['zadnja loža', 'gluteus'], ['donja leđa']]
   ];
   nova.forEach((a) => {
@@ -156,7 +156,7 @@
     A: { cue: 'Pauza 2 s u kontrakciji.', v: [L('clamshell', 'po strani'), L('firehydrant', 'po strani'), L('abdgumom'), L('abdukcija')] },
     /* hinge */
     H: { cue: 'Spuštanje 3 s.', v: [L('rdl'), L('rdlkickstand', 'po nozi'), L('jednorodl', 'po nozi'), L('rdlsipka')] },
-    /* jednonožni pokreti za noge i gluteuse */
+    /* jednonožni pokreti za noge i gluteus */
     U: { cue: 'Spuštanje 3 s.', v: [L('iskorak', 'po nozi'), L('iskorakhod', 'po nozi'), L('stepup', 'po nozi'), L('curtsy', 'po nozi')] },
     LB: { cue: 'Spuštanje 3 s.', v: [L('stepup', 'po nozi'), L('iskorakhod', 'po nozi'), L('curtsy', 'po nozi'), L('bugarski', 'po nozi')] },
     /* veslanja */
@@ -202,7 +202,7 @@
   const gl = G('gluteus');
   if (gl) {
     gl.opis = gl.opis.replace(' Deload svake 4. sedmice.', ' Svake sedmice dio vježbi prelazi u težu varijantu.');
-    const ht = gl.dani[0].vj.find((v) => v.id === 'hipthrust'); if (ht && !ht.n) ht.n = 'Na vrhu zadrži 1–2 s i stisni gluteuse.';
+    const ht = gl.dani[0].vj.find((v) => v.id === 'hipthrust'); if (ht && !ht.n) ht.n = 'Na vrhu zadrži 1–2 s i stisni gluteus.';
   }
   const k = G('kuca'); if (k && k.per) k.per = { tip: k.per.tip, deload: 0 };
   const sc = G('sculpt'); if (sc) sc.bilj = (sc.bilj || []).map((b) => b.replace('Poslije sedmice 6: jedna lakša sedmica (oko pola serija sa istim težinama), pa ponovo od Faze 1 sa težim težinama.', 'Poslije sedmice 6 ponovo počni od Faze 1 sa težim težinama.'));

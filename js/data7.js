@@ -4,7 +4,7 @@
   /* zamjena: Cable pull-through izbačen iz biblioteke */
   FS.EXERCISES = FS.EXERCISES.filter((e) => e.id !== 'pullthrough');
   /* MUST DO za gluteus medius */
-  FS.EXERCISES.push({ id: 'sidelegabd', naziv: 'Bočna abdukcija jedne noge na kablu', grupa: 'Gluteusi', nivo: 'početni', oprema: 'Kabl s manžetom oko gležnja', dij: 'kasnije',
+  FS.EXERCISES.push({ id: 'sidelegabd', naziv: 'Bočna abdukcija jedne noge na kablu', grupa: 'Gluteus', nivo: 'početni', oprema: 'Kabl s manžetom oko gležnja', dij: 'kasnije',
     koraci: ['Postavi kabl nisko i manžetu oko gležnja noge koja radi.', 'Stani bočno uz sprave, drži se za oslonac, trup uspravan.', 'Podigni nogu u stranu, bez nagiba trupa, do visine kuka.', 'Zadrži 1 s i polako vrati nogu.'], savjeti: ['Pokret ide iz kuka, ne iz leđa.', 'Prsti stopala gledaju naprijed ili malo dolje.', 'Radi isto serija s obje noge.'], greske: ['Naginjanje trupa u stranu.', 'Zamah umjesto kontrole.'], video: '' });
   FS.EXTRA_POSES = FS.EXTRA_POSES || {}; FS.EXTRA_MUSKUL = FS.EXTRA_MUSKUL || {};
   FS.EXTRA_POSES.sidelegabd = null; FS.EXTRA_MUSKUL.sidelegabd = { p: ['gluteus medius'], s: ['gluteus minimus', 'tensor fasciae latae'] };
@@ -62,7 +62,7 @@
   const must = (id, di) => { const p = G(id); if (!p || !p.dani[di]) return; const d = p.dani[di]; if (!d.vj.some((v) => v.id === 'sidelegabd')) d.vj.push({ id: 'sidelegabd', s: 3, r: '12 po nozi', n: 'Obavezna izolacija za gluteus medius (MUST DO)' }); };
   must('gluteus', 0); must('gluteus', 2); must('glutefb4', 1); must('glutefb4', 3); must('napredni5', 2); must('napredni5', 4); must('oblikuj', 2); must('oblikuj', 7);
   const addAt = (id, di, after, item) => { const p = G(id); if (!p || !p.dani[di]) return; const d = p.dani[di]; if (d.vj.some((v) => v.id === item.id)) return; const k = d.vj.findIndex((v) => v.id === after); d.vj.splice(k >= 0 ? k + 1 : d.vj.length, 0, item); };
-  addAt('gluteus', 2, 'goblet', { id: 'legpress', s: 3, r: '12', n: 'Stopala visoko na platformi za veći naglasak na gluteuse' });
+  addAt('gluteus', 2, 'goblet', { id: 'legpress', s: 3, r: '12', n: 'Stopala visoko na platformi za veći naglasak na gluteus' });
   addAt('glutefb4', 0, 'cucanjsipka', { id: 'legpress', s: 3, r: '12', n: 'Stopala visoko i šire' });
   addAt('kuca', 3, 'cucanj', { id: 'bocarodl', s: 3, r: '12', n: 'Boce vode u rukama, pregib u kukovima' });
   { const gl = G('glutefb4'); if (gl) { gl.bilj = (gl.bilj || []).concat(['Tri zone gluteusa: TOP (hip thrust, bridge), MID (rumunsko mrtvo dizanje, leg press) i BOTTOM (iskoraci, čučnjevi). Svaka zona treba biti zastupljena, a bočna abdukcija jedne noge je obavezna za gluteus medius.']); } }

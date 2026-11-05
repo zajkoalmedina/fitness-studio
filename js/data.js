@@ -5,7 +5,7 @@
   /* dij: 'da' = pogodno za dijastazu (uz kontrolu), 'kasnije' = tek u kasnijim fazama uz odobrenje, 'ne' = izbjegavati */
   const E = (id, naziv, grupa, nivo, oprema, dij, koraci, savjeti, greske) => ({ id, naziv, grupa, nivo, oprema, dij, koraci, savjeti, greske, video: '' });
 
-  FS.GRUPE = ['Noge', 'Gluteusi', 'Leđa', 'Prsa', 'Ramena', 'Ruke', 'Core', 'Disanje', 'Mobilnost', 'Kardio'];
+  FS.GRUPE = ['Noge', 'Gluteus', 'Leđa', 'Prsa', 'Ramena', 'Ruke', 'Core', 'Disanje', 'Mobilnost', 'Kardio'];
   FS.NIVOI = ['početni', 'srednji', 'napredni'];
   FS.DIJ_LABEL = { da: 'Pogodno za dijastazu', kasnije: 'Tek uz odobrenje (kasnije faze)', ne: 'Izbjegavati kod dijastaze' };
 
@@ -16,19 +16,19 @@
     E('goblet', 'Gobletov čučanj', 'Noge', 'srednji', 'Bučica ili girja', 'kasnije',
       ['Drži bučicu uz grudi objema rukama.', 'Stani u širinu ramena, laktovi ispod bučice.', 'Spusti se u čučanj uz ravna leđa.', 'Izdahni i uspravi se.'],
       ['Teret je blizu tijela.', 'Izdisaj pri usponu, ne zadržavaj dah.'], ['Pretjerano naginjanje naprijed.', 'Prebrzo spuštanje.']),
-    E('rdl', 'Rumunsko mrtvo dizanje s bučicama', 'Gluteusi', 'srednji', 'Bučice', 'kasnije',
-      ['Stani uspravno, bučice ispred bedara.', 'Blago savij koljena i potiskuj kukove unazad.', 'Spuštaj bučice uz noge dok ne osjetiš istezanje u zadnjoj strani bedara.', 'Stisni gluteuse i vrati se u uspravan stav.'],
+    E('rdl', 'Rumunsko mrtvo dizanje s bučicama', 'Gluteus', 'srednji', 'Bučice', 'kasnije',
+      ['Stani uspravno, bučice ispred bedara.', 'Blago savij koljena i potiskuj kukove unazad.', 'Spuštaj bučice uz noge dok ne osjetiš istezanje u zadnjoj strani bedara.', 'Stisni gluteus i vrati se u uspravan stav.'],
       ['Leđa su ravna kroz cijeli pokret.', 'Kretanje dolazi iz kukova, ne iz leđa.'], ['Zaobljena leđa.', 'Bučice se udaljavaju od nogu.']),
     E('iskorak', 'Iskorak unazad', 'Noge', 'srednji', 'Bez opreme ili bučice', 'kasnije',
       ['Stani uspravno, noge u širini kukova.', 'Zakorači jednom nogom unazad.', 'Spusti stražnje koljeno prema podu, prednje koljeno iznad stopala.', 'Odgurni se prednjom nogom i vrati se na početak.'],
       ['Trup je uspravan.', 'Po potrebi se pridrži za stabilan oslonac.'], ['Prednje koljeno ide daleko ispred stopala.', 'Gubi se ravnoteža.']),
-    E('bridge', 'Podizanje kukova (glute bridge)', 'Gluteusi', 'početni', 'Bez opreme', 'da',
-      ['Leži na leđa, koljena savijena, stopala na podu u širini kukova.', 'Izdahni, blago zategni trbuh i podigni kukove.', 'Na vrhu stisni gluteuse, bez prevelikog luka u donjem dijelu leđa.', 'Polako spusti kukove na pod.'],
+    E('bridge', 'Podizanje kukova (glute bridge)', 'Gluteus', 'početni', 'Bez opreme', 'da',
+      ['Leži na leđa, koljena savijena, stopala na podu u širini kukova.', 'Izdahni, blago zategni trbuh i podigni kukove.', 'Na vrhu stisni gluteus, bez prevelikog luka u donjem dijelu leđa.', 'Polako spusti kukove na pod.'],
       ['Gurni kroz pete.', 'Trbuh ostaje blago aktivan, bez ispupčenja po sredini.'], ['Pretjeran luk u leđima.', 'Zadržavanje daha.']),
-    E('hipthrust', 'Hip thrust uz klupu', 'Gluteusi', 'srednji', 'Klupa, bučica ili šipka', 'kasnije',
+    E('hipthrust', 'Hip thrust uz klupu', 'Gluteus', 'srednji', 'Klupa, bučica ili šipka', 'kasnije',
       ['Osloni gornji dio leđa na klupu, stopala na podu.', 'Postavi teret na kukove.', 'Izdahni i podigni kukove do ravne linije koljena–kukovi–ramena.', 'Spusti kontrolisano.'],
       ['Brada ostaje blizu grudi.', 'Zaustavi se na vrhu 1 sekundu.'], ['Prevelik luk u leđima.', 'Stopala preblizu ili predaleko.']),
-    E('sidelift', 'Bočno podizanje noge (ležeći)', 'Gluteusi', 'početni', 'Bez opreme ili mini-guma', 'da',
+    E('sidelift', 'Bočno podizanje noge (ležeći)', 'Gluteus', 'početni', 'Bez opreme ili mini-guma', 'da',
       ['Leži na bok, donja noga blago savijena.', 'Gornju nogu drži ispruženom, stopalo paralelno s podom.', 'Podigni nogu bez okretanja kukova.', 'Polako spusti.'],
       ['Kukovi su naslagani jedan iznad drugog.', 'Pokret je spor i kontrolisan.'], ['Kukovi se rotiraju unazad.', 'Zamahivanje nogom.']),
     E('veslanje', 'Veslanje jednom bučicom', 'Leđa', 'srednji', 'Bučica i klupa', 'kasnije',
@@ -118,7 +118,7 @@
         { naziv: 'Dan A', vj: [ex('cucanj', 3, '12'), ex('veslanje', 3, '10 po strani'), ex('bridge', 3, '15'), ex('bocno', 2, '12'), ex('tva', 3, '10 × 5 s')] },
         { naziv: 'Dan B', vj: [ex('iskorak', 3, '10 po nozi'), ex('sklekzid', 3, '10'), ex('rdl', 3, '10'), ex('biceps', 2, '12'), ex('hodanje', 1, '15 min')] },
         { naziv: 'Dan C', vj: [ex('goblet', 3, '10'), ex('lat', 3, '12'), ex('hipthrust', 3, '12'), ex('triceps', 2, '12'), ex('deadbug', 3, '8 po strani')] }] },
-    { id: 'gluteus', naziv: 'Gluteus – 6 sedmica', opis: 'Fokus na gluteuse i noge, progresivno opterećenje kroz šest sedmica.', nivo: 'srednji', sedmica: 6, dana: 3, cijena: 59, tip: 'gotov', uShopu: true,
+    { id: 'gluteus', naziv: 'Gluteus – 6 sedmica', opis: 'Fokus na gluteus i noge, progresivno opterećenje kroz šest sedmica.', nivo: 'srednji', sedmica: 6, dana: 3, cijena: 59, tip: 'gotov', uShopu: true,
       dani: [
         { naziv: 'Dan A', vj: [ex('hipthrust', 4, '10'), ex('rdl', 3, '10'), ex('iskorak', 3, '10 po nozi'), ex('sidelift', 3, '15 po strani'), ex('bridge', 2, '15')] },
         { naziv: 'Dan B', vj: [ex('goblet', 4, '10'), ex('hipthrust', 3, '12'), ex('rdl', 3, '12'), ex('sidelift', 3, '20 po strani'), ex('hodanje', 1, '20 min')] },
@@ -138,7 +138,7 @@
         cilj: 'Naučiti dubinsko disanje, blagu aktivaciju dubokog trbušnog mišića i kontrolu zdjelice.',
         dani: [{ naziv: 'Trening', vj: [ex('disanje', 2, '8 udisaja'), ex('krokodil', 2, '8 udisaja'), ex('tva', 3, '8 × 5 s'), ex('zdjelica', 2, '10'), ex('heel', 2, '8 po nozi'), ex('hodanje', 1, '10–15 min')] }] },
       { naziv: 'Faza 2 – Stabilnost', sedmice: '3.–4. sedmica', dana: '3 puta sedmično, 15–20 min',
-        cilj: 'Dodati stabilnost trupa i gluteuse uz zadržanu kontrolu središnje linije trbuha.',
+        cilj: 'Dodati stabilnost trupa i gluteus uz zadržanu kontrolu središnje linije trbuha.',
         dani: [{ naziv: 'Trening', vj: [ex('disanje', 1, '8 udisaja'), ex('tva', 2, '8 × 5 s'), ex('bridge', 3, '12'), ex('sidelift', 2, '12 po strani'), ex('mackakrava', 2, '10'), ex('birddog', 2, '6 po strani'), ex('hodanje', 1, '15–20 min')] }] },
       { naziv: 'Faza 3 – Snaga', sedmice: '5.–6. sedmica', dana: '3 puta sedmično, 20–30 min',
         cilj: 'Uvesti osnovne obrasce snage (čučanj, veslanje) uz izdisaj pri naporu.',

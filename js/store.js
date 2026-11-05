@@ -57,7 +57,7 @@
     const progAna = {
       id: 'ind_ana', naziv: 'Individualni program – Ana (4 sedmice)', opis: 'Prilagođeno cilju: snaga i oblikovanje, 3 dana sedmično.', nivo: 'srednji', sedmica: 4, dana: 3, cijena: 0, tip: 'individualni', uShopu: false, vlasnik: ana.id,
       dani: [
-        { naziv: 'Dan 1 – Noge i gluteusi', vj: [{ id: 'goblet', s: 4, r: '10', n: '' }, { id: 'hipthrust', s: 4, r: '10', n: '' }, { id: 'rdl', s: 3, r: '10', n: '' }, { id: 'sidelift', s: 3, r: '15', n: '' }] },
+        { naziv: 'Dan 1 – Noge i gluteus', vj: [{ id: 'goblet', s: 4, r: '10', n: '' }, { id: 'hipthrust', s: 4, r: '10', n: '' }, { id: 'rdl', s: 3, r: '10', n: '' }, { id: 'sidelift', s: 3, r: '15', n: '' }] },
         { naziv: 'Dan 2 – Gornji dio', vj: [{ id: 'veslanje', s: 3, r: '10', n: '' }, { id: 'potisakb', s: 3, r: '10', n: '' }, { id: 'ramena', s: 3, r: '10', n: '' }, { id: 'biceps', s: 2, r: '12', n: '' }, { id: 'triceps', s: 2, r: '12', n: '' }] },
         { naziv: 'Dan 3 – Fullbody', vj: [{ id: 'iskorak', s: 3, r: '10', n: '' }, { id: 'lat', s: 3, r: '12', n: '' }, { id: 'bridge', s: 3, r: '15', n: '' }, { id: 'deadbug', s: 3, r: '8', n: '' }] }]
     };
@@ -92,6 +92,7 @@
       const mod = Store.db.vjezbeMod || {};
       const gi = (e) => { const i = FS.GRUPE.indexOf(e.grupa); return i < 0 ? 99 : i; }, ni = (e) => { const i = FS.NIVOI.indexOf(e.nivo); return i < 0 ? 9 : i; };
       return FS.EXERCISES.map((e) => (mod[e.id] ? { ...e, ...mod[e.id] } : e)).concat(Store.db.vjezbeNove || [])
+        .map((e) => (e.grupa === 'Gluteusi' ? { ...e, grupa: 'Gluteus' } : e))   /* stari zapisi */
         .map((e) => { const v = (FS.VIDEOS && FS.VIDEOS[e.id]) || (FS.VIDEOS_NAZIV && FS.VIDEOS_NAZIV[String(e.naziv).trim().toLowerCase()]) || (FS.VIDEOS_SADRZI && (FS.VIDEOS_SADRZI.find((x) => String(e.naziv).toLowerCase().includes(x[0])) || [])[1]); return v ? { ...e, video: v } : e; })
         .sort((a, b) => gi(a) - gi(b) || ni(a) - ni(b) || String(a.naziv).localeCompare(String(b.naziv), 'bs'));
     },
