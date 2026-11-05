@@ -124,8 +124,9 @@
       d.programId = q.p; d.dan = src.naziv; d.sig = srcSig(src); d.q = { p: q.p, d: q.d, f: q.f, w: q.w || FS.currentWeek(u, Store.program(q.p)) };
       src.vj.forEach((x) => {
         const last = Store.lastSets(u.id, x.id), n = x.s || 3, base = x.pct ? Store.baseKg(u.id, x.id) : 0;
-        const sug = base ? Math.round((base * x.pct / 100) / (base >= 20 ? 2.5 : 1)) * (base >= 20 ? 2.5 : 1) : 0;
-        d.vjezbe.push({ id: x.id, pauza: FS.pauza ? FS.pauza(x) : 0, cilj: x.r + (x.pct ? ' · ≈ ' + x.pct + ' % težine iz 1. sedmice' + (sug ? ' (prijedlog ' + sug + ' kg)' : '') : ''), serije: Array.from({ length: n }, (_, i) => ({ kg: sug ? String(sug) : (last && last[i] && last[i].kg ? String(last[i].kg) : ''), rep: String(parseInt(x.r, 10) || ''), ok: false })) });
+        const pk = FS.predlogKg ? FS.predlogKg(u.id, x, q.w || FS.currentWeek(u, Store.program(q.p)), Store.program(q.p)) : null;
+        const sug = pk ? pk.kg : (base ? Math.round((base * x.pct / 100) / (base >= 20 ? 2.5 : 1)) * (base >= 20 ? 2.5 : 1) : 0);
+        d.vjezbe.push({ id: x.id, pauza: FS.pauza ? FS.pauza(x) : 0, cilj: x.r + (pk ? ' · prijedlog ' + sug + ' kg (prošli put ' + pk.prev + ' kg: ' + pk.txt + ')' : x.pct ? ' · ≈ ' + x.pct + ' % težine iz 1. sedmice' + (sug ? ' (prijedlog ' + sug + ' kg)' : '') : ''), serije: Array.from({ length: n }, (_, i) => ({ kg: sug ? String(sug) : (last && last[i] && last[i].kg ? String(last[i].kg) : ''), rep: String(parseInt(x.r, 10) || ''), ok: false })) });
       });
     }
     return d;

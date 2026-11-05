@@ -26,7 +26,27 @@
   };
   const hasTimeUnit = (r) => /\bs\b|min|×|x\s?\d/.test(String(r));
 
-  FS.perOf = (p) => ({ tip: (p && p.per && p.per.tip) || 'nema', deload: parseInt(p && p.per && p.per.deload, 10) || 0 });
+  /* individualni programi (online i personalni klijenti) po defaultu: linearna periodizacija + deload svake 4. sedmice */
+  FS.perOf = (p) => {
+    const ind = !!p && p.tip === 'individualni' && !p.per;
+    return { tip: (p && p.per && p.per.tip) || (ind ? 'linearna' : 'nema'), deload: parseInt(p && p.per && p.per.deload, 10) || (ind ? 4 : 0) };
+  };
+
+  /* prijedlog težine za sljedeći trening prema zadnjem odrađenom (dvostruka progresija):
+     sve serije do gornje granice ponavljanja → + korak; ispod donje granice → ista težina; deload sedmica → ≈ 90 % */
+  FS.predlogKg = (uid, x, week, prog) => {
+    if (!isLoaded(x.id) || hasTimeUnit(x.r)) return null;
+    const last = FS.Store.lastSets(uid, x.id); if (!last) return null;
+    const done = last.filter((z) => z.ok !== false && +z.kg > 0 && +z.rep > 0); if (!done.length) return null;
+    const top = Math.max(...done.map((z) => +z.kg)), step = top >= 20 ? 2.5 : 1, rd = (v) => Math.round(v / step) * step;
+    const nums = String(x.r).match(/\d+/g) || ['8'], lo = +nums[0], hi = +(nums[1] || nums[0]);
+    const atTop = done.filter((z) => +z.kg === top);
+    const info = prog ? FS.weekInfo(prog, week) : { deload: false };
+    if (info.deload) return { kg: rd(top * 0.9), prev: top, txt: 'deload: oko 90 % prošle težine' };
+    if (atTop.length >= Math.min(done.length, x.s || done.length) && atTop.every((z) => +z.rep >= hi)) return { kg: top + step, prev: top, txt: 'sve serije do ' + hi + ' ponavljanja, povećaj' };
+    if (atTop.some((z) => +z.rep < lo)) return { kg: top, prev: top, txt: 'ostani na istoj težini dok ne dostigneš ' + lo + ' ponavljanja u svim serijama' };
+    return { kg: top, prev: top, txt: 'ista težina, cilj ' + hi + ' ponavljanja u svim serijama' };
+  };
 
   /* informacije o sedmici (1..sedmica) */
   FS.weekInfo = (p, week) => {
