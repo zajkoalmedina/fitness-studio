@@ -54,13 +54,25 @@
     im.onload = () => { const r = Math.min(1, 1000 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width * r); c.height = Math.round(im.height * r); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url); c.toBlob((b) => (b ? res(b) : rej(new Error('x'))), 'image/jpeg', 0.82); };
     im.onerror = () => rej(new Error('x')); im.src = url;
   });
+  const POZE = [['sprijeda', 'Sprijeda'], ['bok', 'Sa boka'], ['ledja', 'Odostraga']];
+  const jeT = () => { const x = Auth.user(); return !!x && x.role === 'trener'; };
+  const primjer = (k) => ((Store.db.fotoPrimjer || {})[k]) || '';
   FS.fotoCard = (u, ro) => {
     const list = ((u.jelovnik || {}).foto || []).slice().sort((a, b) => (a.d < b.d ? 1 : -1));
+    const poz = (k) => POZE.find((x) => x[0] === k);
+    const vodic = (!ro || jeT()) ? h`<div class="card flat"><b>Kako se slikati</b>
+      <div class="grid3 mt-s" style="gap:8px">${POZE.map(([k, l]) => h`<div class="center"><div style="border-radius:12px;overflow:hidden;background:rgba(217,79,107,.1);aspect-ratio:3/4;display:grid;place-items:center">${primjer(k) ? h`<img data-fotoimg="${primjer(k)}" alt="Primjer: ${l}" style="width:100%;height:100%;object-fit:cover;display:block">` : h`<span class="small muted">primjer uskoro</span>`}</div>
+        <div class="small"><b>${l}</b></div>${jeT() ? h`<label class="btn sm" style="display:block;margin-top:4px;cursor:pointer">${primjer(k) ? 'Zamijeni' : 'Dodaj primjer'}<input type="file" accept="image/*" data-fotoprimjer="${k}" style="display:none"></label>` : ''}</div>`)}</div>
+      <ul class="clean small mt-s"><li><span class="tick">✓</span><span><b>Ista svjetlost:</b> isto mjesto, isto doba dana, svjetlo ispred tebe, a ne iza.</span></li>
+        <li><span class="tick">✓</span><span><b>Ista odjeća:</b> svaki put isti sportski top i tajice (ili veš).</span></li>
+        <li><span class="tick">✓</span><span>Telefon na visini struka, oko 2 metra od tebe, cijelo tijelo u kadru.</span></li>
+        <li><span class="tick">✓</span><span>Opušteno stoj, ruke uz tijelo, bez uvlačenja stomaka. Kosa skupljena.</span></li></ul></div>` : '';
     return h`<div class="card"><h3 style="margin-top:0">Fotografije napretka</h3>
-      <p class="small muted">${ro ? 'Vidi ih samo klijent(ica) i ti.' : 'Vidiš ih samo ti i trenerica. Slikaj se na istom mjestu i u isto doba dana.'}</p>
-      ${ro ? '' : h`<label class="btn sm primary" style="display:inline-block;cursor:pointer">+ Dodaj fotografiju<input type="file" accept="image/*" data-fotoup="${u.id}" style="display:none"></label>`}
+      <p class="small muted">${ro ? 'Vidi ih samo klijent(ica) i ti.' : 'Vidiš ih samo ti i trenerica. Svaki put po tri fotografije: sprijeda, sa boka i odostraga.'}</p>
+      ${vodic}
+      ${ro ? '' : h`<div class="row wrap" style="gap:8px">${POZE.map(([k, l]) => h`<label class="btn sm primary" style="cursor:pointer">+ ${l}<input type="file" accept="image/*" data-fotoup="${u.id}" data-pos="${k}" style="display:none"></label>`)}</div>`}
       <div class="grid2 mt-s">${list.map((f) => h`<div><div style="border-radius:12px;overflow:hidden;background:rgba(255,255,255,.05);aspect-ratio:3/4"><img data-fotoimg="${f.p}" alt="Napredak ${fmtDate(f.d)}" style="width:100%;height:100%;object-fit:cover;display:block"></div>
-        <div class="row between small" style="margin-top:4px"><span>${fmtDate(f.d)}</span>${ro ? '' : h`<button class="icon-btn" data-fotorm="${f.p}" aria-label="Obriši fotografiju">✕</button>`}</div></div>`)}</div>
+        <div class="row between small" style="margin-top:4px"><span>${fmtDate(f.d)}${f.pos && poz(f.pos) ? ' · ' + poz(f.pos)[1] : ''}</span>${ro ? '' : h`<button class="icon-btn" data-fotorm="${f.p}" aria-label="Obriši fotografiju">✕</button>`}</div></div>`)}</div>
       ${list.length ? '' : h`<p class="muted small">Još nema fotografija.</p>`}</div>`;
   };
   FS.fotoLoad = (el) => el.querySelectorAll('img[data-fotoimg]').forEach(async (im) => {
@@ -76,8 +88,20 @@
     try {
       const blob = await shrink(f), p = u.id + '/napredak/' + Date.now() + '.jpg';
       await FS.fileStore.put(p, blob);
-      const j = D(u); j.foto = j.foto || []; j.foto.push({ d: today(), p }); Store.save(); toast('Fotografija je dodata.'); FS.rerender();
+      const j = D(u); j.foto = j.foto || []; j.foto.push({ d: today(), p, pos: t.dataset.pos || '' }); Store.save(); toast('Fotografija je dodata.'); FS.rerender();
     } catch (er) { toast('Fotografija nije poslana. Provjeri internet i pokušaj opet.'); }
+  });
+  document.addEventListener('change', async (e) => {
+    const t = e.target; if (!t || !t.matches || !t.matches('[data-fotoprimjer]')) return;
+    const f = t.files && t.files[0], k = t.dataset.fotoprimjer; t.value = ''; if (!f || !jeT()) return;
+    if (!/^image\//.test(f.type)) { toast('Izaberi sliku (JPG ili PNG).'); return; }
+    toast('Šaljem sliku…');
+    try {
+      const blob = await shrink(f), p = 'img/foto_primjer_' + k + '_' + Date.now() + '.jpg';
+      await FS.fileStore.put(p, blob);
+      const old = primjer(k); Store.db.fotoPrimjer = Store.db.fotoPrimjer || {}; Store.db.fotoPrimjer[k] = p; if (old) FS.fileStore.del(old);
+      Store.save(); toast('Primjer je dodat.'); FS.rerender();
+    } catch (er) { toast('Slika nije poslana. Provjeri internet i pokušaj opet.'); }
   });
   document.addEventListener('click', async (e) => {
     const b = e.target.closest && e.target.closest('[data-fotorm]'); if (!b) return;
