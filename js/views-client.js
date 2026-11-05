@@ -48,7 +48,7 @@
         ${FS.vodaCard ? FS.vodaCard(u) : ''}
         <h3>Moji programi</h3>
         ${progs.length ? progs.map((pr) => h`<a class="ex" href="#/program/${pr.id}"><div class="ph">${icon('clipboard')}</div><div class="grow"><b>${pr.naziv}</b><div class="small">${FS.accessLabel(pr, u)} · ${pr.dani.length} dana</div></div></a>`) : h`<div class="card flat center"><p class="muted">Još nemaš programa.</p><a class="btn sm" href="#/programi">Pogledaj programe</a></div>`}
-        ${kupac ? '' : h`<a class="ex" href="#/kondicija"><div class="ph">${icon('flame')}</div><div class="grow"><b>Kondicija: EMOM, HIIT, AMRAP</b><div class="small">Intenzivni treninzi s tajmerom</div></div></a>`}
+        ${true ? "" : h`<a class="ex" href="#/kondicija"><div class="ph">${icon('flame')}</div><div class="grow"><b>Kondicija: EMOM, HIIT, AMRAP</b><div class="small">Intenzivni treninzi s tajmerom</div></div></a>`}
         <a class="ex" href="#/ishrana"><div class="ph">${icon('flame')}</div><div class="grow"><b>Vodič za ishranu</b><div class="small">Principi, recepti, primjer dana</div></div></a>
         <a class="ex" href="#/dijastaza"><div class="ph">${icon('heart')}</div><div class="grow"><b>Kućni program za dijastazu</b><div class="small">Besplatno · 4 faze</div></div></a>
         ${FS.igCard ? FS.igCard('Treba ti pomoć ili promjena plana?', 'Piši mi direktno na Instagramu.') : ''}
