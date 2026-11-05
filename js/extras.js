@@ -643,8 +643,12 @@
       <a class="card" href="#/trcanje" style="display:block"><b>Trčanje za početnice: 5 km i 10 km</b><div class="small muted">Planovi i kalkulator tempa</div></a>
       <a class="btn block mb" href="#/programi">Svi programi →</a><div class="eyebrow mt">Prije početka</div>
       <a class="card" href="#/upitnik" style="display:block"><b>Upitnik za nove klijente</b><div class="small muted">Preuzmi ili popuni online prije početka coachinga.</div></a>`;
+    const vod = Store.shop().find((x) => x.id === 'vodic-ishrana');
+    const vc = vod ? h`<a class="pcard c1" href="#/ishrana?tab=recepti" style="display:block;color:#fff;margin-top:6px"><span class="pc-zn">Novo</span><div class="pc-t">Vodič za ishranu</div><div class="pc-m">80+ recepata · dnevni plan ishrane</div><p class="pc-o" style="margin-bottom:10px">Kalorije i makroi za svaki obrok, a aplikacija sama računa tvoj dan.</p><div class="pc-pr" style="margin:0"><b>${vod.cijena} ${config.valuta}</b><span class="btn primary" style="margin-left:auto;background:#fff;color:var(--rose-2)">Pogledaj</span></div></a>` : null;
+    const hero = el.querySelector('section');
+    if (vc && hero) hero.insertAdjacentHTML('afterend', vc.s);
     anchor.insertAdjacentHTML('beforebegin', sec.s);
-    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 110</p>');
+    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 111</p>');
   };
 
   /* Kalkulatori: veza na suplemente */
