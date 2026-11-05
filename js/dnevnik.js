@@ -54,7 +54,7 @@
     im.onload = () => { const r = Math.min(1, 1000 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width * r); c.height = Math.round(im.height * r); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url); c.toBlob((b) => (b ? res(b) : rej(new Error('x'))), 'image/jpeg', 0.82); };
     im.onerror = () => rej(new Error('x')); im.src = url;
   });
-  const POZE = [['sprijeda', 'Sprijeda'], ['bok', 'Sa boka'], ['ledja', 'Odostraga']];
+  const POZE = [['sprijeda', 'Sprijeda'], ['bok', 'S boka'], ['ledja', 'S leđa']];
   const jeT = () => { const x = Auth.user(); return !!x && x.role === 'trener'; };
   const primjer = (k) => ((Store.db.fotoPrimjer || {})[k]) || '';
   FS.fotoCard = (u, ro) => {
@@ -68,7 +68,7 @@
         <li><span class="tick">✓</span><span>Telefon na visini struka, oko 2 metra od tebe, cijelo tijelo u kadru.</span></li>
         <li><span class="tick">✓</span><span>Opušteno stoj, ruke uz tijelo, bez uvlačenja stomaka. Kosa skupljena.</span></li></ul></div>` : '';
     return h`<div class="card"><h3 style="margin-top:0">Fotografije napretka</h3>
-      <p class="small muted">${ro ? 'Vidi ih samo klijent(ica) i ti.' : 'Vidiš ih samo ti i trenerica. Svaki put po tri fotografije: sprijeda, sa boka i odostraga.'}</p>
+      <p class="small muted">${ro ? 'Vidi ih samo klijent(ica) i ti.' : 'Vidiš ih samo ti i trenerica. Svaki put po tri fotografije: sprijeda, s boka i s leđa.'}</p>
       ${vodic}
       ${ro ? '' : h`<div class="row wrap" style="gap:8px">${POZE.map(([k, l]) => h`<label class="btn sm primary" style="cursor:pointer">+ ${l}<input type="file" accept="image/*" data-fotoup="${u.id}" data-pos="${k}" style="display:none"></label>`)}</div>`}
       <div class="grid2 mt-s">${list.map((f) => h`<div><div style="border-radius:12px;overflow:hidden;background:rgba(255,255,255,.05);aspect-ratio:3/4"><img data-fotoimg="${f.p}" alt="Napredak ${fmtDate(f.d)}" style="width:100%;height:100%;object-fit:cover;display:block"></div>
