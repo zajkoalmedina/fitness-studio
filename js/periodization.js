@@ -58,8 +58,8 @@
     if (x0.kw && x0.kw.length) {   /* vježba se po sedmicama mijenja (vrsta kardija, teža varijanta pokreta) */
       const k = x0.kw[(Math.max(1, week | 0) - 1) % x0.kw.length];
       if (k.skip) return { s: x0.s, r: x0.r, pct: null, tag: '', skip: true };
-      x = { ...x0, id: k.id, n: k.n || '', r: k.r || x0.r };
-      ov = { id: x.id, n: x.n };
+      x = { ...x0, id: k.id, n: k.n || '', r: k.r || x0.r, s: k.s != null ? k.s : x0.s, p: k.p != null ? k.p : x0.p };
+      ov = { id: x.id, n: x.n, p: x.p };
     }
     if (x.fix) return { s: x.s, r: x.r, pct: null, tag: '', ...ov };   /* cirkuiti i kardio: serije i trajanje se ne mijenjaju po sedmici */
     const wi = FS.weekInfo(p, week), loaded = isLoaded(x.id);
