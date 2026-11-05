@@ -52,7 +52,7 @@
       </section>
       ${demoBar()}
       <div class="eyebrow">Online coaching</div>
-      <h2>Mjesečni paketi</h2>
+      <h2>Mjesečni paketi</h2><p class="muted" style="margin-top:-6px">Saradnja traje najmanje 2 mjeseca.</p>
       ${FS.paketi().map((p) => h`<a class="price-card" href="#/paketi">
         <div class="grow"><div class="nm">${p.id}</div><div class="ds">${p.sedmicno} treninga sedmično</div></div>
         <div class="price-tag">${p.cijena} ${config.valuta}</div></a>`)}
@@ -61,7 +61,7 @@
       <div class="eyebrow mt">Istraži</div>
       <div class="tiles">
         <a class="tile" href="#/vjezbe">${icon('dumbbell')}<b>Vježbe</b><small>Biblioteka s videouputama</small></a>
-        <a class="tile" href="#/programi">${icon('list')}<b>Programi</b><small>Gotovi planovi treninga</small></a>
+        <a class="tile" href="#/programi">${icon('list')}<b>Programi</b><small>Gotovi planovi · uskoro</small></a>
         <a class="tile" href="#/alati">${icon('calc')}<b>BMI i kalorije</b><small>Brzi kalkulatori</small></a>
         <a class="tile" href="#/ishrana">${icon('flame')}<b>Ishrana</b><small>Vodič, recepti, primjer dana</small></a>
         <a class="tile" href="#/prica">${icon('heart')}<b>Moja priča</b><small>Kron, operacije, povratak</small></a>
@@ -92,18 +92,18 @@
   };
 
   V.paketi = (el, p, q) => {
-    let tab = ['online', 'personalni', 'tinejdzeri'].includes(q.tab) ? q.tab : 'online';
+    let tab = q.tab === 'tinejdzeri' ? 'tinejdzeri' : 'online'; const toP = q.tab === 'personalni';
     const draw = () => {
       const P = FS.PERSONALNI;
       el.innerHTML = h`
         <h1>Paketi i cijene</h1>
-        <div class="seg"><button data-act="tab" data-t="online" class="${tab === 'online' ? 'on' : ''}">Online</button><button data-act="tab" data-t="personalni" class="${tab === 'personalni' ? 'on' : ''}">Personalni</button><button data-act="tab" data-t="tinejdzeri" class="${tab === 'tinejdzeri' ? 'on' : ''}">Tinejdžeri</button></div>
+        <div class="seg"><button data-act="tab" data-t="online" class="${tab !== 'tinejdzeri' ? 'on' : ''}">Online i personalni</button><button data-act="tab" data-t="tinejdzeri" class="${tab === 'tinejdzeri' ? 'on' : ''}">Tinejdžeri</button></div>
         ${tab === 'online' ? h`
-          <p class="muted">Individualni program, praćenje i podrška. Mjesečne cijene.</p>
+          <div class="eyebrow">Online coaching · mjesečni paketi</div><p class="muted">Individualni program, praćenje i podrška. Saradnja traje najmanje 2 mjeseca.</p>
           ${FS.paketi().map((x) => h`<div class="card cream"><div class="row"><div class="grow"><div class="nm" style="font-family:var(--serif);font-size:26px;font-weight:700;letter-spacing:1px">${x.id}</div><div class="muted">${x.sedmicno} treninga sedmično</div></div><div class="price-tag">${x.cijena} ${config.valuta}</div></div><button class="btn dark block mt-s" data-act="lead" data-p="${x.id}">Prijavi se – ${x.id}</button></div>`)}
           <div class="card"><h3>Svi paketi uključuju</h3><ul class="clean">${FS.PAKET_UKLJUCUJE.map((t) => h`<li><span class="tick">✓</span><span>${t}</span></li>`)}</ul></div>
-          <div class="card note"><b>Mjesečne cijene.</b><br><span class="muted">Treninzi se izvode samostalno, bez videopoziva i bez uključene članarine teretane.</span></div>` : ''}
-        ${tab === 'personalni' ? h`
+          <div class="card note"><b>Mjesečne cijene · saradnja najmanje 2 mjeseca.</b><br><span class="muted">Treninzi se izvode samostalno, bez videopoziva i bez uključene članarine teretane.</span></div>
+          <div class="eyebrow mt" id="personalni">Personalni treninzi</div>
           <div class="card cream"><h3>Individualni treninzi</h3>
             ${P.individualni.map((x) => h`<div class="row between" style="padding:10px 0;border-bottom:1px solid rgba(10,22,48,.12)"><div><b>${x.n}</b><div class="muted small">${x.s}</div></div><div class="price-tag" style="font-size:18px;padding:9px 12px">${x.c} ${config.valuta}</div></div>`)}
           </div>
@@ -127,7 +127,7 @@
           <button class="btn primary block" data-act="lead" data-p="TINEJDZERI">Želiš saznati više? Pošalji upit</button>
           <p class="center muted mt" style="font-family:var(--serif);font-style:italic">Zdrave navike danas, jači ljudi sutra.</p>` : ''}`;
     };
-    draw();
+    draw(); if (toP) setTimeout(() => { const x = el.querySelector('#personalni'); if (x) x.scrollIntoView(); }, 50);
     bind(el, { 'click:tab': (t) => { tab = t.dataset.t; draw(); window.scrollTo(0, 0); }, 'click:lead': (t) => openLead(t.dataset.p || '') });
   };
 
@@ -328,13 +328,9 @@
     const u = Auth.user();
     const draw = () => {
       el.innerHTML = h`<h1>Programi</h1>${demoBar()}
-        <a class="card cream" href="#/dijastaza" style="display:block;color:var(--navy)"><div class="eyebrow" style="color:var(--beige-2)">Kućni program</div><h2>Dijastaza – siguran početak</h2><p class="muted" style="margin:0">Četiri faze, sigurnosne napomene i individualna prilagodba. Besplatno za klijente.</p></a>
         <a class="card" href="#/kondicija" style="display:block"><div class="eyebrow">Kondicija</div><h3 style="margin:0">EMOM, HIIT, AMRAP i Tabata</h3><p class="muted" style="margin:6px 0 0">Intenzivni treninzi s tajmerom koji te vodi kroz vježbe.</p></a>
-        <div class="eyebrow mt">Gotovi programi</div>
-        ${Store.shop().map((p, i) => h`<div class="pcard c${i % 3}">${p.znacka ? h`<span class="pc-zn">${p.znacka}</span>` : ''}<div class="pc-t">${p.naziv}</div><div class="pc-m">${lvl(p)}</div><p class="pc-o">${p.opis}</p>
-          <div class="pc-pr">${p.staraCijena ? h`<s>${p.staraCijena} ${config.valuta}</s>` : ''}<b>${p.cijena} ${config.valuta}</b></div>
-          <div class="pc-b"><a class="btn" href="${p.tip === 'vodic' ? '#/ishrana?tab=recepti' : '#/program/' + p.id}">${owned(u, p) ? 'Otvori' : 'Pregled'}</a>${owned(u, p) ? h`<span class="badge ok">Tvoj program</span>` : h`<button class="btn primary" data-act="buy" data-id="${p.id}">Kupi</button>`}</div></div>`)}
-        ${[['5k', 'Trčanje: od 0 do 5 km', 'početni · 8 sedmica · 3× sedmično', 'Izmjena trčanja i hodanja, korak po korak do 30 minuta trčanja ili 5 km.'], ['10k', 'Trčanje: od 5 do 10 km', 'početni+ · 10 sedmica · 3× sedmično', 'Lagana trčanja, brže dionice i dugo trčanje do 10 km, uz sedmice rasterećenja.']].map(([k, n, l2, o]) => h`<div class="card"><div class="row between"><h3 style="margin:0">${n}</h3><span class="badge ok">Besplatno za klijentice</span></div><div class="small mt-s">${l2}</div><p class="muted mt-s">${o}</p><div class="row"><a class="btn sm grow" href="#/trcanje?tab=${k}">Otvori plan</a><a class="btn sm grow" href="#/trcanje?tab=kalk">Kalkulator tempa</a></div></div>`)}
+        <div class="eyebrow mt">Gotovi planovi treninga</div>
+        <div class="pcard c0" style="text-align:center;padding:34px 20px"><span class="pc-zn">Uskoro</span><div class="pc-t">Gotovi planovi treninga</div><p class="pc-o" style="margin:10px 0 0">Pripremamo nove programe za žene početnice, trening kod kuće i trening u teretani. Uskoro u aplikaciji.</p></div>
         <div class="card flat center"><p class="muted" style="margin:0 0 8px">Želiš program samo za sebe?</p><a class="btn sm" href="#/paketi">Online coaching paketi</a></div>`;
     };
     draw();
