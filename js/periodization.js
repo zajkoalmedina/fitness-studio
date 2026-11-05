@@ -54,7 +54,7 @@
 
   /* primjenjuje sedmicu i dan na jednu vježbu iz programa; vraća {s, r, n, pct} */
   FS.applyWeek = (p, week, dayIdx, x) => {
-    if (x.kw && x.kw.length) { const k = x.kw[(Math.max(1, week | 0) - 1) % x.kw.length]; return { s: x.s, r: x.r, pct: null, tag: '', id: k.id, n: k.n }; }   /* kardio: vrsta se mijenja po sedmicama */
+    if (x.kw && x.kw.length) { const k = x.kw[(Math.max(1, week | 0) - 1) % x.kw.length]; return { s: x.s, r: x.r, pct: null, tag: '', id: k.id, n: k.n, skip: !!k.skip }; }   /* kardio: vrsta se mijenja po sedmicama */
     if (x.fix) return { s: x.s, r: x.r, pct: null, tag: '' };   /* HIIT cirkuiti: broj krugova i trajanje se ne mijenjaju po sedmici */
     const wi = FS.weekInfo(p, week), loaded = isLoaded(x.id);
     let s = x.s, r = x.r, pct = null, tag = '';
@@ -75,7 +75,7 @@
     return { s, r, pct: pct && pct !== 100 ? pct : null, tag };
   };
 
-  FS.weekDays = (p, week) => (p.dani || []).map((d, di) => ({ naziv: d.naziv, vj: d.vj.map((x) => ({ ...x, ...FS.applyWeek(p, week, di, x) })) }));
+  FS.weekDays = (p, week) => (p.dani || []).map((d, di) => ({ naziv: d.naziv, vj: d.vj.map((x) => ({ ...x, ...FS.applyWeek(p, week, di, x) })).filter((x) => !x.skip) }));
 
   /* ukupno direktnih serija po mišićnoj grupi u sedmici */
   FS.weekVolume = (p, week) => {
