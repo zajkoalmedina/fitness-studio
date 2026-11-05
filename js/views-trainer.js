@@ -158,10 +158,11 @@
       ${FS.pristupCard ? FS.pristupCard(u) : ''}
       <div class="stats"><div class="stat"><b>${logs.length}</b><span>treninga</span></div><div class="stat"><b>${Store.weekCount(u.id)}</b><span>ove sedmice</span></div><div class="stat"><b>${wpts.length ? wpts[wpts.length - 1].y : '–'}</b><span>težina (kg)</span></div></div>
       <div class="card"><h3>Programi klijenta / klijentice</h3>
-        ${Store.userPrograms(u).map((x) => h`<div class="row between" style="padding:6px 0"><a href="#/program/${x.id}" class="grow"><b style="color:var(--cream)">${x.naziv}</b><div class="small">${FS.accessLabel(x, u)}</div></a>${FS.access(u, x).trajno ? '' : h`<button class="btn sm" data-act="renew" data-id="${x.id}">Produži</button>`}<button class="icon-btn" data-act="unassign" data-id="${x.id}" aria-label="Ukloni">${icon('trash')}</button></div>`)}
+        ${Store.userPrograms(u).map((x) => h`<div class="row between" style="padding:6px 0"><a href="#/program/${x.id}?k=${u.id}" class="grow"><b style="color:var(--cream)">${x.naziv}</b><div class="small">${FS.accessLabel(x, u)}</div></a>${FS.access(u, x).trajno ? '' : h`<button class="btn sm" data-act="renew" data-id="${x.id}">Produži</button>`}<button class="icon-btn" data-act="unassign" data-id="${x.id}" aria-label="Ukloni">${icon('trash')}</button></div>`)}
         ${(u.programi || []).length ? '' : h`<p class="muted">Nema dodijeljenih programa.</p>`}
         <div class="row mt-s"><select data-act="assignsel" class="grow"><option value="">Dodijeli program…</option>${assignable.map((x) => h`<option value="${x.id}">${x.naziv}</option>`)}</select><button class="btn sm" data-act="assign">Dodaj</button></div>
         <a class="btn sm block mt-s" href="#/trener/program/novi?za=${u.id}">+ Napravi individualni program</a></div>
+      ${FS.perKlijentCard ? FS.perKlijentCard(u, Store.userPrograms(u)) : ''}
       ${FS.planCard(u)}
       ${FS.alergijeCard ? FS.alergijeCard(u.jelovnik, true) : ''}
       ${FS.fotoCard ? FS.fotoCard(u, true) : ''}

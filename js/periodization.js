@@ -28,6 +28,9 @@
 
   /* individualni programi (online i personalni klijenti) po defaultu: linearna periodizacija + deload svake 4. sedmice */
   FS.perOf = (p) => {
+    const cu = FS.perKlijent || (FS.Auth && FS.Auth.user && FS.Auth.user());
+    const ov = p && cu && cu.role !== 'trener' && cu.perOver && cu.perOver[p.id];
+    if (ov) return { tip: ov.tip || 'nema', deload: parseInt(ov.deload, 10) || 0 };
     const ind = !!p && p.tip === 'individualni' && !p.per;
     return { tip: (p && p.per && p.per.tip) || (ind ? 'linearna' : 'nema'), deload: parseInt(p && p.per && p.per.deload, 10) || (ind ? 4 : 0) };
   };
