@@ -8,6 +8,7 @@
   const rec = (id) => recs().find((x) => x.userId === id) || null;
   const wa = () => { const n = String(config.whatsapp || '').replace(/\D/g, ''); return n ? 'https://wa.me/' + n : ''; };
 
+  const LIB = { squat: 'cucanj', lunge: 'iskorak', hinge: 'rdl', pushup: 'sklek', plank: 'planka' };
   const VJ = [
     ['squat', 'Bodyweight Squat', 'Snimaj sa strane i spreda. 8 sporih ponavljanja, stopala u širini ramena.'],
     ['lunge', 'Reverse Lunge', 'Snimaj sa strane. 6 ponavljanja po nozi, bez utega.'],
@@ -29,7 +30,7 @@
     el.innerHTML = h`<div class="eyebrow">Online coaching</div><h1>Početni pregled</h1>
       <p class="muted">Prije nego složim tvoj plan, trebam vidjeti kako vježbaš i koliko se kreneš kroz dan. Tako je plan siguran i napravljen baš za tebe.</p>
       <div class="card"><h3>1. Snimi video vježbi</h3>
-        <ul class="clean">${VJ.map(([id, n, t]) => h`<li><span class="tick">▶</span><span><b>${n}</b><br><span class="muted small">${t}</span>${x.oc && x.oc[id] && x.oc[id].s ? h`<br><span class="badge ${x.oc[id].s === 'ok' ? 'ok' : 'warn'}">${(OC.find((o) => o[0] === x.oc[id].s) || [0, ''])[1]}</span>${x.oc[id].n ? h` <span class="small">${x.oc[id].n}</span>` : ''}` : ''}</span></li>`)}</ul>
+        <ul class="clean">${VJ.map(([id, n, t]) => h`<li><span class="tick">▶</span><span><b>${n}</b><br><span class="muted small">${t}</span> <a class="small" href="#/vjezba/${LIB[id]}">Pogledaj kako se izvodi</a>${x.oc && x.oc[id] && x.oc[id].s ? h`<br><span class="badge ${x.oc[id].s === 'ok' ? 'ok' : 'warn'}">${(OC.find((o) => o[0] === x.oc[id].s) || [0, ''])[1]}</span>${x.oc[id].n ? h` <span class="small">${x.oc[id].n}</span>` : ''}` : ''}</span></li>`)}</ul>
         <p class="small muted">Cijelo tijelo neka bude u kadru, dobro osvijetljeno. Ne moraju biti savršene, trebam vidjeti kako se kreneš. Videi mogu biti odvojeni ili jedan snimak.</p>
         <a class="btn primary block" href="#/moj?tab=poruke">Pošalji video u poruci</a>
         ${link ? h`<a class="btn block mt-s" href="${link}" target="_blank" rel="noopener">Pošalji preko WhatsAppa</a>` : ''}</div>
