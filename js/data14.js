@@ -7,10 +7,6 @@
       'Stani u četveronožni položaj, dlanovi ispod ramena, koljena ispod kukova.|Pogled prema podu, leđa ravna.|Ispruži jednu nogu unazad i gore uz stisak gluteusa.|Vrati koljeno do poda i ponovi, u tabati izmjenjuj nogu po rundi ili po pola vremena.', 'Zdjelica mirna, bez rotacije.|Pokret iz kuka, ne iz donjeg dijela leđa.|Brzo, ali kontrolisano.', 'Izvijanje leđa.|Zamah umjesto stiska gluteusa.'],
     ['highskip', 'High Skip', 'Kardio', 'početni', 'Bez opreme',
       'Stani uspravno, pogled ravno ispred.|Poskoči na jednoj nozi dok drugo koljeno podižeš do visine kuka, a suprotna ruka ide naprijed.|Izmjenjuj strane u ritmu skipinga.|Doskoči mekano na prednji dio stopala.', 'Trup uspravan, ramena opuštena.|Mekan doskok.|Ritam ravnomjeran.', 'Teški doskok na pete.|Naginjanje trupa unazad.'],
-    ['iskorakd', 'Reverse Lunge – Right Leg', 'Noge', 'početni', 'Bez opreme',
-      'Stani uspravno, ruke na kukovima ili uz tijelo, pogled ravno ispred.|Korakni desnom nogom unazad i spusti se dok oba koljena ne budu oko 90°.|Odgurni se prednjom (lijevom) nogom nazad u stojeći položaj.|Cijelo vrijeme radi samo desnom nogom unazad.', 'Prednje koljeno iznad stopala.|Trup uspravan.|Spuštanje 1–2 s.', 'Koljeno ide daleko preko prstiju.|Naginjanje trupa naprijed.'],
-    ['iskorakl', 'Reverse Lunge – Left Leg', 'Noge', 'početni', 'Bez opreme',
-      'Stani uspravno, ruke na kukovima ili uz tijelo, pogled ravno ispred.|Korakni lijevom nogom unazad i spusti se dok oba koljena ne budu oko 90°.|Odgurni se prednjom (desnom) nogom nazad u stojeći položaj.|Cijelo vrijeme radi samo lijevom nogom unazad.', 'Prednje koljeno iznad stopala.|Trup uspravan.|Spuštanje 1–2 s.', 'Koljeno ide daleko preko prstiju.|Naginjanje trupa naprijed.'],
     ['crisscross', 'Criss-Cross', 'Core', 'srednji', 'Bez opreme (prostirka)',
       'Lezi na leđa, ruke iza glave, noge podignute iznad poda, koljena savijena.|Pogled prema koljenima, lopatice odvojene od poda.|Okreni trup i približi lakat suprotnom koljenu dok se druga noga ispruža.|Izmjenjuj strane u kontinuiranom ritmu.', 'Rotacija iz trupa, ne vuci vrat.|Donji dio leđa pritisnut uz pod.|Ritam kontrolisan.', 'Vučenje glave rukama.|Brzo mahanje bez rotacije trupa.'],
     ['sidecrunch', 'Side Crunch Toe Touch', 'Core', 'početni', 'Bez opreme (prostirka)',
@@ -21,7 +17,7 @@
       'Lezi na leđa, koljena savijena, stopala na širini kukova.|Podigni kukove u poziciju glute bridge.|Na vrhu razmakni koljena prema van, pa ih vrati.|Spusti kukove i ponovi.', 'Koljena guraju van, stopala ostaju na mjestu.|Zdjelica mirna.|Polako 2 s.', 'Spuštanje kukova između abdukcija.|Naginjanje zdjelice u stranu.'],
     ['lowskip', 'Low Skip', 'Kardio', 'početni', 'Bez opreme',
       'Stani uspravno, pogled ravno ispred.|Lagano poskakuj s noge na nogu, koljeno se podiže samo do oko 45°, suprotna ruka ide naprijed.|Održavaj ritam ravnomjernim i doskakuj mekano na prednji dio stopala.|Disanje ravnomjerno.', 'Niske, brze skokove drži blizu poda.|Trup uspravan, ramena opuštena.|Manje opterećenje nego High Skip.', 'Teški doskok.|Naginjanje trupa unazad.'],
-    ['lungekneedrive', 'Reverse Lunge with Knee Drive (Round 1 Right Leg, Round 2 Left Leg)', 'Noge', 'srednji', 'Bez opreme',
+    ['lungekneedrive', 'Reverse Lunge with Knee Drive', 'Noge', 'srednji', 'Bez opreme',
       'Stani uspravno, pogled ravno ispred. U prvom krugu radiš desnom nogom, u drugom lijevom.|Korakni radnom nogom unazad u iskorak, oba koljena oko 90°.|Odgurni se i odmah dovedi istu nogu naprijed u fleksiju kuka, koljeno savijeno oko 90°.|Spusti nogu nazad u iskorak i ponovi.', 'Stabilna noga ostaje blago savijena.|Trup uspravan, stegni trbuh.|Kontrolisano, bez zamaha.', 'Naginjanje trupa unazad pri podizanju koljena.|Koljeno prednje noge ide preko prstiju.'],
     ['bandsquatabd', 'Banded Squat with Abduction', 'Gluteus', 'srednji', 'Mini guma (zatvorena) oko koljena',
       'Stavi zatvorenu mini gumu iznad koljena, stopala u širini kukova.|Pogled ravno ispred, grudi podignute.|Spusti se u čučanj uz guranje koljena prema van protiv gume.|Pri ispravljanju prebaci težinu na jednu nogu i odmakni drugu u stranu (abdukcija). Naizmjenično mijenjaj nogu.', 'Guma uvijek napeta.|Zdjelica mirna pri abdukciji.|Ne naginji trup.', 'Koljena upadaju prema unutra.|Naginjanje trupa u stranu.'],
@@ -42,11 +38,12 @@
     if (i === 0) x.n = (uvod || '') + naziv + ': 2 kruga. ' + (rad || 20) + ' s rad, ' + (odmor || T) + ' s odmor između vježbi, 60 s pauza između krugova' + (zadnji ? '.' : ', poslije bloka 90 s pauze.');
     return x;
   });
+  const fixIsk = (arr) => arr.map((x) => (x.id === 'iskorak' ? { ...x, r: '40 s', n: '20 s desna noga, odmah 20 s lijeva noga.' } : x));
   const dan = {
     naziv: 'Tabata 20/10 · Noge i gluteus',
     vj: [].concat(
       blok(['kickbackbw', 'jumpingjack', 'highskip', 'burpee'], 'Blok I', false, 20, 10, 'Intenzitet: visok (napor 8–9 od 10). '),
-      blok(['cucanj', 'sumocucanj', 'iskorakd', 'iskorakl'], 'Blok II'),
+      fixIsk(blok(['cucanj', 'sumocucanj', 'iskorak'], 'Blok II')),
       blok(['twist', 'legraise', 'crisscross', 'sidecrunch'], 'Blok III'),
       blok(['bridge', 'bridgepulse', 'bridgeabd', 'singlebridge'], 'Blok IV (gluteus)', true)
     )
@@ -55,7 +52,7 @@
     naziv: 'Intervalni 30/10 · Noge',
     vj: [].concat(
       blok(['cucanj', 'jumpingjack'], 'Blok 1', false, 30, 10, 'Intenzitet: visok (napor 7–8 od 10). '),
-      blok(['lungekneedrive', 'lowskip'], 'Blok 2', false, 30, 10),
+      blok(['lungekneedrive', 'lowskip'], 'Blok 2', false, 30, 10).map((x) => (x.id === 'lungekneedrive' ? { ...x, n: x.n + ' Prvi krug desna noga, drugi krug lijeva noga.' } : x)),
       blok(['bandsquatabd', 'kickbackguma'], 'Blok 3 (zatvorena mini guma)', false, 30, 10),
       blok(['lateralnilunge', 'burpee'], 'Blok 4', false, 30, 10),
       blok(['hamstringbridge', 'mountainclimb'], 'Blok 5', true, 30, 10)
