@@ -93,6 +93,7 @@
     return { id: kw[0].id, s: 3, r: kw[0].r, fix: true, p: kw[0].p, kw };
   };
   const set = (lads, core) => lads.map((l, i) => slot(l, i === 0, i === lads.length - 1, core));
+  FS._kuca = { set };
   const dan = (naziv, parts) => ({ naziv, vj: [].concat(...parts) });
 
   /* intervalni kardio, 40 min: 5 min zagrijavanje + 5 krugova × 6 min + 5 min hlađenje */

@@ -43,7 +43,9 @@
     if (tab === 'programi') {
       body = h`${FS.pdfCard()}${FS.postavkeCard()}<div class="card"><h3>Cjenovnik paketa (mjesečno, ${config.valuta})</h3><form data-act="cijene" novalidate><div class="grid3">${FS.paketi().map((x) => h`<label class="field" style="margin:0"><span>${x.id}</span><input name="${x.id}" inputmode="decimal" value="${x.cijena}"></label>`)}</div><p class="small mt-s">Naziv i cijenu svakog gotovog programa mijenjaš ispod, u uređivanju programa.</p><button class="btn sm primary" type="submit">Sačuvaj cijene</button></form></div>
         <a class="btn primary block mb" href="#/trener/program/novi">${icon('plus')} Novi program</a>
-        ${Store.allPrograms().map((pr) => h`<a class="ex" href="#/trener/program/${pr.id}"><div class="ph">${icon('clipboard')}</div><div class="grow"><b>${pr.naziv}</b><div class="small">${pr.tip === 'individualni' ? 'individualni' : 'gotov'} · ${pr.dani.length} dana${pr.uShopu ? ' · u prodaji ' + pr.cijena + ' ' + config.valuta : ''}</div></div></a>`)}`;
+        ${(() => { const all = Store.allPrograms(); const row = (pr) => h`<a class="ex" href="#/trener/program/${pr.id}"><div class="ph">${icon('clipboard')}</div><div class="grow"><b>${pr.naziv}</b><div class="small">${pr.tip === 'individualni' ? 'individualni' : pr.mj ? 'biblioteka' : 'gotov'} · ${pr.dani.length} ${pr.dani.length === 1 ? 'trening' : 'dana'}${pr.uShopu ? ' · u prodaji ' + pr.cijena + ' ' + config.valuta : ''}</div></div></a>`;
+          const lib = (FS.MJESTA || []).map(([mj, mn]) => h`<h2 class="mt">${mn}</h2>${(FS.KAT || []).map(([kat, kn]) => { const l = all.filter((x) => x.mj === mj && x.kat === kat); return l.length ? h`<h3 class="mt-s">${kn}</h3>${l.map(row)}` : ''; })}`);
+          return h`${all.filter((x) => !x.mj).map(row)}${lib}`; })()}`;
     }
 
     if (tab === 'narudzbe') {
