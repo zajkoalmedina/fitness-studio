@@ -14,15 +14,10 @@
   FS.MJESTA = [['teretana', 'Teretana'], ['kuca', 'Kućni treninzi']];
 
   /* ---------- teretana ---------- */
-  const fullGym = {
-    početni: [X('legpress', 3, '12–15', 90), X('chestpress', 3, '12–15', 90), X('lat', 3, '12–15', 90), X('ramenaspr', 2, '12–15', 90), X('legcurl', 2, '12–15', 90), X('bridge', 2, '15', 60), X('planka', 2, '20–30 s', 60)],
-    srednji: [X('legpress', 3, '10–12', 120), X('potisakb', 3, '8–10', 120), X('lat', 3, '10–12', 120), X('rdl', 3, '10', 120), X('ramena', 2, '8–10', 90), X('hipthrust', 2, '12', 120), X('planka', 2, '30–40 s', 60)],
-    napredni: [X('cucanjsipka', 4, '5–8', 180), X('bench', 4, '6–8', 180), X('veslanjesipka', 3, '8', 150), X('rdlsipka', 3, '8', 150), X('potisaksipka', 3, '8', 150), X('hipthrust', 3, '8', 150), X('hollow', 3, '30–40 s', 60)]
-  };
   const gymSpec = {
     donji: (n) => [clone(gym[n].dani[0])],
     gluteus: (n) => [clone(gym[n].dani[2])],
-    full: (n) => [{ naziv: 'Full body · Teretana', vj: fullGym[n] }],
+    full: (n) => [clone(gym[n].dani[5])],
     kardio: () => [],
     gornji: (n) => [clone(gym[n].dani[1]), clone(gym[n].dani[3])]
   };
