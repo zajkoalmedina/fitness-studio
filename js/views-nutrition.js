@@ -21,12 +21,12 @@
     const u = Auth.user();
     const has = () => !!u && (u.role === 'trener' || (u.programi || []).includes(VID));
     const prod = () => Store.program(VID) || { id: VID, naziv: 'Vodič za ishranu', cijena: 25 };
-    let tab = ['vodic', 'principi', 'recepti', 'jelovnik', 'pitanja'].includes(q.tab) ? q.tab : (has() && FS.pdfReady && FS.pdfReady() ? 'vodic' : 'principi');
+    let tab = ['vodic', 'principi', 'recepti', 'jelovnik', 'pitanja', 'savjeti'].includes(q.tab) ? q.tab : (has() && FS.pdfReady && FS.pdfReady() ? 'vodic' : 'principi');
     let datum = today();
     const draw = () => {
       el.innerHTML = h`<div class="eyebrow">Vodič</div><h1>Ishrana</h1>
-         <div class="seg"><button data-act="tab" data-t="vodic" class="${tab === 'vodic' ? 'on' : ''}">Vodič</button><button data-act="tab" data-t="principi" class="${tab === 'principi' ? 'on' : ''}">Principi</button><button data-act="tab" data-t="recepti" class="${tab === 'recepti' ? 'on' : ''}">Recepti</button><button data-act="tab" data-t="jelovnik" class="${tab === 'jelovnik' ? 'on' : ''}">Plan ishrane</button><button data-act="tab" data-t="pitanja" class="${tab === 'pitanja' ? 'on' : ''}">Pitanja</button></div>
-        ${tab === 'vodic' ? (has() ? FS.pdfTab() : lockBox()) : ''}${tab === 'principi' ? principi() : ''}${tab === 'recepti' ? recepti() : ''}${tab === 'jelovnik' ? jelovnik() : ''}${tab === 'pitanja' ? pitanja() : ''}
+         <div class="seg"><button data-act="tab" data-t="vodic" class="${tab === 'vodic' ? 'on' : ''}">Vodič</button><button data-act="tab" data-t="principi" class="${tab === 'principi' ? 'on' : ''}">Principi</button><button data-act="tab" data-t="recepti" class="${tab === 'recepti' ? 'on' : ''}">Recepti</button><button data-act="tab" data-t="jelovnik" class="${tab === 'jelovnik' ? 'on' : ''}">Plan ishrane</button><button data-act="tab" data-t="pitanja" class="${tab === 'pitanja' ? 'on' : ''}">Pitanja</button><button data-act="tab" data-t="savjeti" class="${tab === 'savjeti' ? 'on' : ''}">Savjeti</button></div>
+        ${tab === 'vodic' ? (has() ? FS.pdfTab() : lockBox()) : ''}${tab === 'principi' ? principi() : ''}${tab === 'recepti' ? recepti() : ''}${tab === 'jelovnik' ? jelovnik() : ''}${tab === 'pitanja' ? pitanja() : ''}${tab === 'savjeti' ? (u ? FS.savjetiTab() : savjetiLock()) : ''}
         <div class="card alert mt"><b>Važno:</b> ovaj vodič je opšta edukacija i ne zamjenjuje savjet ljekara ili nutricioniste. Ako imaš zdravstvene tegobe, poremećaj ishrane, trudnoća ili dojenje, ili ti je ishrana izvor straha ili brige, javi se stručnoj osobi.</div>`;
       if (tab === 'vodic' && has() && FS.pdfMount) FS.pdfMount(el);
       if (FS.recFotoLoad) FS.recFotoLoad(el);
@@ -57,6 +57,7 @@
     const algCard = () => (klijentica() && has() && FS.alergijeCard ? FS.alergijeCard(JJ()) : '');
     const sadrzi = (r) => { const a = (FS.recAlergeni ? FS.recAlergeni(r) : []).map(FS.alergLabel); return a.length ? h`<p class="small muted mt-s" style="margin:0">Sadrži: ${a.join(', ')}</p>` : ''; };
     const makro = (r) => h`<div class="row wrap mt-s"><span class="pill">${r.kcal} kcal</span><span class="pill">P ${fx(r.p)} g</span><span class="pill">UH ${fx(r.uh)} g</span><span class="pill">M ${fx(r.m)} g</span></div>`;
+    const savjetiLock = () => h`<div class="card note"><div class="row"><span style="width:26px">${icon('lock')}</span><div class="grow"><b>Savjeti o ishrani i suplementima</b><div class="small">Dostupno klijenticama nakon prijave u aplikaciju.</div></div></div><a class="btn block mt-s" href="#/prijava">Prijavi se</a></div>`;
     const lockBox = () => h`<div class="card note"><div class="row"><span style="width:26px">${icon('lock')}</span><div class="grow"><b>${prod().naziv}</b><div class="small">${R().length} recepata (i bosanska jela, voće) sa sastojcima i pripremom + Moj dnevni plan ishrane sa automatskim izborom obroka. Cijena ${prod().cijena} ${FS.config.valuta}.</div></div></div>${FS.gratisBanner ? FS.gratisBanner() : ''}<button class="btn primary block mt-s" data-act="buy">Kupi vodič</button></div>`;
     const kartica = (r, open) => h`<details class="card" ${open === false ? '' : 'open'}><summary style="cursor:pointer"><div class="row between"><b>${r.naziv}</b><span class="badge">${r.bos ? '🇧🇦 ' : ''}${r.obrok}</span></div>
       <div class="small">${r.kcal} kcal · P ${fx(r.p)} · UH ${fx(r.uh)} · M ${fx(r.m)}${r.v != null ? ' · vlakna ' + fx(r.v) : ''}${r.cilj ? ' · ' + r.cilj : ''}</div></summary>
