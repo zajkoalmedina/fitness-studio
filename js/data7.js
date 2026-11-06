@@ -22,7 +22,7 @@
     m_djecja: 'Child\'s pose', m_zabica: 'Frog stretch (dynamic)', m_hinge: 'Dowel hip hinge', m_gleznj: 'Ankle rock', m_iskorak_kuk: 'Hip flexor stretch (lunge)', m_zadnja_loza: 'Dynamic hamstring stretch',
     m_kobra: 'Cobra', m_igla: 'Thread the needle', m_gumapull: 'Band pull-apart', m_gumaveslo: 'Seated band row', m_bocniiskorak: 'Lateral lunge hold', m_skapula: 'Scapular push-up',
     m_v_podizanje: 'Prone V raise', m_sjedeca_rotacija: 'Seated trunk rotation with dowel', m_pas: 'Downward dog', m_kukovi_krug: 'Quadruped hip circles', m_rame_krug: 'Shoulder circles', m_ptica_reach: 'Hip-hinge swimmers',
-    jednorodl: 'Single-leg Romanian deadlift', sumocucanj: 'Sumo squat', lungejump: 'Jumping lunge', lateralnilunge: 'Lateral lunge', singlebridge: 'Single-leg glute bridge', flutter: 'Flutter kicks', skarice: 'Scissor kicks',
+    jednorodl: 'B-Stance Romanian deadlift', sumocucanj: 'Sumo squat', lungejump: 'Jumping lunge', lateralnilunge: 'Lateral lunge', singlebridge: 'Single-leg glute bridge', flutter: 'Flutter kicks', skarice: 'Scissor kicks',
     ytw: 'Y-T-W raise', plankwalk: 'Plank walk-up (up-downs)', farmer: 'Farmer\'s carry', hollow: 'Hollow body hold', skokpovisenje: 'Box jump', kbswing: 'Kettlebell swing', reversehyper: 'Reverse hyperextension', clamshell: 'Clamshell',
     bocnaplanka: 'Side plank with leg lift', zpotisak: 'Z-press', renegade: 'Renegade row', abwheel: 'Ab wheel rollout', swimmers: 'Swimmers (prone)', curtsy: 'Curtsy lunge', kangsquat: 'Kang squat', woodchop: 'Woodchopper',
     skaterhop: 'Skater hop', nevidljiva: 'Invisible jump rope', lakatkoljeno: 'Elbow-to-knee squat', planksavijanje: 'Plank up-downs (forearm to hand)', plankhops: 'Plank jacks / hops', sklopke: 'V-up', pistol: 'Pistol squat (assisted)',

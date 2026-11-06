@@ -107,10 +107,10 @@
         <label class="field"><span>Oprema</span><input name="oprema" value="${e ? e.oprema : 'Bez opreme'}"></label>
         <label class="field"><span>Dijastaza</span><select name="dij">${opts([['da', FS.DIJ_LABEL.da], ['kasnije', FS.DIJ_LABEL.kasnije], ['ne', FS.DIJ_LABEL.ne]], e ? e.dij : 'kasnije')}</select></label>
         <label class="field"><span>Koraci (jedan po redu)</span><textarea name="koraci">${e ? e.koraci.join('\n') : ''}</textarea></label>
-        <label class="field"><span>Savjeti (jedan po redu)</span><textarea name="savjeti">${e ? e.savjeti.join('\n') : ''}</textarea></label>` : h`<p class="muted">${e.naziv}</p>`}
+        <label class="field"><span>Savjeti (jedan po redu)</span><textarea name="savjeti">${e ? e.savjeti.join('\n') : ''}</textarea></label>` : h`<label class="field"><span>Naziv vježbe (vidi se u svim programima)</span><input name="naziv" value="${e.naziv}" maxlength="80"></label>`}
       <div class="card flat"><b>Video s računara</b>${e && /^fs:/.test(e.video || '') ? h`<div class="small mt-s">Video je već postavljen.</div><label class="check"><input type="checkbox" name="rmvid" value="1"><span>Ukloni video</span></label>` : ''}
         <p class="small muted mt-s">Izaberi snimak (MP4, MOV ili WebM, najviše 50 MB). Za duže snimke prvo ih smanji.</p><input type="file" name="vfile" accept="video/mp4,video/quicktime,video/webm,.mp4,.mov,.webm"></div>
-      <label class="field"><span>Ili video link (https://…)</span><input name="video" inputmode="url" autocapitalize="off" value="${e && !/^fs:/.test(e.video || '') ? e.video || '' : ''}" placeholder="https://www.youtube.com/watch?v=…"></label>
+      <label class="field"><span>Ili video link (https://…)</span><input name="video" inputmode="url" autocapitalize="off" value="${e && !/^fs:/.test(e.video || '') && !/^videos\//.test(e.video || '') ? e.video || '' : ''}" placeholder="https://www.youtube.com/watch?v=…"></label>
       <p class="err" id="xerr" hidden></p><button class="btn primary block" type="submit">Sačuvaj</button>
       ${e && custom ? h`<button class="btn danger block mt-s" type="button" data-act="dx">Obriši vježbu</button>` : ''}</form>`, (s) => bind(s, {
       'click:dx': async () => { if (await confirmSheet({ title: 'Obrisati vježbu?', text: 'Vježba će nestati iz biblioteke.', ok: 'Obriši', danger: true })) { Store.db.vjezbeNove = Store.db.vjezbeNove.filter((x) => x.id !== e.id); Store.save(); closeSheet(); done(); } },
@@ -118,6 +118,7 @@
         const d = formData(f), er = $('#xerr', s), bad = (m) => { er.textContent = m; er.hidden = false; };
         let video = String(d.video || '').trim();
         if (!isUrl(video)) return bad('Link mora počinjati s https://');
+        const ownVid = e && /^videos\//.test(e.video || '') ? e.video : '';
         const file = f.querySelector('input[name=vfile]') && f.querySelector('input[name=vfile]').files[0];
         const oldFs = e && /^fs:/.test(e.video || '') ? e.video : '';
         if (file) {
@@ -129,6 +130,7 @@
           try { await FS.fileStore.put(pth, file); } catch (x) { btn.disabled = false; btn.textContent = 'Sačuvaj'; return bad('Video nije poslan. Provjeri internet.'); }
           video = 'fs:' + pth;
         } else if (!video && oldFs && !d.rmvid) video = oldFs;
+        if (!video && ownVid) video = ownVid;
         if (oldFs && video !== oldFs) FS.fileStore.del(oldFs.slice(3));
         if (custom) {
           if (String(d.naziv).trim().length < 2) return bad('Unesi naziv vježbe.');
@@ -138,7 +140,9 @@
           Store.db.vjezbeNove = Store.db.vjezbeNove || [];
           const i = Store.db.vjezbeNove.findIndex((x) => x.id === obj.id);
           if (i >= 0) Store.db.vjezbeNove[i] = obj; else Store.db.vjezbeNove.push(obj);
-        } else { Store.db.vjezbeMod = Store.db.vjezbeMod || {}; Store.db.vjezbeMod[e.id] = { video }; }
+        } else { Store.db.vjezbeMod = Store.db.vjezbeMod || {}; const orig = (FS.EXERCISES.find((x) => x.id === e.id) || {}).naziv, nn = String(d.naziv || '').trim().slice(0, 80);
+          if (nn.length < 2) return bad('Unesi naziv vježbe.');
+          Store.db.vjezbeMod[e.id] = nn !== orig ? { video, naziv: nn } : { video }; }
         Store.save(); closeSheet(); toast('Vježba sačuvana.'); done();
       }
     }));
