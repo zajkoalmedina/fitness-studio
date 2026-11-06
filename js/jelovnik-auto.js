@@ -24,13 +24,43 @@
     return (tagCache[r.id] = out);
   };
 
+  /* pravila raznolikosti: tradicionalna bosanska jela najviše 2 sedmično, grah 1, mahunarke 2, više vlastitih recepata, bez ponavljanja u sedmici */
+  const BOS = new Set(['b03', 'b05', 'b06', 'b07', 'b08', 'b09', 'b11', 'b12', 'b13', 'b18', 'b19', 'b21', 'b23', 'b24', 'b30']);
+  const isOwn = (r) => /^r\d/.test(r.id) || (/^b\d/.test(r.id) && +r.id.slice(1) >= 19);
+  const isGrah = (r) => /grah/i.test(r.naziv + ' ' + (r.sast || []).join(' '));
+  const isLeg = (r) => /grah|leć|grašak|mahun/i.test(r.naziv + ' ' + (r.sast || []).join(' '));
+  const weekCounts = (J, iso) => {
+    const c = { bos: 0, grah: 0, leg: 0, used: new Set(), prosla: new Set() };
+    if (!J || !J.dani || !/^\d{4}-\d\d-\d\d$/.test(iso)) return c;
+    const wd = (new Date(iso + 'T12:00:00').getDay() + 6) % 7, R = FS.RECEPTI_V || [];
+    for (let i = 0; i < wd; i++) {   /* samo dani te sedmice prije ovog dana */
+      const di = FS.addDays(iso, i - wd);
+      const d = J.dani[di]; if (!d) continue;
+      new Set(Object.values(d).map((e) => e.id)).forEach((id) => {
+        const r = R.find((x) => x.id === id); if (!r) return;
+        c.used.add(id); if (BOS.has(id)) c.bos++; if (isGrah(r)) c.grah++; if (isLeg(r)) c.leg++;
+      });
+    }
+    for (let i = wd + 1; i <= wd + 7; i++) { const d = J.dani[FS.addDays(iso, -i)]; if (d) Object.values(d).forEach((e) => c.prosla.add(e.id)); }
+    return c;
+  };
+
   /* ciljni makroi: ako nisu zadati, 25 % proteina, 25 % masti, ostalo UH */
   const macros = (T, M) => (M && M.p > 0 ? M : { p: (T * 0.25) / 4, m: (T * 0.25) / 9, uh: (T * 0.5) / 4 });
 
   /* jedan dan: kombinira obroke tako da se poklope i kalorije i makroi; vraća { dorucak: {id, por}, ... } */
   FS.autoDay = (target, seed, used, M, left, pref) => {
     const R = (FS.RECEPTI_V || []).filter((r) => !(pref && pref.J && FS.alergMatch && FS.alergMatch(r, pref.J).length)), rand = rnd(hash(String(seed))), G = macros(target, M), SPLIT = target >= 2000 ? SPLIT5 : SPLIT4; let slots = Object.keys(SPLIT); const NC = slots.length > 4 ? 9 : 14;
-    const cand = {};
+    const cand = {}, WK = weekCounts(pref && pref.J, String(seed).split(':')[0]);
+    const rules = (r) => {
+      let s = isOwn(r) ? -0.15 : 0;
+      if (WK.used.has(r.id)) s += 0.6;
+      else if (WK.prosla.has(r.id)) s += 0.3;
+      if (BOS.has(r.id)) s += WK.bos >= 2 ? 30 : (WK.bos === 1 ? 0.35 : -0.2);
+      if (isGrah(r)) s += WK.grah >= 1 ? 30 : 0.15;
+      if (isLeg(r)) s += WK.leg >= 2 ? 30 : (WK.leg === 1 ? 0.5 : 0);
+      return s;
+    };
     slots.forEach((slot) => {
       const goal = target * SPLIT[slot], list = [];
       const ne = (pref && pref.ne) || [], voli = (pref && pref.voli) || [];
@@ -39,7 +69,7 @@
       if (bezNe.length >= 3) pool = bezNe; // ako bi ostalo premalo jela, ne isključuj sve
       pool.forEach((r) => POR.forEach((f) => {
         const lik = FS.recTags(r).filter((t) => voli.includes(t)).length;
-        const sc = Math.abs(r.kcal * f - goal) / goal + 0.05 * Math.abs(f - 1) + (used && used.has(r.id) ? 0.35 : 0) + rand() * 0.15 - Math.min(2, lik) * 0.18;
+        const sc = Math.abs(r.kcal * f - goal) / goal + 0.05 * Math.abs(f - 1) + (used && used.has(r.id) ? 0.35 : 0) + rand() * 0.15 - Math.min(2, lik) * 0.18 + rules(r);
         list.push({ r, f, sc });
       }));
       cand[slot] = list.sort((a, b) => a.sc - b.sc).slice(0, NC);
@@ -49,6 +79,9 @@
     const pick = [];
     const rec = (i, k, p, u, m, sc) => {
       if (i === slots.length) {
+        const ids = new Set(pick.map((c) => c.r.id)), rr = [...ids].map((id) => pick.find((c) => c.r.id === id).r);
+        const bos = WK.bos + rr.filter((r) => BOS.has(r.id)).length, grah = WK.grah + rr.filter(isGrah).length, leg = WK.leg + rr.filter(isLeg).length;
+        sc += (bos > 2 ? 30 : 0) + (grah > 1 ? 30 : 0) + (leg > 2 ? 30 : 0);
         const e = Math.abs(k - target) / target + 0.5 * (Math.abs(p - G.p) / G.p + Math.abs(u - G.uh) / G.uh + Math.abs(m - G.m) / G.m) / 3 + sc * 0.15;
         if (!best || e < best.e) best = { e, pick: pick.slice() };
         return;
