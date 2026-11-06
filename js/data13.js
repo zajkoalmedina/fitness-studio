@@ -4,6 +4,8 @@
   const FS = (window.FS = window.FS || {});
   if (!FS.GOTOVI) return;
   const nova = [
+    ['gluteext', 'Glute Hyperextension (45°)', 'Gluteus', 'početni', 'Sprava za hiperekstenziju, podloga 45°', 'ne',
+      'Namjesti jastuk sprave ispod kukova, stopala pod valjkom, noge ispružene, stopala blago okrenuta prema van.|Ukrsti ruke na grudima ili uz glavu, gornji dio leđa blago zaobljen, brada prema grudima.|Spusti trup iz kukova dok ne osjetiš istezanje zadnje lože i gluteusa.|Podigni trup stiskom gluteusa do ravne linije tijela i zaustavi se, bez izvijanja leđa.', 'Pokret dolazi iz kukova, ne iz donjeg dijela leđa.|Na vrhu stisni gluteus 1 s.|Spuštanje 2–3 s.|Za više opterećenja drži bučicu ili kolut uz grudi.', 'Izvijanje donjeg dijela leđa na vrhu.|Zamah trupom.|Spuštanje ispod kontrolisanog opsega.', ['gluteus'], ['zadnja loža', 'donji dio leđa']],
     ['facepull', 'Face Pull', 'Ramena', 'početni', 'Kabl, uže', 'ne',
       'Namjesti kabl u visinu lica i uhvati uže s oba kraja, dlanovi gledaju jedan prema drugom.|Odstupi korak, rebra spuštena, pogled ravno ispred.|Povuci uže prema licu, laktovi visoko i vani, lopatice se spajaju.|Zadrži 1 s, polako vrati 2 s.', 'Lakši teg, čist pokret.|Rotiraj podlaktice prema van na kraju pokreta.|Ne naginji se unazad.', 'Pretežak teg i zamah trupom.|Laktovi padaju ispod ramena.', ['ramena', 'leđa'], ['rotatori']],
     ['dbfly', 'Dumbbell Fly', 'Prsa', 'srednji', 'Bučice, klupa', 'ne',
@@ -43,21 +45,21 @@
     pocetni: [
       { naziv: 'Trening 1 · Strong Legs', vj: [X('legpress', 3, '12–15', 90), X('legext', 3, '15–20', 90), X('legcurl', 3, '12–15', 90), X('goblet', 3, '12–15', 90, { n: 'Spuštaj polako 3 s, grudi podignute.' }), X('listovi', 3, '15–20', 60)] },
       { naziv: 'Trening 2 · Back Day', vj: [X('lat', 3, '12–15', 90), X('veslanjekabl', 3, '12–15', 90), X('reversepec', 3, '15', 90), X('facepull', 2, '15', 90), SS('biceps', 2, '12–15'), X('tricepskabl', 2, '12–15', 90)] },
-      { naziv: 'Trening 3 · Glutes', vj: [X('abdukcija', 3, '15–20', 90), X('kickback', 3, '12–15', 90, { n: 'Po nozi.' }), X('legpress', 3, '15', 90, { n: 'Stopala visoko na platformi, koljena prate prste.' }), X('bridge', 3, '15', 90, { n: 'Zadrži 2 s na vrhu.' }), X('backext', 3, '12–15', 90)] },
+      { naziv: 'Trening 3 · Glutes', vj: [X('abdukcija', 3, '15–20', 90), X('kickback', 3, '12–15', 90, { n: 'Po nozi.' }), X('legpress', 3, '15', 90, { n: 'Stopala visoko na platformi, koljena prate prste.' }), X('bridge', 3, '15', 90, { n: 'Zadrži 2 s na vrhu.' }), X('gluteext', 3, '12–15', 90, { n: 'Zaobljen gornji dio leđa, stisni gluteus na vrhu.' })] },
       { naziv: 'Trening 4 · Upper Body', vj: [X('chestpress', 3, '12–15', 90), X('ramenaspr', 3, '12–15', 90), X('veslanjeoslonjeno', 2, '12–15', 90), X('bocno', 2, '15', 60), X('triceps', 2, '15', 60)] },
       { naziv: 'Trening 5 · HIIT', vj: hiit(['cucanj', 'skleknakoljenima', 'jumpingjack', 'bicycle', 'sumocucanj', 'stolicasklek', 'highknees', 'toetaps'], 30, 3, 90, 'umjeren do visok (napor 6–7 od 10)') }
     ],
     srednji: [
       { naziv: 'Trening 1 · Strong Legs', vj: [X('legpress', 3, '10–12', 120), X('cucanjsipka', 3, '8–10', 150), X('bugarski', 2, '8–10 po nozi', 120), X('rdl', 2, '10', 120), X('legext', 3, '12–15', 90, DS), X('listovi', 3, '15', 60)] },
       { naziv: 'Trening 2 · Back Day', vj: [X('lat', 3, '10–12', 120), X('veslanjekabl', 3, '10–12', 120), X('veslanje', 2, '10–12 po strani', 90), X('facepull', 3, '12–15', 90), SS('cablecurl', 2, '10–12'), X('tricepskabl', 2, '10–12', 90, DS)] },
-      { naziv: 'Trening 3 · Glutes', vj: [X('hipthrust', 3, '10–12', 150, { n: 'Pauza 2–3 min.' }), X('iskorak', 2, '10 po nozi', 120), X('rdlsipka', 3, '8–10', 150), X('legcurl', 2, '12', 90), X('abdukcija', 2, '12–15', 90, DS)] },
+      { naziv: 'Trening 3 · Glutes', vj: [X('hipthrust', 3, '10–12', 150, { n: 'Pauza 2–3 min.' }), X('iskorak', 2, '10 po nozi', 120), X('rdlsipka', 3, '8–10', 150), X('legcurl', 2, '12', 90), X('gluteext', 2, '12–15', 90), X('abdukcija', 2, '12–15', 90, DS)] },
       { naziv: 'Trening 4 · Upper Body', vj: [X('potisakb', 3, '8–10', 120), X('ramena', 2, '8–10', 120), X('lat', 2, '10–12', 120), X('dbfly', 2, '10–12', 90), X('bocno', 2, '12–15', 60, DS), X('hammer', 2, '10–12', 60)] },
       { naziv: 'Trening 5 · HIIT', vj: hiit(['iskorak', 'sklek', 'skaterhop', 'planka', 'curtsy', 'veslanjeguma', 'squatjacks', 'twist'], 40, 4, 75, 'visok (napor 7–8 od 10)') }
     ],
     napredni: [
       { naziv: 'Trening 1 · Strong Legs', vj: [X('cucanjsipka', 4, '5–8', 180, { n: 'Zagrijavanje: 50 % radne kilaže.' }), X('bugarski', 3, '8–10 po nozi', 150), X('rdlsipka', 3, '8', 150), X('legpress', 3, '10–12', 120, DS), X('legext', 3, '12', 90, DS), X('listovi', 3, '12–15', 60)] },
       { naziv: 'Trening 2 · Back Day', vj: [X('lat', 4, '8–10', 150), X('veslanjesipka', 3, '8', 150), X('tbar', 3, '8–10', 120), X('cablepullover', 3, '12', 90), X('facepull', 3, '15', 90, DS), SS('cablecurl', 3, '10–12'), X('tricepsrb', 3, '10–12', 90, DS)] },
-      { naziv: 'Trening 3 · Glutes', vj: [X('hipthrust', 4, '6–8', 180, { n: 'Zadnja serija: zadrži 8 s na vrhu. Pauza 3–5 min.' }), X('hipthrust1', 3, '8 po nozi', 120), X('rdlsipka', 3, '8–10', 150), X('iskorakhod', 3, '10 po nozi', 120), X('legcurl', 3, '10–12', 90), X('kickback', 3, '12 po nozi', 90, DS), X('abdukcija', 2, '15', 60, DS)] },
+      { naziv: 'Trening 3 · Glutes', vj: [X('hipthrust', 4, '6–8', 180, { n: 'Zadnja serija: zadrži 8 s na vrhu. Pauza 3–5 min.' }), X('hipthrust1', 3, '8 po nozi', 120), X('rdlsipka', 3, '8–10', 150), X('iskorakhod', 3, '10 po nozi', 120), X('legcurl', 3, '10–12', 90), X('gluteext', 3, '10–12', 90, { n: 'Uz bučicu ili kolut uz grudi.' }), X('kickback', 3, '12 po nozi', 90, DS), X('abdukcija', 2, '15', 60, DS)] },
       { naziv: 'Trening 4 · Upper Body', vj: [X('bench', 4, '6–8', 180), X('potisaksipka', 3, '8', 150), X('veslanjesipka', 3, '8', 150), X('cablefly', 2, '10–12 po strani', 90), X('bocno', 3, '12–15', 60, DS), X('tricepsrb', 2, '10–12', 60)] },
       { naziv: 'Trening 5 · HIIT', vj: hiit(['lungejump', 'diamondsklek', 'burpee', 'sklopke', 'cucanjskok', 'pikesklek', 'plankhops', 'hollow'], 45, 4, 60, 'vrlo visok (napor 8–9 od 10)') }
     ]
