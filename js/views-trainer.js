@@ -45,7 +45,8 @@
         <a class="btn primary block mb" href="#/trener/program/novi">${icon('plus')} Novi program</a>
         ${(() => { const all = Store.allPrograms(); const row = (pr) => h`<a class="ex" href="#/trener/program/${pr.id}"><div class="ph">${icon('clipboard')}</div><div class="grow"><b>${pr.naziv}</b><div class="small">${pr.tip === 'individualni' ? 'individualni' : pr.mj ? 'biblioteka' : 'gotov'} · ${pr.dani.length} ${pr.dani.length === 1 ? 'trening' : 'dana'}${pr.uShopu ? ' · u prodaji ' + pr.cijena + ' ' + config.valuta : ''}</div></div></a>`;
           const NO = { 'početni': 0, srednji: 1, napredni: 2 };
-          const lib = h`<h2 class="mt">Biblioteka treninga</h2><p class="small">Klikni mjesto, pa kategoriju, i tek tada se prikazuju treninzi (poredani po nivoima).</p>${(FS.MJESTA || []).map(([mj, mn]) => { const cnt = all.filter((x) => x.mj === mj).length; return cnt ? h`<details class="card"><summary style="cursor:pointer"><b style="font-family:var(--serif);font-size:19px">${mn}</b> <span class="small">· ${cnt} treninga</span></summary>
+          const cel = all.filter((x) => x.kat === 'cijeli');
+          const lib = h`${cel.length ? h`<h2 class="mt">Cijeli programi</h2><p class="small">Kompletni planovi (više treninga, po sedmicama). Dodijeli ih klijentici, a ona ih vidi kao svoj individualni program.</p><details class="card"><summary style="cursor:pointer"><b style="font-family:var(--serif);font-size:19px">Cijeli programi</b> <span class="small">· ${cel.length}</span></summary>${cel.map(row)}</details>` : ''}<h2 class="mt">Biblioteka treninga (pojedinačni treninzi)</h2><p class="small">Klikni mjesto, pa kategoriju, i tek tada se prikazuju treninzi (poredani po nivoima).</p>${(FS.MJESTA || []).map(([mj, mn]) => { const cnt = all.filter((x) => x.mj === mj && x.kat !== 'cijeli').length; return cnt ? h`<details class="card"><summary style="cursor:pointer"><b style="font-family:var(--serif);font-size:19px">${mn}</b> <span class="small">· ${cnt} treninga</span></summary>
             ${(FS.KAT || []).map(([kat, kn]) => { const l = all.filter((x) => x.mj === mj && x.kat === kat).sort((x, y) => (NO[x.nivo] || 0) - (NO[y.nivo] || 0)); return l.length ? h`<details class="card flat mt-s"><summary style="cursor:pointer"><b>${kn}</b> <span class="small">· ${l.length}</span></summary>${l.map(row)}</details>` : ''; })}</details>` : ''; })}`;
           return h`${all.filter((x) => !x.mj).map(row)}${lib}`; })()}`;
     }
@@ -208,7 +209,7 @@
       'click:renew': (b) => { (u.pstart = u.pstart || {})[b.dataset.id] = today(); Store.save(); toast('Pristup produžen: počinje od danas.'); rr(); },
       'click:assign': () => { let v = $('[data-act=assignsel]', el).value; if (!v) return; const src = Store.program(v);
         if (src && src.samoTrener && src.tip === 'gotov') { /* trening iz biblioteke: klijentica dobija svoj individualni program, bez oznaka biblioteke */
-          const cp = JSON.parse(JSON.stringify(src)); delete cp.samoTrener; delete cp.mj; delete cp.kat; delete cp.per;
+          const cp = JSON.parse(JSON.stringify(src)); delete cp.samoTrener; delete cp.mj; delete cp.kat; if (!cp.per || (cp.per.tip === 'nema' && !cp.per.deload)) delete cp.per;
           cp.id = 'ind_' + Math.random().toString(36).slice(2, 9); cp.tip = 'individualni'; cp.vlasnik = u.id; cp.uShopu = false; cp.cijena = 0;
           cp.naziv = String(src.naziv).replace(/^(Teretana|Kućni treninzi|Kuća|Kod kuće|Biblioteka)\s·\s/, ''); cp.opis = 'Individualni program prilagođen tebi.';
           Store.db.programi.push(cp); v = cp.id; }

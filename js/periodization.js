@@ -122,7 +122,8 @@
   };
   FS.weekPlan = (p, week) => {
     const n = (p.dani || []).length, f = PLAN[p.id];
-    const idx = (f ? f(Math.max(1, week | 0)) : rang(0, n - 1)).filter((i) => i >= 0 && i < n);
+    const w0 = Math.max(1, week | 0), fz = p.faze && (p.faze.find((x) => w0 >= x.od && w0 <= x.do) || p.faze[p.faze.length - 1]);
+    const idx = (fz ? fz.dani : f ? f(w0) : rang(0, n - 1)).filter((i) => i >= 0 && i < n);
     return idx.map((i) => ({ i, opt: /opcionalno|HIIT/i.test(p.dani[i].naziv) && p.id !== 'hiit' }));
   };
 
