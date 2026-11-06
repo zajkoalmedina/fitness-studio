@@ -82,5 +82,6 @@
 
   const PULS = '<form class="card" data-act="puls" novalidate><h3>Pulsne zone za trening</h3><p class="muted small">Puls pokazuje koliko ti je napor stvarno težak. Upiši godine i puls u mirovanju (izmjeri ujutro, prije ustajanja, 1 min). Ako znaš najviši puls izmjeren na kraju testa ili intervala, upiši ga.</p>\n      <div class="grid3"><label class="field"><span>Godine</span><input name="g" inputmode="numeric" placeholder="npr. 35"></label><label class="field"><span>Puls u mirovanju</span><input name="r" inputmode="numeric" placeholder="npr. 62"></label><label class="field"><span>Najviši puls (ne mora)</span><input name="m" inputmode="numeric" placeholder="npr. 185"></label></div><p class="err" id="perr2" hidden></p>\n      <button class="btn primary block" type="submit">Izračunaj zone</button><div id="pzone" class="mt-s"></div></form>';
   FS.trkExtra = { puls: PULS, tabs: [['coop', 'Cooperov test'], ['int', 'Intervali i tempo']], html: (tab) => (tab === 'coop' ? coop() : int()) };
+  FS.trkData = { W, T, NIV, D };
   FS.coopCalc = (d) => { const v = (d - 504.9) / 44.73, pace = 720 / (d / 1000); return { v, pace }; };
 })();

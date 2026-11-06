@@ -59,9 +59,43 @@
   V.trcanje = (el, p, q) => {
     const u = Auth.user(), isK = u && (u.role === 'klijentica' || u.role === 'trener');
     const isT = !!u && u.role === 'trener'; /* Cooperov test i intervali: samo trenerica, ona ih prilagođava klijenticama */
-    let tab = ['5k', '10k', 'kalk'].concat(isT ? ['coop', 'int'] : []).includes(q.tab) ? q.tab : '5k';
+    const plan0 = u && u.role === 'klijentica' && u.trkPlan; /* plan trčanja koji je trenerica sastavila za klijenticu */
+    let tab = ['5k', '10k', 'kalk'].concat(isT ? ['coop', 'int', 'plan'] : [], plan0 ? ['moj'] : []).includes(q.tab) ? q.tab : (plan0 && !q.tab ? 'moj' : '5k');
+    let pd = null; /* nacrt plana u uređivanju (trenerica) */
     const draw = () => {
-      const seg = h`<div class="seg">${[['5k', 'Plan 5 km'], ['10k', 'Plan 10 km']].concat(FS.trkExtra && isT ? FS.trkExtra.tabs : [], [['kalk', 'Kalkulator tempa']]).map(([k, l]) => h`<button data-act="tab" data-t="${k}" class="${tab === k ? 'on' : ''}">${l}</button>`)}</div>`;
+      const seg = h`<div class="seg">${(plan0 ? [['moj', 'Moj plan']] : []).concat([['5k', 'Plan 5 km'], ['10k', 'Plan 10 km']], FS.trkExtra && isT ? FS.trkExtra.tabs.concat([['plan', 'Plan za klijenticu']]) : [], [['kalk', 'Kalkulator tempa']]).map(([k, l]) => h`<button data-act="tab" data-t="${k}" class="${tab === k ? 'on' : ''}">${l}</button>`)}</div>`;
+
+      if (tab === 'moj' && plan0) {
+        const pl = u.trkPlan, d = doc(u), ks = [];
+        pl.tjedni.forEach((w, wi) => w.ss.forEach((tx, si) => { if (String(tx).trim()) ks.push('moj-' + wi + '-' + si); }));
+        const dn = ks.filter((k) => d.done[k]).length;
+        el.innerHTML = h`<div class="eyebrow">Plan trčanja</div><h1>${pl.naziv}</h1>${seg}
+          <div class="progress mb" role="progressbar" aria-valuenow="${dn}" aria-valuemax="${ks.length}"><i style="width:${ks.length ? Math.round((dn / ks.length) * 100) : 0}%"></i></div><div class="small mb">${dn} od ${ks.length} treninga završeno</div>
+          <div class="card note"><b>Kako trčati</b><p class="muted mt-s" style="margin:0">Svaki trening počni zagrijavanjem (WU) i završi hlađenjem (CD). Lagano znači da možeš razgovarati. Ako osjetiš oštru bol, prekini. Oznake: WU zagrijavanje, CD hlađenje, I interval, T tempo.</p></div>
+          ${pl.tjedni.map((w, wi) => h`<details class="card" ${wi === 0 ? 'open' : ''}><summary style="cursor:pointer"><b style="font-family:var(--serif);font-size:18px">${w.naz}</b></summary>
+            ${w.ss.map((tx, si) => String(tx).trim() ? h`<label class="check" style="align-items:flex-start"><input type="checkbox" data-act="done" data-k="${'moj-' + wi + '-' + si}" ${d.done['moj-' + wi + '-' + si] ? 'checked' : ''}><span><b>Trening ${si + 1}.</b> ${tx}</span></label>` : '')}</details>`)}
+          ${FS.raw(FS.trkExtra ? FS.trkExtra.puls : '')}
+          <a class="btn block mb" href="#/trcanje?tab=kalk">Kalkulator tempa</a>`;
+        return;
+      }
+      if (tab === 'plan' && isT && FS.trkData) {
+        const { W, T, NIV, D } = FS.trkData, ks = Store.klijentice();
+        if (!pd) pd = { kid: '', nivo: 0, naziv: 'Priprema za Cooperov test', tjedni: [{ naz: 'Sedmica 1', ss: ['', '', ''] }] };
+        const opts = h`${T.map((tt, ti) => h`<optgroup label="${tt.naz}">${tt.s.map(([n, v], si) => v[pd.nivo] === D ? '' : h`<option value="${ti + '|' + si}">${n}: ${v[pd.nivo]}</option>`)}</optgroup>`)}`;
+        el.innerHTML = h`<div class="eyebrow">Samo za tebe</div><h1>Plan trčanja za klijenticu</h1>${seg}
+          <p class="muted">Sastavi plan za klijenticu koja se priprema za Cooperov test ili trčanje. Za svaki trening možeš upisati svoj tekst ili ubaciti interval iz liste. Klijentica ga vidi u svom prostoru kao „Moj plan”.</p>
+          <div class="card"><label class="field"><span>Klijentica</span><select data-f="kid" data-act="pkid"><option value="">Izaberi…</option>${ks.map((k) => h`<option value="${k.id}" ${pd.kid === k.id ? 'selected' : ''}>${k.ime}${k.trkPlan ? ' (ima plan)' : ''}</option>`)}</select></label>
+            <div class="grid2"><label class="field"><span>Nivo (za liste)</span><select data-f="nivo" data-act="pniv">${NIV.map(([en, bs], i) => h`<option value="${i}" ${pd.nivo === i ? 'selected' : ''}>${en} (${bs})</option>`)}</select></label>
+            <label class="field"><span>Naziv plana</span><input data-f="naziv" value="${pd.naziv}"></label></div>
+            <div class="row wrap"><button class="btn sm" data-act="pcoop">Učitaj Cooper plan (6 sedmica)</button><button class="btn sm" data-act="pprazan">Prazan plan</button></div></div>
+          ${pd.tjedni.map((w, wi) => h`<div class="card"><label class="field"><span>Naziv sedmice</span><input data-f="wn" data-w="${wi}" value="${w.naz}"></label>
+            ${w.ss.map((tx, si) => h`<label class="field"><span>Trening ${si + 1}</span><textarea data-f="tx" data-w="${wi}" data-s="${si}" rows="2" placeholder="Npr. 1,5 km WU, 8 × 300 m I (100 m lagano), 1,5 km CD">${tx}</textarea></label>
+              <select data-act="ppick" data-w="${wi}" data-s="${si}" class="mb"><option value="">+ Ubaci iz liste intervala…</option>${FS.raw(opts.s)}</select>`)}</div>`)}
+          <div class="row wrap mb"><button class="btn sm" data-act="padd">+ Dodaj sedmicu</button><button class="btn sm" data-act="prm">− Ukloni zadnju</button></div>
+          <button class="btn primary block mb" data-act="psave">Dodijeli plan klijentici</button>
+          ${pd.kid && (Store.user(pd.kid) || {}).trkPlan ? h`<button class="btn danger block mb" data-act="pdel">Ukloni plan klijentici</button>` : ''}`;
+        return;
+      }
       if (tab === 'kalk') {
         el.innerHTML = h`<div class="eyebrow">Alat</div><h1>Kalkulator tempa</h1>${seg}
           <form class="card" data-act="pred" novalidate><h3>Procjena rezultata i tempa za trening</h3><p class="muted small">Upiši koliko si nedavno trčala neku distancu. Procjena koristi Riegelovu formulu.</p>
@@ -95,8 +129,23 @@
         <div class="card"><h3>Dobro je znati</h3><ul class="dots">${FS.TRK_OPSTE.map((t) => h`<li>${t}</li>`)}</ul></div>
         <a class="btn block mb" href="#/trcanje?tab=kalk">Kalkulator tempa</a>`;
     };
+    const sync = () => { if (!pd) return; const g = (f) => el.querySelector('[data-f=' + f + ']'); if (!g('kid')) return; pd.kid = g('kid').value; pd.nivo = +g('nivo').value; pd.naziv = g('naziv').value;
+      el.querySelectorAll('[data-f=wn]').forEach((i) => { pd.tjedni[+i.dataset.w].naz = i.value; }); el.querySelectorAll('[data-f=tx]').forEach((i) => { pd.tjedni[+i.dataset.w].ss[+i.dataset.s] = i.value; }); };
     draw();
     bind(el, {
+      'click:pcoop': () => { sync(); const { W } = FS.trkData, n = pd.nivo; pd.tjedni = W.map(([naz, iv, tm, lg]) => ({ naz, ss: [iv[n], 'Tempo: ' + tm[n] + ' (5 min lagano prije i poslije)', 'Dugo lagano: ' + lg[n]] })); draw(); },
+      'click:pprazan': () => { sync(); pd.tjedni = [{ naz: 'Sedmica 1', ss: ['', '', ''] }]; draw(); },
+      'click:padd': () => { sync(); pd.tjedni.push({ naz: 'Sedmica ' + (pd.tjedni.length + 1), ss: ['', '', ''] }); draw(); },
+      'click:prm': () => { sync(); if (pd.tjedni.length > 1) pd.tjedni.pop(); draw(); },
+      'change:pkid': () => { sync(); const k = pd.kid && Store.user(pd.kid); if (k && k.trkPlan) { pd.nivo = k.trkPlan.nivo || 0; pd.naziv = k.trkPlan.naziv; pd.tjedni = JSON.parse(JSON.stringify(k.trkPlan.tjedni)); toast('Učitan postojeći plan klijentice.'); } draw(); },
+      'change:pniv': () => { sync(); draw(); },
+      'change:ppick': (s) => { sync(); if (!s.value) return; const { T } = FS.trkData, [ti, si] = s.value.split('|').map(Number), tt = T[ti], it = tt.s[si], tx = tt.naz + ' (' + it[0] + '): ' + it[1][pd.nivo], c = pd.tjedni[+s.dataset.w].ss, i = +s.dataset.s; c[i] = c[i] ? c[i] + ' + ' + tx : tx; draw(); },
+      'click:psave': () => { sync(); const k = pd.kid && Store.user(pd.kid); if (!k) { toast('Izaberi klijenticu.'); return; }
+        const tj = pd.tjedni.map((w) => ({ naz: String(w.naz).trim() || 'Sedmica', ss: w.ss.map((x) => String(x).trim()) })).filter((w) => w.ss.some((x) => x));
+        if (!tj.length) { toast('Upiši barem jedan trening.'); return; }
+        const dd = doc(k); Object.keys(dd.done).forEach((x) => { if (x.startsWith('moj-')) delete dd.done[x]; });
+        k.trkPlan = { naziv: String(pd.naziv).trim() || 'Plan trčanja', nivo: pd.nivo, tjedni: tj, kreirano: today() }; Store.save(); toast('Plan je dodijeljen. ' + k.ime + ' ga vidi kao „Moj plan”.'); draw(); },
+      'click:pdel': () => { const k = pd && pd.kid && Store.user(pd.kid); if (!k) return; delete k.trkPlan; Store.save(); toast('Plan je uklonjen.'); draw(); },
       'click:tab': (t) => { tab = t.dataset.t; try { history.replaceState(null, '', '#/trcanje?tab=' + tab); } catch (e) { /* ignoriši */ } draw(); },
       'submit:coop': (f) => {
         const x = FS.formData(f), d = parseFloat(String(x.d).replace(',', '.')), er = $('#cerr', el), o = $('#cout', el);
