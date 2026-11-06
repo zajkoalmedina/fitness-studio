@@ -38,7 +38,7 @@
     const b = e.target.closest && e.target.closest('[data-voda]'); if (!b) return;
     const u = Auth.user(); if (!u || u.role !== 'klijentica') return;
     const t = today(), dn = D(u).dnevno; dn[t] = dn[t] || { c: 0, k: 0 }; dn[t].c = Math.max(0, Math.min(30, dn[t].c + +b.dataset.voda));
-    Store.save(); FS.rerender();
+    const y = window.scrollY; Store.save(); FS.rerender(); window.scrollTo(0, y); requestAnimationFrame(() => window.scrollTo(0, y));
   });
   document.addEventListener('change', (e) => {
     const i = e.target; if (!i || !i.matches || !i.matches('[data-koraci]')) return;
