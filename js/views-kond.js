@@ -41,6 +41,10 @@
       opis: 'Svaki krug: trčanje, pa bicikl, a krug završavaš zamasima girje. Trčanje i zamasi se smanjuju iz kruga u krug, bicikl ostaje isti. Mjeri se ukupno vrijeme.',
       pir: [['Trčanje na traci', ['1500 m', '1200 m', '900 m', '600 m', '300 m']], ['Bicikl', ['1200 m', '1200 m', '1200 m', '1200 m', '1200 m']], ['Girja zamah (swing)', ['24', '20', '16', '12', '8']]],
       savjet: 'Bez trake trči vani, a bicikl možeš zamijeniti veslom ili ski ergom na istu udaljenost. Prvi krug je najduži, ne kreći prebrzo. Zapiši vrijeme pa ga pokušaj nadmašiti za 4 sedmice.' },
+    { id: 'piramida-10-2', naziv: 'Piramida 10/8/6/4/2 – bučice', tip: 'PIRAMIDA', krugova: 5, nivo: 'srednji', oprema: 'Bučice, klupa',
+      opis: 'Pet krugova, ponavljanja se smanjuju: 10, 8, 6, 4, 2. Što je manje ponavljanja, to teža bučica. Odmor 60 do 90 s između krugova.',
+      pir: [['Goblet čučanj', ['10', '8', '6', '4', '2']], ['Sklek', ['10', '8', '6', '4', '2']], ['Veslanje bučicom (po strani)', ['10', '8', '6', '4', '2']], ['Glute bridge s bučicom', ['10', '8', '6', '4', '2']]],
+      savjet: 'Povećaj težinu kako ponavljanja padaju, ali zadrži čistu formu. Zapiši vrijeme pa ga pokušaj nadmašiti za 4 sedmice.' },
     { id: 'chipper', naziv: 'Chipper – na vrijeme (oko 20 min)', tip: 'CHIPPER', nivo: 'napredni', oprema: 'Bučice ili girja, klupa',
       opis: 'Jedan prolaz kroz listu od vrha do dna što brže možeš uz dobru formu. Zapiši vrijeme i ponovi za 4 sedmice.',
       lista: [['Thruster s bučicama', '40'], ['Girja zamah (swing)', '40'], ['Penjanje na klupu (step up), bučice', '40'], ['Burpee', '30'], ['Veslanje u pretklonu', '20 po strani']],
@@ -144,7 +148,7 @@
             ${started && !done ? h`<button class="btn" data-act="reset">Ispočetka</button>` : ''}</div></div>
         <div class="card"><h3>${k.tip === 'INTERVALI' || k.tip === 'TABATA' ? 'Stanice' : (pir ? 'Piramida' : 'Vježbe')}</h3>
           ${pir ? '' : h`<ol class="steps">${lista.map(([nm, r]) => h`<li><span><b>${nm}</b>${r ? ' · ' + r : ''}</span></li>`)}</ol>`}
-          ${pir ? h`<table class="mt-s" style="width:100%;font-size:14px;border-collapse:collapse"><tr><th></th>${[1, 2, 3, 4, 5].map((n) => h`<th>${n}</th>`)}</tr>${k.pir.map(([nm, v]) => h`<tr><td><b>${nm}</b></td>${v.map((x) => h`<td style="text-align:center">${x}</td>`)}</tr>`)}</table>` : ''}
+          ${pir ? h`<table class="mt-s" style="width:100%;font-size:14px;border-collapse:collapse"><tr><th></th>${Array.from({ length: k.krugova }, (_, n) => n + 1).map((n) => h`<th>${n}</th>`)}</tr>${k.pir.map(([nm, v]) => h`<tr><td><b>${nm}</b></td>${v.map((x) => h`<td style="text-align:center">${x}</td>`)}</tr>`)}</table>` : ''}
           ${k.tip === 'INTERVALI' ? h`<p class="small">${k.rad} s rada, ${k.odmor} s odmora, ${k.krugova} kruga.</p>` : ''}</div>
         <div class="card"><h3>Savjet</h3><p style="margin:0">${k.savjet}</p></div>
         <div class="card"><h3>Zagrijavanje</h3><p style="margin:0">${ZAGRIJAVANJE}</p></div>

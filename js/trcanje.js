@@ -54,12 +54,18 @@
   FS.trkPredict = (dKm, tSec) => [3, 5, 10, 21.0975].map((d) => ({ d, t: tSec * Math.pow(d / dKm, 1.06) }));
   const distNaz = (d) => (d === 21.0975 ? 'Polumaraton' : d + ' km');
 
+  /* plan trčanja za klijenticu je individualni program (sinhronizuje se kao i ostali programi) */
+  FS.trkPlanOf = (u) => { const p = u && (Store.db.programi || []).find((x) => x.trk && x.vlasnik === u.id); return p ? p.trk : null; };
+  FS.trkPlanSet = (u, plan) => { const id = 'trk_' + u.id, L = Store.db.programi; let p = L.find((x) => x.id === id);
+    if (!p) { p = { id, naziv: plan.naziv, opis: 'Plan trčanja prilagođen tebi.', nivo: 'početni', sedmica: 1, dana: 1, cijena: 0, tip: 'individualni', uShopu: false, vlasnik: u.id, dani: [{ naziv: 'Plan trčanja', vj: [] }] }; L.push(p); }
+    p.naziv = plan.naziv; p.trk = plan; u.programi = u.programi || []; if (!u.programi.includes(id)) u.programi.push(id); (u.pstart = u.pstart || {})[id] = today(); };
+  FS.trkPlanDel = (u) => { const id = 'trk_' + u.id; Store.db.programi = Store.db.programi.filter((x) => x.id !== id); u.programi = (u.programi || []).filter((x) => x !== id); };
   const doc = (u) => { const L = (Store.db.upitnici = Store.db.upitnici || []); let d = L.find((x) => x.userId === u.id && x.tip === 'trk'); if (!d) { d = { id: 'trk_' + u.id, userId: u.id, tip: 'trk', datum: today(), done: {} }; L.push(d); } d.done = d.done || {}; return d; };
 
   V.trcanje = (el, p, q) => {
     const u = Auth.user(), isK = u && (u.role === 'klijentica' || u.role === 'trener');
     const isT = !!u && u.role === 'trener'; /* Cooperov test i intervali: samo trenerica, ona ih prilagođava klijenticama */
-    const plan0 = u && u.role === 'klijentica' && u.trkPlan; /* plan trčanja koji je trenerica sastavila za klijenticu */
+    const plan0 = u && u.role === 'klijentica' && FS.trkPlanOf(u); /* plan trčanja koji je trenerica sastavila za klijenticu */
     let tab = ['5k', '10k', 'kalk'].concat(isT ? ['coop', 'int', 'plan'] : [], plan0 ? ['moj'] : []).includes(q.tab) ? q.tab : (plan0 && !q.tab ? 'moj' : '5k');
     let pd = null; /* nacrt plana u uređivanju (trenerica) */
     const draw = () => {
@@ -67,7 +73,7 @@
 
       const RED = ['Intervali', 'Tempo', 'Dugo lagano'];
       if (tab === 'moj' && plan0) {
-        const pl = u.trkPlan, d = doc(u), ks = [];
+        const pl = plan0, d = doc(u), ks = [];
         pl.tjedni.forEach((w, wi) => w.ss.forEach((tx, si) => { if (String(tx).trim()) ks.push('moj-' + wi + '-' + si); }));
         const dn = ks.filter((k) => d.done[k]).length;
         el.innerHTML = h`<div class="eyebrow">Plan trčanja</div><h1>${pl.naziv}</h1>${seg}
@@ -80,7 +86,7 @@
         return;
       }
       if (tab === 'plan' && isT && FS.trkData) {
-        if (!pd) { pd = { kid: q.k || '', nivo: 0, naziv: 'Priprema za Cooperov test', testm: '', tjedni: [{ naz: 'Sedmica 1', ss: ['', '', ''] }] }; const k0 = pd.kid && Store.user(pd.kid); if (k0 && k0.trkPlan) { pd.nivo = k0.trkPlan.nivo || 0; pd.naziv = k0.trkPlan.naziv; pd.tjedni = JSON.parse(JSON.stringify(k0.trkPlan.tjedni)); } }
+        if (!pd) { pd = { kid: q.k || '', nivo: 0, naziv: 'Priprema za Cooperov test', testm: '', tjedni: [{ naz: 'Sedmica 1', ss: ['', '', ''] }] }; const k0 = pd.kid && Store.user(pd.kid), t0p = k0 && FS.trkPlanOf(k0); if (t0p) { pd.nivo = t0p.nivo || 0; pd.naziv = t0p.naziv; pd.tjedni = JSON.parse(JSON.stringify(t0p.tjedni)); } }
         const { W, T, NIV, D } = FS.trkData, ks = Store.klijentice(), n = pd.nivo;
         const grp = (lab, arr) => arr.length ? h`<optgroup label="${lab}">${arr.map(([v, t2]) => h`<option value="${t2}">${v}</option>`)}</optgroup>` : '';
         const fromT = (ti) => T[ti].s.filter(([nm, v]) => v[n] !== D).map(([nm, v]) => [T[ti].naz + ' · ' + nm + ': ' + v[n], T[ti].naz + ' (' + nm + '): ' + v[n]]);
@@ -93,7 +99,7 @@
         const LAB = [['Cooper test, intervali', 'Iz Cooper plana'], ['Tempo, progresija', 'Iz Cooper plana'], ['Lagano i dugo', 'Iz Cooper plana']];
         el.innerHTML = h`<div class="eyebrow">Samo za tebe</div><h1>Plan trčanja / Cooper priprema</h1>${seg}
           <p class="muted">Sastavi sedmični plan za klijenticu. U svaki red možeš ubaciti gotov trening iz liste (intervali, tempo, dugo trčanje) ili upisati svoj, na osnovu rezultata testiranja. Klijentica vidi plan u svom prostoru.</p>
-          <div class="card"><label class="field"><span>Klijentica</span><select data-f="kid" data-act="pkid"><option value="">Izaberi…</option>${ks.map((k) => h`<option value="${k.id}" ${pd.kid === k.id ? 'selected' : ''}>${k.ime}${k.trkPlan ? ' (ima plan)' : ''}</option>`)}</select></label>
+          <div class="card"><label class="field"><span>Klijentica</span><select data-f="kid" data-act="pkid"><option value="">Izaberi…</option>${ks.map((k) => h`<option value="${k.id}" ${pd.kid === k.id ? 'selected' : ''}>${k.ime}${FS.trkPlanOf(k) ? ' (ima plan)' : ''}</option>`)}</select></label>
             <div class="grid2"><label class="field"><span>Nivo (za gotove liste)</span><select data-f="nivo" data-act="pniv">${NIV.map(([en, bs], i) => h`<option value="${i}" ${pd.nivo === i ? 'selected' : ''}>${en} (${bs})</option>`)}</select></label>
             <label class="field"><span>Naziv plana</span><input data-f="naziv" value="${pd.naziv}"></label></div>
             <div class="row wrap"><button class="btn sm" data-act="pcoop">Učitaj Cooper plan (6 sedmica)</button><button class="btn sm" data-act="pprazan">Prazan plan</button></div></div>
@@ -104,7 +110,7 @@
               <select data-act="ppick" data-w="${wi}" data-s="${si}" class="mb"><option value="">+ Ubaci gotov trening…</option>${grp('Iz biblioteke', POOL[si].slice(si === 0 ? 0 : 0))}</select>`)}</div>`)}
           <div class="row wrap mb"><button class="btn sm" data-act="padd">+ Dodaj sedmicu</button><button class="btn sm" data-act="prm">− Ukloni zadnju</button></div>
           <button class="btn primary block mb" data-act="psave">Dodijeli plan klijentici</button>
-          ${pd.kid && (Store.user(pd.kid) || {}).trkPlan ? h`<button class="btn danger block mb" data-act="pdel">Ukloni plan klijentici</button>` : ''}`;
+          ${pd.kid && FS.trkPlanOf(Store.user(pd.kid) || {}) ? h`<button class="btn danger block mb" data-act="pdel">Ukloni plan klijentici</button>` : ''}`;
         el.__pool = POOL;
         return;
       }
@@ -149,7 +155,7 @@
       'click:pprazan': () => { sync(); pd.tjedni = [{ naz: 'Sedmica 1', ss: ['', '', ''] }]; draw(); },
       'click:padd': () => { sync(); pd.tjedni.push({ naz: 'Sedmica ' + (pd.tjedni.length + 1), ss: ['', '', ''] }); draw(); },
       'click:prm': () => { sync(); if (pd.tjedni.length > 1) pd.tjedni.pop(); draw(); },
-      'change:pkid': () => { sync(); const k = pd.kid && Store.user(pd.kid); if (k && k.trkPlan) { pd.nivo = k.trkPlan.nivo || 0; pd.naziv = k.trkPlan.naziv; pd.tjedni = JSON.parse(JSON.stringify(k.trkPlan.tjedni)); toast('Učitan postojeći plan klijentice.'); } draw(); },
+      'change:pkid': () => { sync(); const k = pd.kid && Store.user(pd.kid), tp = k && FS.trkPlanOf(k); if (tp) { pd.nivo = tp.nivo || 0; pd.naziv = tp.naziv; pd.tjedni = JSON.parse(JSON.stringify(tp.tjedni)); toast('Učitan postojeći plan klijentice.'); } draw(); },
       'change:pniv': () => { sync(); draw(); },
       'change:ppick': (s) => { sync(); if (!s.value) return; const c = pd.tjedni[+s.dataset.w].ss, i = +s.dataset.s; c[i] = c[i] ? c[i] + ' + ' + s.value : s.value; draw(); },
       'click:ptest': () => { sync(); const m = parseFloat(String(pd.testm).replace(',', '.')); if (!(m >= 500 && m <= 5000)) { toast('Upiši udaljenost u metrima (500 do 5000).'); return; }
@@ -159,8 +165,8 @@
         const tj = pd.tjedni.map((w) => ({ naz: String(w.naz).trim() || 'Sedmica', ss: w.ss.map((x) => String(x).trim()) })).filter((w) => w.ss.some((x) => x));
         if (!tj.length) { toast('Upiši barem jedan trening.'); return; }
         const dd = doc(k); Object.keys(dd.done).forEach((x) => { if (x.startsWith('moj-')) delete dd.done[x]; });
-        k.trkPlan = { naziv: String(pd.naziv).trim() || 'Plan trčanja', nivo: pd.nivo, tjedni: tj, kreirano: today() }; Store.save(); toast('Plan je dodijeljen. ' + k.ime + ' ga vidi kao „Moj plan”.'); draw(); },
-      'click:pdel': () => { const k = pd && pd.kid && Store.user(pd.kid); if (!k) return; delete k.trkPlan; Store.save(); toast('Plan je uklonjen.'); draw(); },
+        FS.trkPlanSet(k, { naziv: String(pd.naziv).trim() || 'Plan trčanja', nivo: pd.nivo, tjedni: tj, kreirano: today() }); Store.save(); toast('Plan je dodijeljen. ' + k.ime + ' ga vidi kao „Moj plan”.'); draw(); },
+      'click:pdel': () => { const k = pd && pd.kid && Store.user(pd.kid); if (!k) return; FS.trkPlanDel(k); Store.save(); toast('Plan je uklonjen.'); draw(); },
       'click:tab': (t) => { tab = t.dataset.t; try { history.replaceState(null, '', '#/trcanje?tab=' + tab); } catch (e) { /* ignoriši */ } draw(); },
       'submit:coop': (f) => {
         const x = FS.formData(f), d = parseFloat(String(x.d).replace(',', '.')), er = $('#cerr', el), o = $('#cout', el);

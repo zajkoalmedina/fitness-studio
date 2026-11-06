@@ -5,11 +5,11 @@
 
   const ROUTES = [
     ['', 'home'], ['paketi', 'paketi'], ['alati', 'alati'], ['vjezbe', 'vjezbe'], ['vjezba/:id', 'vjezba'],
-    ['programi', 'programi'], ['program/:id', 'program'], ['dijastaza', 'dijastaza'], ['prica', 'prica'], ['ishrana', 'ishrana'], ['kondicija', 'kondicija'], ['suplementi', 'suplementi'], ['trcanje', 'trcanje'], ['rm', 'rm'], ['zagrijavanje', 'zagrijavanje'], ['hipertrofija', 'hipertrofija'], ['poruke', 'poruke', 'trener'], ['mjerenje', 'mjerenje'], ['upitnik', 'upitnik'], ['kond/:id', 'kond'], ['prijava', 'prijava'],
+    ['programi', 'programi'], ['program/:id', 'program'], ['dijastaza', 'dijastaza'], ['prica', 'prica'], ['ishrana', 'ishrana'], ['kondicija', 'kondicija'], ['kondsablon', 'kondsablon', 'trener'], ['suplementi', 'suplementi'], ['trcanje', 'trcanje'], ['rm', 'rm'], ['zagrijavanje', 'zagrijavanje'], ['hipertrofija', 'hipertrofija'], ['poruke', 'poruke', 'trener'], ['mjerenje', 'mjerenje'], ['upitnik', 'upitnik'], ['kond/:id', 'kond'], ['prijava', 'prijava'],
     ['moj', 'moj', 'klijentica'], ['pregled', 'pregled', 'klijentica'], ['trening/novi', 'trening_novi', 'klijentica'],
     ['trener', 'trener', 'trener'], ['trener/klijentica/:id', 'trener_klijentica', 'trener'], ['trener/program/:id', 'trener_program', 'trener']
   ];
-  const DETAIL = new Set(['prica', 'vjezba', 'program', 'trening_novi', 'trener_klijentica', 'trener_program', 'paketi', 'dijastaza', 'ishrana', 'kond', 'suplementi', 'upitnik', 'pregled', 'trcanje', 'rm', 'zagrijavanje', 'hipertrofija', 'mjerenje']);
+  const DETAIL = new Set(['prica', 'vjezba', 'program', 'trening_novi', 'trener_klijentica', 'trener_program', 'paketi', 'dijastaza', 'ishrana', 'kond', 'kondsablon', 'suplementi', 'upitnik', 'pregled', 'trcanje', 'rm', 'zagrijavanje', 'hipertrofija', 'mjerenje']);
   const leave = [];
   FS.onLeave = (fn) => leave.push(fn);
 

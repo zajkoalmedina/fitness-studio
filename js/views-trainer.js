@@ -43,6 +43,7 @@
     if (tab === 'programi') {
       body = h`${FS.pdfCard()}${FS.postavkeCard()}<div class="card"><h3>Cjenovnik paketa (mjesečno, ${config.valuta})</h3><form data-act="cijene" novalidate><div class="grid3">${FS.paketi().map((x) => h`<label class="field" style="margin:0"><span>${x.id}</span><input name="${x.id}" inputmode="decimal" value="${x.cijena}"></label>`)}</div><p class="small mt-s">Naziv i cijenu svakog gotovog programa mijenjaš ispod, u uređivanju programa.</p><button class="btn sm primary" type="submit">Sačuvaj cijene</button></form></div>
         <a class="btn primary block mb" href="#/trener/program/novi">${icon('plus')} Novi program</a>
+        <a class="card" href="#/kondsablon" style="display:block"><b>Kondicijski šabloni</b><div class="small muted">EMOM, AMRAP, Tabata, intervali, piramida: uredi primjer i dodijeli klijentici</div></a>
         <a class="card" href="#/hipertrofija" style="display:block"><b>Vodič: plan za hipertrofiju</b><div class="small muted">Tabela pump kroz 4 sedmice i koraci kako složiti plan (samo za tebe)</div></a>
         ${(() => { const all = Store.allPrograms(); const row = (pr) => h`<a class="ex" href="#/trener/program/${pr.id}"><div class="ph">${icon('clipboard')}</div><div class="grow"><b>${pr.naziv}</b><div class="small">${pr.tip === 'individualni' ? 'individualni' : pr.mj ? 'biblioteka' : 'gotov'} · ${pr.dani.length} ${pr.dani.length === 1 ? 'trening' : 'dana'}${pr.uShopu ? ' · u prodaji ' + pr.cijena + ' ' + config.valuta : ''}</div></div></a>`;
           const NO = { 'početni': 0, srednji: 1, napredni: 2 };
@@ -172,7 +173,7 @@
         ${(u.programi || []).length ? '' : h`<p class="muted">Nema dodijeljenih programa.</p>`}
         <div class="row mt-s"><select data-act="assignsel" class="grow"><option value="">Dodijeli program…</option>${assignable.map((x) => h`<option value="${x.id}">${x.naziv}</option>`)}</select><button class="btn sm" data-act="assign">Dodaj</button></div>
         <a class="btn sm block mt-s" href="#/trener/program/novi?za=${u.id}">+ Napravi individualni program</a>
-        <a class="btn sm block mt-s" href="#/trcanje?tab=plan&k=${u.id}">${u.trkPlan ? 'Uredi plan trčanja (Cooper)' : '+ Cooper / plan trčanja'}</a>${u.trkPlan ? h`<div class="small mt-s">Dodijeljen plan trčanja: <b>${u.trkPlan.naziv}</b> · ${u.trkPlan.tjedni.length} sedmica</div>` : ''}</div>
+        <a class="btn sm block mt-s" href="#/trcanje?tab=plan&k=${u.id}">${FS.trkPlanOf(u) ? 'Uredi plan trčanja (Cooper)' : '+ Cooper / plan trčanja'}</a></div>
       ${FS.perKlijentCard ? FS.perKlijentCard(u, Store.userPrograms(u)) : ''}
       ${FS.planCard(u)}
       ${FS.alergijeCard ? FS.alergijeCard(u.jelovnik, true) : ''}
