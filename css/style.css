@@ -117,7 +117,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--beige);box-shadow:0 0
 .big{font-family:var(--serif);font-size:52px;line-height:1;color:var(--cream)}
 .meter{position:relative;height:12px;border-radius:99px;background:linear-gradient(90deg,#6c8fbf 0 18%,#8fbf9f 18% 50%,#e0b36a 50% 75%,#e08a7a 75% 100%);margin:18px 0 8px}
 .meter i{position:absolute;top:-5px;width:4px;height:22px;background:var(--cream);border-radius:3px;box-shadow:0 0 0 2px var(--navy)}
-.kv{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line)} .kv:last-child{border:0} .kv b{font-weight:600}
+.kv{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line)} .kv>span{flex:none;max-width:42%} .kv>b{text-align:right} .kv:last-child{border:0} .kv b{font-weight:600}
 
 /* exercises */
 .ex{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:var(--r-sm);margin-bottom:10px;background:rgba(255,255,255,.03);color:var(--cream)}
