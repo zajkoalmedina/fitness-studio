@@ -5,7 +5,7 @@
 
   const ROUTES = [
     ['', 'home'], ['paketi', 'paketi'], ['alati', 'alati'], ['vjezbe', 'vjezbe'], ['vjezba/:id', 'vjezba'],
-    ['programi', 'programi'], ['program/:id', 'program'], ['dijastaza', 'dijastaza'], ['prica', 'prica'], ['ishrana', 'ishrana'], ['kondicija', 'kondicija'], ['suplementi', 'suplementi'], ['trcanje', 'trcanje'], ['rm', 'rm'], ['zagrijavanje', 'zagrijavanje'], ['hipertrofija', 'hipertrofija'], ['mjerenje', 'mjerenje'], ['upitnik', 'upitnik'], ['kond/:id', 'kond'], ['prijava', 'prijava'],
+    ['programi', 'programi'], ['program/:id', 'program'], ['dijastaza', 'dijastaza'], ['prica', 'prica'], ['ishrana', 'ishrana'], ['kondicija', 'kondicija'], ['suplementi', 'suplementi'], ['trcanje', 'trcanje'], ['rm', 'rm'], ['zagrijavanje', 'zagrijavanje'], ['hipertrofija', 'hipertrofija'], ['poruke', 'poruke', 'trener'], ['mjerenje', 'mjerenje'], ['upitnik', 'upitnik'], ['kond/:id', 'kond'], ['prijava', 'prijava'],
     ['moj', 'moj', 'klijentica'], ['pregled', 'pregled', 'klijentica'], ['trening/novi', 'trening_novi', 'klijentica'],
     ['trener', 'trener', 'trener'], ['trener/klijentica/:id', 'trener_klijentica', 'trener'], ['trener/program/:id', 'trener_program', 'trener']
   ];
@@ -36,7 +36,9 @@
     const acc = u ? (u.role === 'trener' ? ['#/trener', 'Panel', 'users'] : ['#/moj', 'Moj prostor', 'user']) : ['#/prijava', 'Prijava', 'user'];
     const items0 = [['#/', 'Početna', 'home', ['home']], ['#/programi', 'Programi', 'list', ['programi', 'program', 'dijastaza', 'kondicija', 'kond']], ['#/vjezbe', 'Vježbe', 'dumbbell', ['vjezbe', 'vjezba']], ['#/alati', 'Alati', 'calc', ['alati', 'ishrana', 'suplementi']], [acc[0], acc[1], acc[2], ['prijava', 'moj', 'trening_novi', 'trener', 'trener_klijentica', 'trener_program']]];
     const items = items0.filter((it) => it[0] !== '#/vjezbe' || (u && u.role === 'trener'));
-    $('#tabbar').innerHTML = h`${items.map(([href, label, ic, names]) => h`<a class="tab ${names.includes(name) ? 'on' : ''}" href="${href}" ${names.includes(name) ? 'aria-current="page"' : ''}>${icon(ic)}<span>${label}${href === '#/trener' && FS.obavNovo && FS.obavNovo() ? h` <b style="background:var(--rose-2);color:#fff;border-radius:99px;padding:0 6px;font-size:11px">${FS.obavNovo()}</b>` : ''}</span></a>`)}`.s;
+    if (u && u.role === 'trener') items.splice(items.length - 1, 0, ['#/poruke', 'Poruke', 'chat', ['poruke']]); /* poruke klijentica uvijek pri ruci, sa značkom nepročitanih */
+    const fab = $('#fab'); if (fab) fab.hidden = !!(u && u.role === 'trener'); /* plutajući Instagram gumb je za klijentice, trenerici zaklanja sadržaj */
+    $('#tabbar').innerHTML = h`${items.map(([href, label, ic, names]) => h`<a class="tab ${names.includes(name) ? 'on' : ''}" href="${href}" ${names.includes(name) ? 'aria-current="page"' : ''}>${icon(ic)}<span>${label}${href === '#/trener' && FS.obavNovo && FS.obavNovo() ? h` <b style="background:var(--rose-2);color:#fff;border-radius:99px;padding:0 6px;font-size:11px">${FS.obavNovo()}</b>` : ''}${href === '#/poruke' && FS.porukeNovo && FS.porukeNovo() ? h` <b style="background:var(--rose-2);color:#fff;border-radius:99px;padding:0 6px;font-size:11px">${FS.porukeNovo()}</b>` : ''}</span></a>`)}`.s;
   }
   FS.refreshNav = () => renderNav(FS.currentRoute);
 
