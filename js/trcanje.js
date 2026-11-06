@@ -69,7 +69,7 @@
             <p class="err" id="perr" hidden></p><button class="btn primary block" type="submit">Izračunaj</button></form><div id="pout"></div>
           <form class="card" data-act="pace" novalidate><h3>Tempo ↔ vrijeme</h3>
             <div class="grid2"><label class="field"><span>Distanca (km)</span><input name="km" inputmode="decimal" placeholder="npr. 5"></label><label class="field"><span>Vrijeme</span><input name="t" placeholder="npr. 30:00"></label></div>
-            <button class="btn block" type="submit">Izračunaj tempo po km</button><div id="cout" class="mt-s"></div></form>`;
+            <button class="btn block" type="submit">Izračunaj tempo po km</button><div id="cout" class="mt-s"></div></form>${FS.raw(FS.trkExtra ? FS.trkExtra.puls : '')}`;
         return;
       }
       if ((tab === 'coop' || tab === 'int') && FS.trkExtra) {
@@ -87,6 +87,7 @@
       el.innerHTML = h`<div class="eyebrow">Trčanje za početnice</div><h1>${P.naziv}</h1>${seg}<p class="muted">${P.opis}</p>
         <div class="progress mb" role="progressbar" aria-valuenow="${done}" aria-valuemax="${total}"><i style="width:${Math.round((done / total) * 100)}%"></i></div><div class="small mb">${done} od ${total} treninga završeno</div>
         <div class="card note"><b>Kako trčati</b><p class="muted mt-s" style="margin:0">${P.napomena}</p></div>
+        ${FS.raw(FS.trkExtra ? FS.trkExtra.puls : '')}
         ${P.tjedni.map(([nz, ss], wi) => h`<details class="card" ${wi === 0 ? 'open' : ''}><summary style="cursor:pointer"><b style="font-family:var(--serif);font-size:18px">${nz}</b></summary>
           <p class="small mt-s">${WU}. ${CD}.</p>
           ${ss.map((t, si) => { const key = tab + '-' + wi + '-' + si; return h`<label class="check" style="align-items:flex-start"><input type="checkbox" data-act="done" data-k="${key}" ${d.done[key] ? 'checked' : ''}><span><b>Trening ${si + 1}.</b> ${t}</span></label>`; })}</details>`)}
