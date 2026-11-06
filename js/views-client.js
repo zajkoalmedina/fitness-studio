@@ -126,7 +126,7 @@
         const last = Store.lastSets(u.id, x.id), n = x.s || 3, base = x.pct ? Store.baseKg(u.id, x.id) : 0;
         const pk = FS.predlogKg ? FS.predlogKg(u.id, x, q.w || FS.currentWeek(u, Store.program(q.p)), Store.program(q.p)) : null;
         const sug = pk ? pk.kg : (base ? Math.round((base * x.pct / 100) / (base >= 20 ? 2.5 : 1)) * (base >= 20 ? 2.5 : 1) : 0);
-        d.vjezbe.push({ id: x.id, ds: !!x.ds, sw: (String(x.r).match(/^\s*(\d+)\s*s\b/) || [])[1] ? +String(x.r).match(/^\s*(\d+)\s*s\b/)[1] : 0, pauza: FS.pauza ? FS.pauza(x) : 0, cilj: x.r + (pk ? ' · prijedlog ' + sug + ' kg (prošli put ' + pk.prev + ' kg: ' + pk.txt + ')' : x.pct ? ' · ≈ ' + x.pct + ' % težine iz 1. sedmice' + (sug ? ' (prijedlog ' + sug + ' kg)' : '') : ''), serije: Array.from({ length: n }, (_, i) => ({ kg: sug ? String(sug) : (last && last[i] && last[i].kg ? String(last[i].kg) : ''), rep: String(parseInt(x.r, 10) || ''), ok: false })) });
+        d.vjezbe.push({ id: x.id, pz: x.pz, ds: !!x.ds, sw: (String(x.r).match(/^\s*(\d+)\s*s\b/) || [])[1] ? +String(x.r).match(/^\s*(\d+)\s*s\b/)[1] : 0, pauza: FS.pauza ? FS.pauza(x) : 0, cilj: x.r + (pk ? ' · prijedlog ' + sug + ' kg (prošli put ' + pk.prev + ' kg: ' + pk.txt + ')' : x.pct ? ' · ≈ ' + x.pct + ' % težine iz 1. sedmice' + (sug ? ' (prijedlog ' + sug + ' kg)' : '') : ''), serije: Array.from({ length: n }, (_, i) => ({ kg: sug ? String(sug) : (last && last[i] && last[i].kg ? String(last[i].kg) : ''), rep: String(parseInt(x.r, 10) || ''), ok: false })) });
       });
     }
     return d;
@@ -219,7 +219,7 @@
       'click:free': () => { d = { uid: u.id, start: Date.now(), programId: null, dan: '', vjezbe: [], rpe: '', biljeska: '', free: true }; save(); draw(); },
       'input:kg': (t) => { d.vjezbe[t.dataset.vi].serije[t.dataset.si].kg = t.value; save(); },
       'input:rep': (t) => { d.vjezbe[t.dataset.vi].serije[t.dataset.si].rep = t.value; save(); },
-      'click:ok': (t) => { const v = d.vjezbe[t.dataset.vi], s = v.serije[t.dataset.si]; s.ok = !s.ok; t.classList.toggle('on', s.ok); save(); if (s.ok && v.pauza > 0) startRest(v.pauza); },
+      'click:ok': (t) => { const v = d.vjezbe[t.dataset.vi], s = v.serije[t.dataset.si]; s.ok = !s.ok; t.classList.toggle('on', s.ok); save(); const rp = (v, si) => (si === v.serije.length - 1 && v.pz != null ? v.pz : v.pauza); if (s.ok && rp(v, +t.dataset.si) > 0) startRest(rp(v, +t.dataset.si)); },
       'click:restoff': () => stopRest(),
       'click:sw': (t) => {
         const vi = +t.dataset.vi, v = d.vjezbe[vi], si = v.serije.findIndex((z) => !z.ok);
@@ -228,7 +228,7 @@
           const z = v.serije[si]; z.ok = true; if (!z.rep) z.rep = String(v.sw); save();
           const bt = el.querySelector('[data-act=ok][data-vi="' + vi + '"][data-si="' + si + '"]'); if (bt) bt.classList.add('on');
           const ri = el.querySelector('[data-act=rep][data-vi="' + vi + '"][data-si="' + si + '"]'); if (ri) ri.value = z.rep;
-          if (v.pauza > 0) { startRest(v.pauza, 'Odmor'); toast('Gotovo! Odmor.'); } else toast('Gotovo! Odmah sljedeća vježba.');
+          const rp2 = si === v.serije.length - 1 && v.pz != null ? v.pz : v.pauza; if (rp2 > 0) { startRest(rp2, 'Odmor'); toast('Gotovo! Odmor.'); } else toast('Gotovo! Odmah sljedeća vježba.');
         });
       },
       'click:addset': (t) => { const v = d.vjezbe[t.dataset.vi], l = v.serije[v.serije.length - 1] || { kg: '', rep: '' }; v.serije.push({ kg: l.kg, rep: l.rep, ok: false }); save(); draw(); },

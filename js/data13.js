@@ -34,9 +34,9 @@
   const DS = { ds: true };
 
   /* HIIT: noge, gornji dio, kardio, stomak, pa isto još jednom; vrijeme ide na štoperici */
-  const hiit = (ids, rad, kruga, odmor) => {
+  const hiit = (ids, rad, kruga, odmor, inten) => {
     const tr = 15;
-    return ids.map((id, i) => X(id, kruga, rad + ' s', i === ids.length - 1 ? odmor : tr, i === 0 ? { n: 'Štoperica: pritisni ⏱ i radi ' + rad + ' s, odmor ' + tr + ' s prije sljedeće vježbe. Redoslijed: noge, gornji dio, kardio, stomak (dvaput). Cijeli krug × ' + kruga + ', pauza ' + odmor + ' s poslije zadnje vježbe.' } : {}));
+    return ids.map((id, i) => X(id, kruga, rad + ' s', i === ids.length - 1 ? odmor : tr, i === 0 ? { n: 'Intenzitet: ' + inten + '. Štoperica: pritisni ⏱ i radi ' + rad + ' s, odmor ' + tr + ' s prije sljedeće vježbe. Redoslijed: noge, gornji dio, kardio, stomak (dvaput). Cijeli krug × ' + kruga + ', pauza ' + odmor + ' s poslije zadnje vježbe.' } : {}));
   };
 
   const dani = {
@@ -45,21 +45,21 @@
       { naziv: 'Trening 2 · Back Day', vj: [X('lat', 3, '12–15', 90), X('veslanjekabl', 3, '12–15', 90), X('reversepec', 3, '15', 90), X('facepull', 2, '15', 90), SS('biceps', 2, '12–15'), X('tricepskabl', 2, '12–15', 90)] },
       { naziv: 'Trening 3 · Glutes', vj: [X('abdukcija', 3, '15–20', 90), X('kickback', 3, '12–15', 90, { n: 'Po nozi.' }), X('legpress', 3, '15', 90, { n: 'Stopala visoko na platformi, koljena prate prste.' }), X('bridge', 3, '15', 90, { n: 'Zadrži 2 s na vrhu.' }), X('backext', 3, '12–15', 90)] },
       { naziv: 'Trening 4 · Upper Body', vj: [X('chestpress', 3, '12–15', 90), X('ramenaspr', 3, '12–15', 90), X('veslanjeoslonjeno', 2, '12–15', 90), X('bocno', 2, '15', 60), X('triceps', 2, '15', 60)] },
-      { naziv: 'Trening 5 · HIIT', vj: hiit(['cucanj', 'skleknakoljenima', 'jumpingjack', 'bicycle', 'sumocucanj', 'stolicasklek', 'highknees', 'toetaps'], 30, 3, 90) }
+      { naziv: 'Trening 5 · HIIT', vj: hiit(['cucanj', 'skleknakoljenima', 'jumpingjack', 'bicycle', 'sumocucanj', 'stolicasklek', 'highknees', 'toetaps'], 30, 3, 90, 'umjeren do visok (napor 6–7 od 10)') }
     ],
     srednji: [
       { naziv: 'Trening 1 · Strong Legs', vj: [X('legpress', 3, '10–12', 120), X('cucanjsipka', 3, '8–10', 150), X('bugarski', 2, '8–10 po nozi', 120), X('rdl', 2, '10', 120), X('legext', 3, '12–15', 90, DS), X('listovi', 3, '15', 60)] },
       { naziv: 'Trening 2 · Back Day', vj: [X('lat', 3, '10–12', 120), X('veslanjekabl', 3, '10–12', 120), X('veslanje', 2, '10–12 po strani', 90), X('facepull', 3, '12–15', 90), SS('cablecurl', 2, '10–12'), X('tricepskabl', 2, '10–12', 90, DS)] },
       { naziv: 'Trening 3 · Glutes', vj: [X('hipthrust', 3, '10–12', 150, { n: 'Pauza 2–3 min.' }), X('iskorak', 2, '10 po nozi', 120), X('rdlsipka', 3, '8–10', 150), X('legcurl', 2, '12', 90), X('abdukcija', 2, '12–15', 90, DS)] },
       { naziv: 'Trening 4 · Upper Body', vj: [X('potisakb', 3, '8–10', 120), X('ramena', 2, '8–10', 120), X('lat', 2, '10–12', 120), X('dbfly', 2, '10–12', 90), X('bocno', 2, '12–15', 60, DS), X('hammer', 2, '10–12', 60)] },
-      { naziv: 'Trening 5 · HIIT', vj: hiit(['iskorak', 'sklek', 'skaterhop', 'planka', 'curtsy', 'veslanjeguma', 'squatjacks', 'twist'], 40, 4, 75) }
+      { naziv: 'Trening 5 · HIIT', vj: hiit(['iskorak', 'sklek', 'skaterhop', 'planka', 'curtsy', 'veslanjeguma', 'squatjacks', 'twist'], 40, 4, 75, 'visok (napor 7–8 od 10)') }
     ],
     napredni: [
       { naziv: 'Trening 1 · Strong Legs', vj: [X('cucanjsipka', 4, '5–8', 180, { n: 'Zagrijavanje: 50 % radne kilaže.' }), X('bugarski', 3, '8–10 po nozi', 150), X('rdlsipka', 3, '8', 150), X('legpress', 3, '10–12', 120, DS), X('legext', 3, '12', 90, DS), X('listovi', 3, '12–15', 60)] },
       { naziv: 'Trening 2 · Back Day', vj: [X('lat', 4, '8–10', 150), X('veslanjesipka', 3, '8', 150), X('tbar', 3, '8–10', 120), X('cablepullover', 3, '12', 90), X('facepull', 3, '15', 90, DS), SS('cablecurl', 3, '10–12'), X('tricepsrb', 3, '10–12', 90, DS)] },
       { naziv: 'Trening 3 · Glutes', vj: [X('hipthrust', 4, '6–8', 180, { n: 'Zadnja serija: zadrži 8 s na vrhu. Pauza 3–5 min.' }), X('hipthrust1', 3, '8 po nozi', 120), X('rdlsipka', 3, '8–10', 150), X('iskorakhod', 3, '10 po nozi', 120), X('legcurl', 3, '10–12', 90), X('kickback', 3, '12 po nozi', 90, DS), X('abdukcija', 2, '15', 60, DS)] },
       { naziv: 'Trening 4 · Upper Body', vj: [X('bench', 4, '6–8', 180), X('potisaksipka', 3, '8', 150), X('veslanjesipka', 3, '8', 150), X('cablefly', 2, '10–12 po strani', 90), X('bocno', 3, '12–15', 60, DS), X('tricepsrb', 2, '10–12', 60)] },
-      { naziv: 'Trening 5 · HIIT', vj: hiit(['lungejump', 'diamondsklek', 'burpee', 'sklopke', 'cucanjskok', 'pikesklek', 'plankhops', 'hollow'], 45, 4, 60) }
+      { naziv: 'Trening 5 · HIIT', vj: hiit(['lungejump', 'diamondsklek', 'burpee', 'sklopke', 'cucanjskok', 'pikesklek', 'plankhops', 'hollow'], 45, 4, 60, 'vrlo visok (napor 8–9 od 10)') }
     ]
   };
   const prog = (id, naziv, nivo, opis, bilj) => ({
