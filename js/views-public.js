@@ -43,7 +43,6 @@
         <div class="inner">
           <div class="eyebrow">Personalni treninzi · Online coaching</div>
           <h1>ALMEDINA<br>FITNESS</h1>
-          <p>Stručno vođen, siguran i elegantan trening prilagođen tvojim ciljevima i mogućnostima.</p>
           <div class="row wrap mt">
             <a class="btn primary" href="#/paketi">Pogledaj pakete</a>
             <a class="btn" href="${u ? homeFor(u) : '#/prijava'}">${u ? 'Moj prostor' : 'Prijava'}</a>
@@ -65,7 +64,7 @@
         <a class="tile" href="#/alati">${icon('calc')}<b>BMI i kalorije</b><small>Brzi kalkulatori</small></a>
         <a class="tile" href="#/ishrana">${icon('flame')}<b>Ishrana</b><small>Vodič, recepti, primjer dana</small></a>
         <a class="tile" href="#/prica">${icon('heart')}<b>Moja priča</b><small>Kron, operacije, povratak</small></a>
-        <a class="tile" href="#/dijastaza">${icon('heart')}<b>Dijastaza</b><small>Siguran kućni program</small></a>
+        ${FS.Auth.user() ? h`<a class="tile" href="#/dijastaza">${icon('heart')}<b>Dijastaza</b><small>Siguran kućni program</small></a>` : ''}
         ${(() => { const u = FS.Auth.user(); return u && u.role === 'trener' ? h`<a class="tile" href="#/zagrijavanje">${icon('flame')}<b>Zagrijavanje</b><small>Samo za tebe</small></a>` : ''; })()}<a class="tile" href="#/trcanje">${icon('flame')}<b>Trčanje</b><small>Planovi 5 km i 10 km</small></a>
       </div>
       ${FS.igCard ? FS.igCard('Želiš plan baš za sebe?', 'Javi mi se na Instagramu i složit ćemo trening po tvom tempu.') : ''}
@@ -82,7 +81,7 @@
       <div class="card"><p>Imam Crohnovu bolest već godinama. Dva puta sam završila na hitnim, iznenadnim operacijama.</p>
         <p>Jedan dan sam puna energije, a drugi je loš. I opet se vratim na početak. Više puta.</p>
         <p>Naučila sam da se ne čeka savršen dan. Dovoljno je doći i uraditi onoliko koliko danas možeš. To je disciplina, a motivacija dolazi poslije.</p>
-        <p><b>Ako počinješ ispočetka, vraćaš se poslije pauze ili si nesigurna jer kreće prvi put, javi mi se.</b> Znam kako je tamo gdje si ti.</p></div>
+        <p><b>Ako počinješ ispočetka, vraćaš se poslije pauze ili si nesigurna jer krećeš prvi put, javi mi se.</b> Znam kako je tamo gdje si ti.</p></div>
       <div class="card"><div class="eyebrow">Obrazovanje</div>
         <ul style="margin:6px 0 0;padding-left:18px"><li>Bachelor kondicione pripreme</li><li>CFT1 edukacija</li><li>Certificirani fitness instruktor, level 3</li></ul></div>
       ${FS.igCard ? FS.igCard('Počni svojim tempom', 'Javi mi se na Instagramu, bez obaveze.') : ''}
@@ -100,7 +99,7 @@
           <div class="eyebrow">Online coaching · mjesečni paketi</div><p class="muted">Individualni program, praćenje i podrška. Saradnja traje najmanje 2 mjeseca.</p>
           ${FS.paketi().map((x) => h`<div class="card cream"><div class="row"><div class="grow"><div class="nm" style="font-family:var(--serif);font-size:26px;font-weight:700;letter-spacing:1px">${x.id}</div><div class="muted">${x.sedmicno} treninga sedmično</div></div><div class="price-tag">${x.cijena} ${config.valuta}</div></div><button class="btn dark block mt-s" data-act="lead" data-p="${x.id}">Prijavi se – ${x.id}</button></div>`)}
           <div class="card"><h3>Svi paketi uključuju</h3><ul class="clean">${FS.PAKET_UKLJUCUJE.map((t) => h`<li><span class="tick">✓</span><span>${t}</span></li>`)}</ul></div>
-          <div class="card note"><b>Mjesečne cijene · saradnja najmanje 2 mjeseca.</b><br><span class="muted">Treninzi se izvode samostalno, bez videopoziva i bez uključene članarine teretane.</span></div>
+          <div class="card note"><b>Mjesečne cijene · saradnja najmanje 2 mjeseca.</b></div>
           <div class="eyebrow mt" id="personalni">Personalni treninzi</div>
           <div class="card cream"><h3>Individualni treninzi</h3>
             ${P.individualni.map((x) => h`<div class="row between" style="padding:10px 0;border-bottom:1px solid rgba(10,22,48,.12)"><div><b>${x.n}</b><div class="muted small">${x.s}</div></div><div class="price-tag" style="font-size:18px;padding:9px 12px">${x.c} ${config.valuta}</div></div>`)}
