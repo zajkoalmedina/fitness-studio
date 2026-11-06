@@ -9,7 +9,7 @@
     return [
       { naziv: 'Trening 1', vj: [X('sklek', a, m), X('goblet', a, m, 'Bučica ili kugla.'), X('lat', a, m, 'Široki hvat ispred glave.'), X('ramena', a, m), X('legcurl', a, iz, 'Zadnja loža, fleksija na spravi sjedeći.')] },
       { naziv: 'Trening 2', vj: [X('rdl', a, f === 1 ? '10' : '10', 'Mrtvo dizanje s bučicama.'), X('kosibucice', a, m, 'Kosa klupa za grudi.'), X('iskorakhod', a, m, 'Hodanje preko sale, ponavljanja po nozi.'), X('veslanjekabl', a, m, 'Sjedeći na klupici za leđa sa sajlom.'), X('biceps', a, iz, 'Stojeći.')] },
-      { naziv: 'Trening 3', vj: [X('lat', a, m, 'Uski obrnuti hvat.'), X('legpress', a, m), X('bocno', a, iz, 'Letenje za ramena sa bučicama.'), X('goodmorning', a, iz, 'Sa bučicom u rukama.'), X('tricepskabl', a, iz, 'Na spravi sa sajlom.')] }
+      { naziv: 'Trening 3', vj: [X('lat', a, m, 'Uski obrnuti hvat.'), X('legpress', a, m), X('bocno', a, iz, 'Letenje za ramena sa bučicama.'), X('rdl', a, iz, 'Rumunsko mrtvo dizanje s bučicama.'), X('tricepskabl', a, iz, 'Na spravi sa sajlom.')] }
     ];
   };
   const out = [];
