@@ -26,6 +26,9 @@
     <form class="card" data-act="coop" novalidate><h3>Procjena kondicije</h3><p class="muted small">Upiši pređenu udaljenost u metrima.</p>
       <label class="field"><span>Udaljenost u 12 min (m)</span><input name="d" inputmode="numeric" placeholder="npr. 2000"></label><p class="err" id="cerr" hidden></p>
       <button class="btn primary block" type="submit">Izračunaj</button><div id="cout" class="mt-s"></div></form>
+    <form class="card" data-act="puls" novalidate><h3>Pulsne zone za trening</h3><p class="muted small">Puls pokazuje koliko ti je napor stvarno težak. Upiši godine i puls u mirovanju (izmjeri ujutro, prije ustajanja, 1 min). Ako znaš najviši puls izmjeren na kraju testa ili intervala, upiši ga.</p>
+      <div class="grid3"><label class="field"><span>Godine</span><input name="g" inputmode="numeric" placeholder="npr. 35"></label><label class="field"><span>Puls u mirovanju</span><input name="r" inputmode="numeric" placeholder="npr. 62"></label><label class="field"><span>Najviši puls (ne mora)</span><input name="m" inputmode="numeric" placeholder="npr. 185"></label></div><p class="err" id="perr2" hidden></p>
+      <button class="btn primary block" type="submit">Izračunaj zone</button><div id="pzone" class="mt-s"></div></form>
     <div class="card"><h3>Raspored sedmice (6 sedmica)</h3><p class="small">Teretana 2 puta, trčanje 3 puta, najmanje jedan dan odmora.</p>
       ${[['Ponedjeljak', 'Trčanje: intervali'], ['Utorak', 'Teretana A: gornji dio tijela i trup'], ['Srijeda', 'Trčanje: tempo'], ['Četvrtak', 'Teretana B: noge i gluteus (umjereno, ne do otkaza)'], ['Petak', 'Odmor'], ['Subota', 'Trčanje: dugo, lagano'], ['Nedjelja', 'Odmor ili šetnja']].map(([d, t]) => h`<div class="kv"><span>${d}</span><b>${t}</b></div>`)}</div>
     <h3>Plan po sedmicama i nivoima</h3>

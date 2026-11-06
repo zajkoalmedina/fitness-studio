@@ -102,6 +102,17 @@
         er.hidden = true; const r = FS.coopCalc(d);
         o.innerHTML = h`<div class="kv"><span>Okvirni VO₂max</span><b>${r.v.toFixed(1)} ml/kg/min</b></div><div class="kv"><span>Prosječan tempo</span><b>${fmt(r.pace)} po km</b></div><p class="small mt-s">Procjena po Cooperovoj formuli. Služi za praćenje napretka kroz vrijeme.</p>`.s;
       },
+      'submit:puls': (f) => {
+        const x = FS.formData(f), g = parseInt(x.g, 10), r = parseInt(x.r, 10), mx = parseInt(x.m, 10), er = $('#perr2', el), o = $('#pzone', el);
+        if (!(g >= 14 && g <= 90) || !(r >= 35 && r <= 110) || (x.m && !(mx > r + 40 && mx <= 230))) { er.textContent = 'Provjeri unos: godine, puls u mirovanju (35 do 110) i, ako upisuješ, najviši puls.'; er.hidden = false; return; }
+        er.hidden = true;
+        const max = x.m ? mx : Math.round(208 - 0.7 * g), rez = max - r, bpm = (p) => Math.round(r + rez * p);
+        const Z = [['Hodanje, oporavak', 0.5, 0.6, 'Zagrijavanje i hlađenje'], ['Lagano (Easy, dugo)', 0.6, 0.7, 'Možeš razgovarati, napor 5 do 6'], ['Tempo (T), progresija', 0.8, 0.88, 'Ugodno teško, napor 7'], ['Intervali (brze dionice)', 0.88, 0.95, 'Napor 8, pogledaj napomenu ispod']];
+        const vo = (15.3 * max / r).toFixed(1);
+        o.innerHTML = h`<div class="kv"><span>Najviši puls ${x.m ? '(tvoj)' : '(procjena)'}</span><b>${max} otkucaja/min</b></div>${Z.map(([n, a, b, t]) => h`<div class="kv"><span>${n}<br><span class="small">${t}</span></span><b>${bpm(a)} – ${bpm(b)}</b></div>`)}
+          <div class="kv"><span>Okvirni VO₂max iz pulsa</span><b>${vo} ml/kg/min</b></div>
+          <p class="small mt-s">Zone računa Karvonenova formula (puls rezerve). Procjena najvišeg pulsa ${x.m ? 'nije potrebna jer si upisala svoj' : '(208 − 0,7 × godine) može odstupati i za 10 do 12 otkucaja'}, a tačnija je vrijednost izmjerena na kraju Cooperovog testa. VO₂max iz pulsa je grublja procjena od testa. U kratkim intervalima (do 2 minute) puls kasni, pa se tu orijentiši prema osjećaju. Ako uzimaš lijekove za srce ili pritisak, zone dogovori s ljekarom.</p>`.s;
+      },
       'change:done': (t) => { const d = doc(u); d.done[t.dataset.k] = t.checked; Store.save(); draw(); },
       'submit:pred': (f) => {
         const x = FS.formData(f), tsec = parse(x.t), dkm = parseFloat(x.d), er = $('#perr', el);
