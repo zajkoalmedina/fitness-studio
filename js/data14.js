@@ -45,7 +45,7 @@
   const dan = {
     naziv: 'Tabata 20/10 · Noge i gluteus',
     vj: [].concat(
-      blok(['kickbackbw', 'jumpingjack', 'highskip', 'mountainclimb'], 'Blok I', false, 20, 10, 'Intenzitet: visok (napor 8–9 od 10). '),
+      blok(['kickbackbw', 'jumpingjack', 'highskip', 'burpee'], 'Blok I', false, 20, 10, 'Intenzitet: visok (napor 8–9 od 10). '),
       blok(['cucanj', 'sumocucanj', 'iskorakd', 'iskorakl'], 'Blok II'),
       blok(['twist', 'legraise', 'crisscross', 'sidecrunch'], 'Blok III'),
       blok(['bridge', 'bridgepulse', 'bridgeabd', 'singlebridge'], 'Blok IV (gluteus)', true)
@@ -57,7 +57,7 @@
       blok(['cucanj', 'jumpingjack'], 'Blok 1', false, 30, 10, 'Intenzitet: visok (napor 7–8 od 10). '),
       blok(['lungekneedrive', 'lowskip'], 'Blok 2', false, 30, 10),
       blok(['bandsquatabd', 'kickbackguma'], 'Blok 3 (zatvorena mini guma)', false, 30, 10),
-      blok(['lateralnilunge', 'mountainclimb'], 'Blok 4', false, 30, 10),
+      blok(['lateralnilunge', 'burpee'], 'Blok 4', false, 30, 10),
       blok(['hamstringbridge', 'mountainclimb'], 'Blok 5', true, 30, 10)
     )
   };
