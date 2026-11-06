@@ -43,6 +43,7 @@
     if (tab === 'programi') {
       body = h`${FS.pdfCard()}${FS.postavkeCard()}<div class="card"><h3>Cjenovnik paketa (mjesečno, ${config.valuta})</h3><form data-act="cijene" novalidate><div class="grid3">${FS.paketi().map((x) => h`<label class="field" style="margin:0"><span>${x.id}</span><input name="${x.id}" inputmode="decimal" value="${x.cijena}"></label>`)}</div><p class="small mt-s">Naziv i cijenu svakog gotovog programa mijenjaš ispod, u uređivanju programa.</p><button class="btn sm primary" type="submit">Sačuvaj cijene</button></form></div>
         <a class="btn primary block mb" href="#/trener/program/novi">${icon('plus')} Novi program</a>
+        <a class="card" href="#/hipertrofija" style="display:block"><b>Vodič: plan za hipertrofiju</b><div class="small muted">Tabela pump kroz 4 sedmice i koraci kako složiti plan (samo za tebe)</div></a>
         ${(() => { const all = Store.allPrograms(); const row = (pr) => h`<a class="ex" href="#/trener/program/${pr.id}"><div class="ph">${icon('clipboard')}</div><div class="grow"><b>${pr.naziv}</b><div class="small">${pr.tip === 'individualni' ? 'individualni' : pr.mj ? 'biblioteka' : 'gotov'} · ${pr.dani.length} ${pr.dani.length === 1 ? 'trening' : 'dana'}${pr.uShopu ? ' · u prodaji ' + pr.cijena + ' ' + config.valuta : ''}</div></div></a>`;
           const NO = { 'početni': 0, srednji: 1, napredni: 2 };
           const cel = all.filter((x) => x.kat === 'cijeli');
