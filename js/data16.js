@@ -17,7 +17,7 @@
   const gymSpec = {
     donji: (n) => [clone(gym[n].dani[0])],
     gluteus: (n) => [clone(gym[n].dani[2])],
-    full: (n) => [clone(gym[n].dani[5])],
+    full: () => [],
     kardio: () => [],
     gornji: (n) => [clone(gym[n].dani[1]), clone(gym[n].dani[3])]
   };
@@ -29,7 +29,7 @@
     donji: (n) => [{ naziv: 'Donji dio tijela · Kućni', vj: [].concat(pick(['SQ2', 'HG2', 'LUN2', 'BR2'], n), pick(['ABD2', 'CLAM', 'CALF'], n)) }],
     gluteus: (n) => [{ naziv: 'Gluteus · Kućni', vj: [].concat(pick(['BR', 'HG', 'ABD', 'CLAM'], n), pick(['BR2', 'ABD2', 'LUN'], n)) }],
     full: (n) => [{ naziv: 'Full body · Kućni', vj: [].concat(pick(['SQ', 'BR', 'ABD', 'CLAM'], n), pick(['PUSH', 'ROW', 'SH'], n), pick(['UP', 'LOW', 'LAT', 'ROT'], n, true)) }],
-    kardio: (n) => [clone(gym[n].dani[4])].concat(n === 'srednji' && HI ? clone(HI.dani) : []),
+    kardio: (n) => [clone(FS._hiit[{ 'početni': 'pocetni', srednji: 'srednji', napredni: 'napredni' }[n]])].concat(n === 'srednji' && HI ? clone(HI.dani) : []),
     gornji: (n) => n === 'početni' && KU ? clone(KU.dani) : [{ naziv: 'Gornji dio tijela · Kućni', vj: [].concat(pick(['PUSH2', 'ROW', 'REAR', 'ARM'], n)) }]
   };
 

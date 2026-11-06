@@ -4,6 +4,8 @@
   const FS = (window.FS = window.FS || {});
   if (!FS.GOTOVI) return;
   const nova = [
+    ['bentfly', 'Bent-Over Dumbbell Rear Delt Fly', 'Ramena', 'srednji', 'Dvije lagane bučice', 'ne',
+      'Stani s koljenima blago savijenim, nagni trup naprijed s ravnim leđima, bučice vise ispod ramena, dlanovi jedan prema drugom.|Pogled prema podu ispred stopala, vrat u liniji kičme.|Raširi ruke u stranu do visine ramena, laktovi blago savijeni, lopatice se spajaju.|Polako spusti bučice 2 do 3 s.', 'Lagane bučice, bez zamaha.|Trup miran.|Zadrži 1 s na vrhu.', 'Zamah trupom.|Podizanje ramena prema ušima.', ['ramena'], ['leđa']],
     ['iskorakbuc', 'Dumbbell Reverse Lunge', 'Noge', 'srednji', 'Dvije bučice', 'ne',
       'Stani uspravno s bučicom u svakoj ruci uz tijelo, pogled ravno ispred.|Korakni jednom nogom unazad i spusti se dok oba koljena ne budu oko 90°.|Odgurni se prednjom nogom nazad u stojeći položaj.|Ponovi na istu ili naizmjenično na drugu nogu.', 'Prednje koljeno iznad stopala.|Trup uspravan, ramena opuštena.|Spuštanje 2–3 s.', 'Koljeno ide daleko preko prstiju.|Naginjanje trupa naprijed.', ['kvadriceps', 'gluteus'], ['zadnja loža']],
     ['gluteext', 'Glute Hyperextension (45°)', 'Gluteus', 'početni', 'Sprava za hiperekstenziju, podloga 45°', 'ne',
@@ -43,63 +45,65 @@
     return ids.map((id, i) => X(id, kruga, rad + ' s', i === ids.length - 1 ? odmor : tr, i === 0 ? { n: 'Intenzitet: ' + inten + '. Štoperica: pritisni ⏱ i radi ' + rad + ' s, odmor ' + tr + ' s prije sljedeće vježbe. Redoslijed: noge, gornji dio, kardio, stomak (dvaput). Cijeli krug × ' + kruga + ', pauza ' + odmor + ' s poslije zadnje vježbe.' } : {}));
   };
 
-  /* isti trening na sva tri nivoa: ista mjesta vježbi, samo lakša ili teža varijacija (početni, srednji, napredni) */
-  const KIND = {
-    main: { s: [3, 3, 4], r: ['12–15', '8–10', '5–8'], p: [90, 120, 150] },
-    iso: { s: [3, 3, 3], r: ['15–20', '12–15', '10–12'], p: [60, 90, 90] },
-    uni: { s: [3, 3, 3], r: ['10–12 po nozi', '10 po nozi', '8–10 po nozi'], p: [90, 120, 120] },
-    time: { s: [3, 3, 3], r: ['20–30 s', '30–40 s', '40–60 s'], p: [60, 60, 60] }
-  };
-  const SL = (ids, kind, o) => Object.assign({ ids, kind }, o || {});
+  /* Srednji nivo je tačno plan treninga br. 1 (isti redoslijed i vježbe). Početni i napredni imaju ista mjesta vježbi, samo lakšu ili težu varijaciju. */
+  const LI = { 'početni': 0, srednji: 1, napredni: 2 };
+  const E = (ids, o) => Object.assign({ ids }, o);
+  /* r: [početni, srednji, napredni]; p: pauza; n: napomene po nivou; ds: drop set po nivou */
+  const SLOT = (ids, s, r, p, n, ds, ss) => ({ ids, s, r, p, n: n || ['', '', ''], ds: ds || [0, 0, 0], ss: !!ss });
   const mk = (sl, li) => {
-    const k = KIND[sl.kind];
-    const x = { id: sl.ids[li], s: k.s[li], r: k.r[li], fix: true, p: sl.ss ? 0 : (sl.p || k.p)[li], n: (sl.n && sl.n[li]) || '' };
-    if (sl.ss) { x.ss = true; if (!x.n) x.n = 'Superserija: odmah poslije ove ide sljedeća vježba.'; }
-    if (sl.ds && sl.ds[li]) x.ds = true;
+    const x = { id: sl.ids[li], s: sl.s, r: sl.r[li], fix: true, p: sl.ss ? 0 : sl.p[li], n: sl.n[li] || '' };
+    if (sl.ss) { x.ss = true; x.n = x.n || 'Superserija: odmah poslije ove ide sljedeća vježba.'; }
+    if (sl.ds[li]) x.ds = true;
     return x;
   };
+  const P3 = [120, 180, 180], P3H = [150, 240, 240];
   const T = {
-    donji: [SL(['cucanj', 'goblet', 'cucanjsipka'], 'main', { n: ['Tjelesna težina, spuštanje 3 s.', 'Bučica uz grudi.', 'Šipka na leđima, zagrijavanje 50 % radne težine.'] }),
-      SL(['bridge', 'hipthrust', 'hipthrust'], 'main', { n: ['Zadrži 2 s na vrhu.', 'Bučica na kukovima.', 'Šipka na kukovima, pauza 3 min.'], p: [90, 120, 180] }),
-      SL(['iskorak', 'iskorakbuc', 'bugarski'], 'uni', { n: ['Iskorak unazad bez tereta.', 'Iskorak unazad s bučicama.', 'Zadnja noga na klupi.'] }),
-      SL(['legext', 'legext', 'legext'], 'iso', { ds: [0, 1, 1] }), SL(['legcurl', 'legcurl', 'legcurl'], 'iso', { ds: [0, 0, 1] }),
-      SL(['listovi', 'listovi', 'listovi'], 'iso', { n: ['Oba stopala.', 'S bučicom u ruci.', 'Na jednoj nozi, spuštanje 3 s.'] })],
-    back: [SL(['lat', 'lat', 'lat'], 'main', { n: ['Srednji hvat.', 'Srednji hvat, kontrolisan povrat.', 'Pauza 1 s dolje, povrat 3 s.'] }),
-      SL(['veslanjekabl', 'veslanje', 'tbar'], 'main'), SL(['m_gumapull', 'reversepec', 'cablereardelt'], 'iso'),
-      SL(['facepull', 'facepull', 'facepull'], 'iso', { ds: [0, 0, 1] }), SL(['biceps', 'cablecurl', 'cablecurl'], 'iso', { ss: true }),
-      SL(['triceps', 'tricepskabl', 'tricepsrb'], 'iso', { ds: [0, 1, 1] })],
-    glute: [SL(['bridge', 'hipthrust', 'hipthrust'], 'main', { n: ['Zadrži 2 s na vrhu.', 'Bučica na kukovima.', 'Šipka na kukovima, pauza 3 do 5 min.'], p: [90, 120, 180] }),
-      SL(['stepup', 'iskorakhod', 'bugarski'], 'uni', { n: ['Niska klupa, bez tereta.', 'S bučicama.', 'Zadnja noga na klupi.'] }),
-      SL(['goodmorningbw', 'rdl', 'rdlsipka'], 'main'), SL(['legcurl', 'curlloptom', 'ghdraise'], 'iso'),
-      SL(['gluteext', 'gluteext', 'gluteext'], 'iso', { n: ['Bez tereta, zaobljen gornji dio leđa.', 'Bučica uz grudi.', 'Kolut ili bučica uz grudi.'] }),
-      SL(['abdukcija', 'kickback', 'sidelegabd'], 'iso', { ds: [0, 1, 1] })],
-    upper: [SL(['chestpress', 'potisakb', 'bench'], 'main'), SL(['ramenaspr', 'ramena', 'potisaksipka'], 'main'),
-      SL(['veslanjeoslonjeno', 'veslanje', 'veslanjesipka'], 'main'), SL(['bocno', 'bocno', 'bocno'], 'iso', { ds: [0, 1, 1] }),
-      SL(['bocapregib', 'biceps', 'hammer'], 'iso', { ss: true }), SL(['triceps', 'tricepskabl', 'tricepsrb'], 'iso', { ds: [0, 1, 1] })],
-    full: [SL(['cucanj', 'goblet', 'cucanjsipka'], 'main'), SL(['chestpress', 'potisakb', 'bench'], 'main'), SL(['veslanjekabl', 'veslanje', 'veslanjesipka'], 'main'),
-      SL(['goodmorningbw', 'rdl', 'rdlsipka'], 'main'), SL(['ramenaspr', 'ramena', 'potisaksipka'], 'main'), SL(['planka', 'planksavijanje', 'hollow'], 'time')]
+    donji: [
+      SLOT(['goblet', 'cucanjsipka', 'frontcucanj'], 3, ['12–15', '8–16', '6–8'], P3, ['Bučica uz grudi. Zagrijavanje: prvu vježbu zagrij sa 50 % radne težine.', '8 do otkaza. Zagrijavanje: prvu vježbu zagrij sa 50 % radne težine.', 'Zagrijavanje: 50 % radne težine. Šipka ispred, laktovi visoko.']),
+      SLOT(['bridge', 'hipthrust', 'hipthrust1'], 2, ['12–15', '8–10', '6–8 po nozi'], P3H, ['Zadrži 2 s na vrhu.', '10 do otkaza. Pauza 3 do 5 min.', 'Jedna noga. Pauza 3 do 5 min.']),
+      SLOT(['iskorak', 'bugarski', 'bugarski'], 2, ['10–12 po nozi', '8–10', '6–8 po nozi'], P3, ['Iskorak unazad bez težine.', '10 do otkaza.', 'S bučicama u rukama.']),
+      SLOT(['legext', 'legext', 'legext'], 3, ['15–20', '10–12', '8–10'], P3, ['Lagana težina, polako.', '12 do otkaza.', 'Zadnja serija drop set.'], [0, 0, 1])],
+    back: [
+      SLOT(['lat', 'lat', 'lat'], 3, ['12–15', '8–10', '6–8'], P3, ['Srednji hvat, polako.', '10 do otkaza.', 'Pauza 1 s dolje, povrat 3 s.']),
+      SLOT(['veslanjeguma', 'veslanjekabl', 'tbar'], 2, ['12–15', '8–12', '6–8'], P3, ['Elastična guma.', '12 do otkaza.', 'T-bar veslanje.']),
+      SLOT(['m_gumapull', 'facepull', 'facepull'], 3, ['12–15', '10–12', '10–12'], P3, ['Razvlačenje elastične gume.', '12 do otkaza.', 'Zadrži 1 s na kraju pokreta.'], [0, 0, 1]),
+      SLOT(['reversepec', 'bentfly', 'cablereardelt'], 2, ['12–15', '10–12', '10–12'], P3, ['Na spravi, lagana težina.', 'Bučice, 12 do otkaza.', 'Na kablu, jedna pa druga ruka.'], [0, 0, 1]),
+      SLOT(['biceps', 'biceps', 'cablecurl'], 3, ['12–15', '10–12', '8–10'], P3, ['Superserija s tricepsom.', 'Superserija s tricepsom, 12 do otkaza.', 'Superserija s tricepsom.'], [0, 0, 1], true),
+      SLOT(['triceps', 'tricepskabl', 'tricepskabl'], 3, ['12–15', '10–12', '8–10'], [120, 120, 120], ['Elastična guma. Pauza između superserija 2 min.', 'Kanap. Pauza između superserija 2 min.', 'Kanap. Pauza između superserija 2 min.'], [0, 0, 1])],
+    glute: [
+      SLOT(['bridge', 'hipthrust', 'hipthrust1'], 3, ['12–15', '8–10', '6–8 po nozi'], P3H, ['Zadrži 2 s na vrhu. Pauza 3 do 5 min.', '10 do otkaza. Pauza 3 do 5 min.', 'Jedna noga. Pauza 3 do 5 min.']),
+      SLOT(['klizniiskorak', 'iskorak', 'iskorakhod'], 2, ['10–12 po nozi', '6–10', '8–10 po nozi'], P3, ['Klizni iskorak, oslonac po potrebi.', '10 do otkaza.', 'Iskorak u hodu s bučicama.']),
+      SLOT(['rdl', 'rdlsipka', 'jednorodl'], 2, ['12–15', '8–10', '6–8 po nozi'], P3, ['Bučice.', 'Šipka, 10 do otkaza.', 'B-Stance, jedna noga naprijed.']),
+      SLOT(['legcurl', 'legcurl', 'legcurl'], 2, ['12–15', '8–12', '8–10'], P3, ['Lagana težina.', '12 do otkaza.', 'Jedna noga, spuštanje 3 s.'], [0, 0, 1]),
+      SLOT(['abdgumom', 'abdukcija', 'sidelegabd'], 2, ['15–20', '10–12', '8–10'], P3, ['Mini guma.', '12 do otkaza.', 'Na kablu, po nozi.'], [0, 0, 1])],
+    upper: [
+      SLOT(['chestpress', 'chestpress', 'potisakb'], 3, ['12–15', '8–10', '6–8'], P3, ['Lagana težina.', '10 do otkaza.', 'Bučice na ravnoj klupi.']),
+      SLOT(['cablepullover', 'pullover', 'pullover'], 2, ['12–15', '10–12', '8–10'], P3, ['Kabl, ruke ispružene.', '12 do otkaza.', 'Bučica, povrat 3 s.']),
+      SLOT(['ramenaspr', 'ramena', 'potisaksipka'], 2, ['12–15', '8–10', '6–8'], P3, ['Na spravi.', 'Bučice, 10 do otkaza.', 'Šipka.']),
+      SLOT(['veslanjeoslonjeno', 'veslanje', 'gorillarow'], 2, ['12–15', '8–12', '6–8 po strani'], P3, ['Oslonjeno na klupu.', '12 do otkaza.', 'Gorilla Row.']),
+      SLOT(['dbfly', 'dbfly', 'cablefly'], 2, ['12–15', '10 + 15 (do pola pokreta)', '8–10 po strani'], P3, ['Lagane bučice.', '10 ponavljanja i još 15 do pola pokreta.', 'Na kablu.'], [0, 0, 1])]
   };
+  const day = (naziv, arr, li) => ({ naziv, vj: arr.map((x) => mk(x, li)) });
+  const dan = (li) => [
+    day('Trening 1 · Strong Legs', T.donji, li), day('Trening 2 · Back Day', T.back, li),
+    day('Trening 3 · Hipertrofija Glutes', T.glute, li), day('Trening 4 · Upper Body', T.upper, li)
+  ];
+  const dani = { pocetni: dan(0), srednji: dan(1), napredni: dan(2) };
+  /* HIIT dani za kućnu biblioteku (ne ulaze u teretanske planove) */
   const H = [['cucanj', 'cucanjskok', 'lungejump'], ['skleknakoljenima', 'sklek', 'diamondsklek'], ['jumpingjack', 'skaterhop', 'burpee'], ['bicycle', 'planka', 'sklopke'],
     ['sumocucanj', 'curtsy', 'tuckjump'], ['stolicasklek', 'planksavijanje', 'pikesklek'], ['highknees', 'squatjacks', 'plankhops'], ['toetaps', 'twist', 'hollow']];
   const HP = [[30, 3, 90, 'umjeren do visok (napor 6–7 od 10)'], [40, 4, 75, 'visok (napor 7–8 od 10)'], [45, 4, 60, 'vrlo visok (napor 8–9 od 10)']];
-  const dan = (li) => [
-    { naziv: 'Trening 1 · Strong Legs', vj: T.donji.map((x) => mk(x, li)) },
-    { naziv: 'Trening 2 · Back Day', vj: T.back.map((x) => mk(x, li)) },
-    { naziv: 'Trening 3 · Glutes', vj: T.glute.map((x) => mk(x, li)) },
-    { naziv: 'Trening 4 · Upper Body', vj: T.upper.map((x) => mk(x, li)) },
-    { naziv: 'Trening 5 · HIIT', vj: hiit(H.map((a) => a[li]), HP[li][0], HP[li][1], HP[li][2], HP[li][3]) },
-    { naziv: 'Trening 6 · Full body', vj: T.full.map((x) => mk(x, li)) }
-  ];
-  const dani = { pocetni: dan(0), srednji: dan(1), napredni: dan(2) };
+  FS._hiit = {};
+  ['pocetni', 'srednji', 'napredni'].forEach((k, li) => { FS._hiit[k] = { naziv: 'Trening 5 · HIIT', vj: hiit(H.map((a) => a[li]), HP[li][0], HP[li][1], HP[li][2], HP[li][3]) }; });
   const prog = (id, naziv, nivo, opis, bilj) => ({
-    id, naziv, opis, nivo, sedmica: 4, dana: 6, cijena: 0, tip: 'gotov', uShopu: false, samoTrener: true, per: { tip: 'nema', deload: 0 },
+    id, naziv, opis, nivo, sedmica: 4, dana: 4, cijena: 0, tip: 'gotov', uShopu: false, samoTrener: true, per: { tip: 'nema', deload: 0 },
     bilj, dani: dani[nivo === 'početni' ? 'pocetni' : nivo]
   });
   const KOM = ['Biblioteka treninga za trenericu: dodijeli cijeli plan klijentici ili kopiraj pojedinačne treninge u njen individualni program (Uredi program, Kopiraj trening).', 'Svaka vježba ima Drop set opciju (kvačica u uređivanju programa). Klijent klikom na „Drop set" dobije objašnjenje.'];
   const NOVI = [
-    prog('sab_pocetni', 'Biblioteka · Početni nivo', 'početni', 'Pet treninga: Strong Legs, Back Day, Glutes, Upper Body i HIIT. Prvo sprave, ponavljanja 12 do 20, pa lakše varijacije vježbi.', KOM.concat(['Početni nivo: 12–15 ponavljanja (do 20 za noge i gluteus), pauza oko 90 s, prvo sprave, pa jednostavne varijacije.'])),
-    prog('sab_srednji', 'Biblioteka · Srednji nivo', 'srednji', 'Pet treninga: Strong Legs, Back Day, Glutes, Upper Body i HIIT. Sprave i slobodni tegovi, 8 do 12 ponavljanja, teže varijacije, drop set na izolacijama.', KOM.concat(['Srednji nivo: 8–12 ponavljanja, pauza 2 do 2,5 min na složenim vježbama.'])),
-    prog('sab_napredni', 'Biblioteka · Napredni nivo', 'napredni', 'Pet treninga: Strong Legs, Back Day, Glutes, Upper Body i HIIT. Teški složeni pokreti (5 do 10 ponavljanja), jednostrane varijante i drop set.', KOM.concat(['Napredni nivo: 5–10 ponavljanja na složenim vježbama, pauza 2 do 3 min (hip thrust 3–5 min).']))
+    prog('sab_pocetni', 'Biblioteka · Početni nivo', 'početni', 'Četiri treninga: Strong Legs, Back Day, Hipertrofija Glutes i Upper Body. Prvo sprave, ponavljanja 12 do 20, pa lakše varijacije vježbi.', KOM.concat(['Početni nivo: 12–15 ponavljanja (do 20 za noge i gluteus), pauza oko 90 s, prvo sprave, pa jednostavne varijacije.'])),
+    prog('sab_srednji', 'Biblioteka · Srednji nivo', 'srednji', 'Četiri treninga: Strong Legs, Back Day, Hipertrofija Glutes i Upper Body. Sprave i slobodni tegovi, 8 do 12 ponavljanja, teže varijacije, drop set na izolacijama.', KOM.concat(['Srednji nivo: 8–12 ponavljanja, pauza 2 do 2,5 min na složenim vježbama.'])),
+    prog('sab_napredni', 'Biblioteka · Napredni nivo', 'napredni', 'Četiri treninga: Strong Legs, Back Day, Hipertrofija Glutes i Upper Body. Teški složeni pokreti (5 do 10 ponavljanja), jednostrane varijante i drop set.', KOM.concat(['Napredni nivo: 5–10 ponavljanja na složenim vježbama, pauza 2 do 3 min (hip thrust 3–5 min).']))
   ];
   const KEEP = ['dijastaza', 'vodic-ishrana'];
   FS.GOTOVI.splice(0, FS.GOTOVI.length, ...FS.GOTOVI.filter((g) => KEEP.includes(g.id)), ...NOVI);
