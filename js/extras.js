@@ -640,7 +640,7 @@
     const sec = h`<div class="eyebrow">Treninzi uživo</div><h2>Personalni i tinejdžeri</h2>
       <a class="card" href="#/paketi?tab=personalni" style="display:block"><b>Personalni treninzi</b><div class="small muted">Individualno i 2 na 1, Extreme Sport, Stup</div></a>
       <a class="card" href="#/paketi?tab=tinejdzeri" style="display:block"><b>Tinejdžeri od 16 godina</b><div class="small muted">Siguran, stručno vođen trening</div></a>
-      <a class="card" href="#/trcanje" style="display:block"><b>Trčanje za početnice: 5 km i 10 km</b><div class="small muted">Planovi i kalkulator tempa</div></a>
+      <a class="card" href="#/trcanje" style="display:block"><b>Trčanje: 5 km, 10 km, Cooperov test, intervali</b><div class="small muted">Planovi, tempo, pulsne zone i kalkulator</div></a>
       <a class="btn block mb" href="#/programi">Svi programi →</a><div class="eyebrow mt">Prije početka</div>
       <a class="card" href="#/upitnik" style="display:block"><b>Upitnik za nove klijente</b><div class="small muted">Preuzmi ili popuni online prije početka coachinga.</div></a>`;
     const vod = Store.shop().find((x) => x.id === 'vodic-ishrana');
@@ -648,14 +648,14 @@
     const hero = el.querySelector('section');
     if (vc && hero) hero.insertAdjacentHTML('afterend', vc.s);
     anchor.insertAdjacentHTML('beforebegin', sec.s);
-    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 161</p>');
+    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 162</p>');
   };
 
   /* Kalkulatori: veza na suplemente */
   const alati0 = V.alati;
   V.alati = (el, p, q) => {
     alati0(el, p, q);
-    const wrap = document.createElement('div'); wrap.innerHTML = h`<a class="card" href="#/trcanje" style="display:block"><b>Trčanje: planovi 5 km i 10 km + kalkulator tempa</b><div class="small muted">Za početnice, korak po korak</div></a><a class="card" href="#/suplementi" style="display:block"><b>Suplementi</b><div class="small muted">Praktične smjernice: šta ima smisla, a šta ne</div></a>`.s;
+    const wrap = document.createElement('div'); wrap.innerHTML = h`<a class="card" href="#/trcanje" style="display:block"><b>Trčanje: 5 km, 10 km, Cooperov test, intervali + kalkulator</b><div class="small muted">Za početnice, korak po korak</div></a><a class="card" href="#/suplementi" style="display:block"><b>Suplementi</b><div class="small muted">Praktične smjernice: šta ima smisla, a šta ne</div></a>`.s;
     wrap.insertAdjacentHTML('afterbegin', '<a class="card" href="#/mjerenje" style="display:block"><b>Kako se mjeriti</b><div class="small muted">Vaganje, obim struka i fotografije: kada i kako</div></a>');
     while (wrap.firstChild) el.appendChild(wrap.firstChild);
   };

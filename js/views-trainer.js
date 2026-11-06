@@ -203,7 +203,13 @@
       'change:paket': (s) => { u.paket = s.value || null; Store.save(); toast('Paket ažuriran.'); },
       'change:status': (s) => { u.aktivan = s.value === '1'; Store.save(); toast(u.aktivan ? 'Račun je aktivan.' : 'Račun je deaktiviran.'); },
       'click:renew': (b) => { (u.pstart = u.pstart || {})[b.dataset.id] = today(); Store.save(); toast('Pristup produžen: počinje od danas.'); rr(); },
-      'click:assign': () => { const v = $('[data-act=assignsel]', el).value; if (!v) return; u.programi.push(v); (u.dodijeljeno = u.dodijeljeno || []).push(v); (u.pstart = u.pstart || {})[v] = today(); Store.save(); toast('Program dodijeljen (klijentica ga vidi kao svoj program).'); rr(); },
+      'click:assign': () => { let v = $('[data-act=assignsel]', el).value; if (!v) return; const src = Store.program(v);
+        if (src && src.samoTrener && src.tip === 'gotov') { /* trening iz biblioteke: klijentica dobija svoj individualni program, bez oznaka biblioteke */
+          const cp = JSON.parse(JSON.stringify(src)); delete cp.samoTrener; delete cp.mj; delete cp.kat; delete cp.per;
+          cp.id = 'ind_' + Math.random().toString(36).slice(2, 9); cp.tip = 'individualni'; cp.vlasnik = u.id; cp.uShopu = false; cp.cijena = 0;
+          cp.naziv = String(src.naziv).replace(/^(Teretana|Kućni treninzi|Kuća|Kod kuće|Biblioteka)\s·\s/, ''); cp.opis = 'Individualni program prilagođen tebi.';
+          Store.db.programi.push(cp); v = cp.id; }
+        u.programi.push(v); (u.dodijeljeno = u.dodijeljeno || []).push(v); (u.pstart = u.pstart || {})[v] = today(); Store.save(); toast('Program dodijeljen (klijentica ga vidi kao svoj program).'); rr(); },
       'click:unassign': (b) => { u.programi = u.programi.filter((x) => x !== b.dataset.id); Store.save(); rr(); },
       'click:savenote': () => { u.biljeska = $('[data-act=note]', el).value.slice(0, 1500); Store.save(); toast('Bilješka sačuvana.'); },
       'submit:reply': (f) => { const t = String(formData(f).t || '').trim(); if (t.length < 2) { toast('Napiši odgovor.'); return; } const m = Store.db.poruke.find((x) => x.id === f.dataset.id); m.odgovor = t.slice(0, 1500); m.status = 'obradjeno'; Store.save(); toast('Odgovor poslan.'); rr(); },
