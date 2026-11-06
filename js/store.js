@@ -62,12 +62,12 @@
         { naziv: 'Dan 3 – Fullbody', vj: [{ id: 'iskorak', s: 3, r: '10', n: '' }, { id: 'lat', s: 3, r: '12', n: '' }, { id: 'bridge', s: 3, r: '15', n: '' }, { id: 'deadbug', s: 3, r: '8', n: '' }] }]
     };
     ana.programi = [progAna.id];
-    maja.programi = ['kuca']; // kupljeno
-    const sa = seedLogs(ana.id, 'fullbody');
-    const sm = seedLogs(maja.id, 'kuca');
+    maja.programi = ['sab_pocetni']; maja.dodijeljeno = ['sab_pocetni'];
+    const sa = seedLogs(ana.id, 'sab_srednji');
+    const sm = seedLogs(maja.id, 'sab_pocetni');
     const db = {
       v: 1, users: [trener, ana, maja, lejla], programi: [progAna], logs: [...sa.logs, ...sm.logs.slice(0, 5)], mjere: [...sa.mj, ...sm.mj.slice(0, 4)],
-      pristup: [], kupovine: [{ id: uid(), userId: maja.id, programId: 'kuca', datum: addDays(today(), -20), iznos: 39, demo: true }],
+      pristup: [], kupovine: [{ id: uid(), userId: maja.id, programId: 'vodic-ishrana', datum: addDays(today(), -20), iznos: 25, demo: true }],
       poruke: [{ id: uid(), userId: lejla.id, tip: 'upit', tekst: 'Zanima me može li se plan prilagoditi za rad od kuće bez opreme.', datum: addDays(today(), -1), status: 'novo', odgovor: '' }],
       prijave: [{ id: uid(), ime: 'Sara (demo)', kontakt: '@sara.demo', paket: 'START', tekst: 'Počinjem od nule.', datum: addDays(today(), -2), status: 'novo' }],
       vjezbeMod: {}, vjezbeNove: []

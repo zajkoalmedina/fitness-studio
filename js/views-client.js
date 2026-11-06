@@ -126,7 +126,7 @@
         const last = Store.lastSets(u.id, x.id), n = x.s || 3, base = x.pct ? Store.baseKg(u.id, x.id) : 0;
         const pk = FS.predlogKg ? FS.predlogKg(u.id, x, q.w || FS.currentWeek(u, Store.program(q.p)), Store.program(q.p)) : null;
         const sug = pk ? pk.kg : (base ? Math.round((base * x.pct / 100) / (base >= 20 ? 2.5 : 1)) * (base >= 20 ? 2.5 : 1) : 0);
-        d.vjezbe.push({ id: x.id, pauza: FS.pauza ? FS.pauza(x) : 0, cilj: x.r + (pk ? ' · prijedlog ' + sug + ' kg (prošli put ' + pk.prev + ' kg: ' + pk.txt + ')' : x.pct ? ' · ≈ ' + x.pct + ' % težine iz 1. sedmice' + (sug ? ' (prijedlog ' + sug + ' kg)' : '') : ''), serije: Array.from({ length: n }, (_, i) => ({ kg: sug ? String(sug) : (last && last[i] && last[i].kg ? String(last[i].kg) : ''), rep: String(parseInt(x.r, 10) || ''), ok: false })) });
+        d.vjezbe.push({ id: x.id, ds: !!x.ds, sw: (String(x.r).match(/^\s*(\d+)\s*s\b/) || [])[1] ? +String(x.r).match(/^\s*(\d+)\s*s\b/)[1] : 0, pauza: FS.pauza ? FS.pauza(x) : 0, cilj: x.r + (pk ? ' · prijedlog ' + sug + ' kg (prošli put ' + pk.prev + ' kg: ' + pk.txt + ')' : x.pct ? ' · ≈ ' + x.pct + ' % težine iz 1. sedmice' + (sug ? ' (prijedlog ' + sug + ' kg)' : '') : ''), serije: Array.from({ length: n }, (_, i) => ({ kg: sug ? String(sug) : (last && last[i] && last[i].kg ? String(last[i].kg) : ''), rep: String(parseInt(x.r, 10) || ''), ok: false })) });
       });
     }
     return d;
@@ -167,7 +167,7 @@
       }
       el.innerHTML = h`<div class="eyebrow">${d.dan || 'Slobodan trening'}</div><h1>Trening</h1><p class="small" id="timer">Upiši kilažu i ponavljanja, pa označi ✓ svaku završenu seriju.</p><div class="restbar" id="rest" hidden><span id="resttxt"></span><button type="button" data-act="restoff">Preskoči</button></div>
         ${d.vjezbe.map((v, vi) => { const e = Store.ex(v.id) || { naziv: v.id }; const last = Store.lastSets(u.id, v.id);
-          return h`<div class="card" data-vi="${vi}"><div class="row between"><div class="grow"><a href="#/vjezba/${v.id}"><b style="color:var(--cream);font-size:17px">${e.naziv}</b></a>${v.cilj ? h`<div class="small">Cilj: ${v.cilj}</div>` : ''}${v.pauza ? h`<div class="small rest">Pauza između serija: ${v.pauza >= 60 && v.pauza % 60 === 0 ? v.pauza / 60 + ' min' : v.pauza + ' s'}</div>` : (v.pauza === 0 ? h`<div class="small rest">Bez pauze: odmah sljedeća vježba</div>` : '')}${last ? h`<div class="small">Zadnji put: ${last.map((s) => (s.kg ? s.kg + '×' : '') + s.rep).join(' · ')}</div>` : ''}</div><button class="icon-btn" data-act="rmex" data-vi="${vi}" aria-label="Ukloni vježbu">${icon('trash')}</button></div>
+          return h`<div class="card" data-vi="${vi}"><div class="row between"><div class="grow"><a href="#/vjezba/${v.id}"><b style="color:var(--cream);font-size:17px">${e.naziv}</b></a>${v.cilj ? h`<div class="small">Cilj: ${v.cilj}</div>` : ''}${v.pauza ? h`<div class="small rest">Pauza između serija: ${v.pauza >= 60 && v.pauza % 60 === 0 ? v.pauza / 60 + ' min' : v.pauza + ' s'}</div>` : (v.pauza === 0 ? h`<div class="small rest">Bez pauze: odmah sljedeća vježba</div>` : '')}${v.ds ? h`<div class="mt-s"><button type="button" class="chip on" data-act="dsinfo">Drop set na zadnjoj seriji ⓘ</button></div>` : ''}${v.sw ? h`<div class="mt-s"><button type="button" class="btn sm" data-act="sw" data-vi="${vi}">⏱ Štoperica ${v.sw} s</button></div>` : ''}${last ? h`<div class="small">Zadnji put: ${last.map((s) => (s.kg ? s.kg + '×' : '') + s.rep).join(' · ')}</div>` : ''}</div><button class="icon-btn" data-act="rmex" data-vi="${vi}" aria-label="Ukloni vježbu">${icon('trash')}</button></div>
             <div class="setrow small mt-s" style="margin-bottom:4px"><span></span><span class="center">kg</span><span class="center">ponavljanja</span><span></span></div>
             ${v.serije.map((s, si) => h`<div class="setrow"><span class="n">${si + 1}</span><input inputmode="decimal" data-act="kg" data-vi="${vi}" data-si="${si}" value="${s.kg}" placeholder="0" aria-label="Kilogrami"><input inputmode="numeric" data-act="rep" data-vi="${vi}" data-si="${si}" value="${s.rep}" placeholder="0" aria-label="Ponavljanja"><button class="ok ${s.ok ? 'on' : ''}" data-act="ok" data-vi="${vi}" data-si="${si}" aria-label="Završeno">✓</button></div>`)}
             <button class="btn sm" data-act="addset" data-vi="${vi}">+ serija</button></div>`; })}
@@ -205,10 +205,11 @@
 
     let restT = 0;
     const stopRest = () => { clearInterval(restT); const b = $('#rest', el); if (b) b.hidden = true; };
-    const startRest = (sec) => {
+    const beep = () => { try { const C = window.AudioContext || window.webkitAudioContext, c = new C(), o = c.createOscillator(); o.frequency.value = 880; o.connect(c.destination); o.start(); setTimeout(() => { o.stop(); c.close(); }, 350); } catch (e) { /* ignoriši */ } };
+    const startRest = (sec, label, done) => {
       clearInterval(restT); const b = $('#rest', el), tx = $('#resttxt', el); if (!b || !tx) return;
-      let left = sec; b.hidden = false; tx.textContent = 'Pauza: ' + left + ' s';
-      restT = setInterval(() => { left--; if (left <= 0) { stopRest(); try { navigator.vibrate && navigator.vibrate(200); } catch (e) { /* ignoriši */ } toast('Pauza gotova, sljedeća serija!'); } else tx.textContent = 'Pauza: ' + left + ' s'; }, 1000);
+      const lb = label || 'Pauza'; let left = sec; b.hidden = false; tx.textContent = lb + ': ' + left + ' s';
+      restT = setInterval(() => { left--; if (left <= 0) { stopRest(); beep(); try { navigator.vibrate && navigator.vibrate(200); } catch (e) { /* ignoriši */ } if (done) done(); else toast('Pauza gotova, sljedeća serija!'); } else tx.textContent = lb + ': ' + left + ' s'; }, 1000);
     };
     FS.onLeave(() => clearInterval(restT));
     const tick = setInterval(() => { const t = $('#timer', el); if (!t || !d) return; const m = Math.floor((Date.now() - d.start) / 60000); t.textContent = `Traje ${m} min · označi ✓ svaku završenu seriju.`; }, 15000);
@@ -220,6 +221,16 @@
       'input:rep': (t) => { d.vjezbe[t.dataset.vi].serije[t.dataset.si].rep = t.value; save(); },
       'click:ok': (t) => { const v = d.vjezbe[t.dataset.vi], s = v.serije[t.dataset.si]; s.ok = !s.ok; t.classList.toggle('on', s.ok); save(); if (s.ok && v.pauza > 0) startRest(v.pauza); },
       'click:restoff': () => stopRest(),
+      'click:sw': (t) => {
+        const vi = +t.dataset.vi, v = d.vjezbe[vi], si = v.serije.findIndex((z) => !z.ok);
+        if (si < 0) { toast('Sve serije su već označene.'); return; }
+        startRest(v.sw, 'Radi (serija ' + (si + 1) + ')', () => {
+          const z = v.serije[si]; z.ok = true; if (!z.rep) z.rep = String(v.sw); save();
+          const bt = el.querySelector('[data-act=ok][data-vi="' + vi + '"][data-si="' + si + '"]'); if (bt) bt.classList.add('on');
+          const ri = el.querySelector('[data-act=rep][data-vi="' + vi + '"][data-si="' + si + '"]'); if (ri) ri.value = z.rep;
+          if (v.pauza > 0) { startRest(v.pauza, 'Odmor'); toast('Gotovo! Odmor.'); } else toast('Gotovo! Odmah sljedeća vježba.');
+        });
+      },
       'click:addset': (t) => { const v = d.vjezbe[t.dataset.vi], l = v.serije[v.serije.length - 1] || { kg: '', rep: '' }; v.serije.push({ kg: l.kg, rep: l.rep, ok: false }); save(); draw(); },
       'click:rmex': (t) => { d.vjezbe.splice(+t.dataset.vi, 1); save(); draw(); },
       'click:addex': () => {

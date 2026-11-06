@@ -246,6 +246,7 @@
             <div class="grid3 mt-s"><label class="field" style="margin:0"><span>Serije</span><input data-act="xs" data-di="${di}" data-xi="${xi}" inputmode="numeric" value="${x.s}"></label><label class="field" style="margin:0;grid-column:span 2"><span>Ponavljanja</span><input data-act="xr" data-di="${di}" data-xi="${xi}" value="${x.r}" maxlength="30"></label></div>
             <div class="grid2 mt-s"><label class="field" style="margin:0"><span>Pauza između serija (s)</span><input data-act="xp" data-di="${di}" data-xi="${xi}" inputmode="numeric" placeholder="auto ${FS.pauza ? FS.pauza({ ...x, fix: false, p: x.p === 0 ? undefined : x.p }) : ''}" value="${x.fix && x.p != null && x.p !== 0 ? x.p : ''}" ${x.p === 0 ? 'disabled' : ''}></label>
               <label class="check" style="margin:0;align-self:end"><input type="checkbox" data-act="xss" data-di="${di}" data-xi="${xi}" ${x.p === 0 ? 'checked' : ''} ${xi === d.vj.length - 1 ? 'disabled' : ''}><span>Superserija sa sljedećom</span></label></div>
+            <div class="row mt-s"><label class="check" style="margin:0"><input type="checkbox" data-act="xds" data-di="${di}" data-xi="${xi}" ${x.ds ? 'checked' : ''}><span>Drop set (zadnja serija)</span></label><button type="button" class="chip" data-act="dsinfo">Šta je drop set?</button></div>
             <input class="mt-s" data-act="xn" data-di="${di}" data-xi="${xi}" value="${x.n || ''}" placeholder="Napomena (nije obavezno)" maxlength="120"></div>`)}
           <div class="row mt-s"><button class="btn sm grow" data-act="addex" data-di="${di}">+ Vježba</button><button class="btn sm grow" data-act="newex" data-di="${di}">+ Nova vježba</button></div></div>`)}
         <button class="btn block mb" data-act="addday">+ Dodaj dan</button>
@@ -267,6 +268,7 @@
       'input:xr': (t) => { P.dani[t.dataset.di].vj[t.dataset.xi].r = t.value; },
       'input:xn': (t) => { P.dani[t.dataset.di].vj[t.dataset.xi].n = t.value; },
       'input:xp': (t) => { const x = P.dani[t.dataset.di].vj[t.dataset.xi], v = parseInt(t.value, 10); if (t.value.trim() !== '' && v >= 0 && v <= 900) { x.fix = true; x.p = v; } else { delete x.fix; delete x.p; } },
+      'change:xds': (t) => { const x = P.dani[t.dataset.di].vj[t.dataset.xi]; if (t.checked) x.ds = true; else delete x.ds; },
       'change:xss': (t) => { const x = P.dani[t.dataset.di].vj[t.dataset.xi]; if (t.checked) { x.p = 0; x.ss = true; delete x.fix; } else { delete x.p; delete x.ss; } draw(); },
       'click:xup': (t) => { const a = P.dani[t.dataset.di].vj, i = +t.dataset.xi; if (i > 0) { [a[i - 1], a[i]] = [a[i], a[i - 1]]; draw(); } },
       'click:xdn': (t) => { const a = P.dani[t.dataset.di].vj, i = +t.dataset.xi; if (i < a.length - 1) { [a[i + 1], a[i]] = [a[i], a[i + 1]]; draw(); } },
