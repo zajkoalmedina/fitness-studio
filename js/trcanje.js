@@ -58,9 +58,9 @@
 
   V.trcanje = (el, p, q) => {
     const u = Auth.user(), isK = u && (u.role === 'klijentica' || u.role === 'trener');
-    let tab = ['5k', '10k', 'kalk'].includes(q.tab) ? q.tab : '5k';
+    let tab = ['5k', '10k', 'kalk', 'coop', 'int'].includes(q.tab) ? q.tab : '5k';
     const draw = () => {
-      const seg = h`<div class="seg">${[['5k', 'Plan 5 km'], ['10k', 'Plan 10 km'], ['kalk', 'Kalkulator tempa']].map(([k, l]) => h`<button data-act="tab" data-t="${k}" class="${tab === k ? 'on' : ''}">${l}</button>`)}</div>`;
+      const seg = h`<div class="seg">${[['5k', 'Plan 5 km'], ['10k', 'Plan 10 km']].concat(FS.trkExtra ? FS.trkExtra.tabs : [], [['kalk', 'Kalkulator tempa']]).map(([k, l]) => h`<button data-act="tab" data-t="${k}" class="${tab === k ? 'on' : ''}">${l}</button>`)}</div>`;
       if (tab === 'kalk') {
         el.innerHTML = h`<div class="eyebrow">Alat</div><h1>Kalkulator tempa</h1>${seg}
           <form class="card" data-act="pred" novalidate><h3>Procjena rezultata i tempa za trening</h3><p class="muted small">Upiši koliko si nedavno trčala neku distancu. Procjena koristi Riegelovu formulu.</p>
@@ -71,6 +71,10 @@
             <div class="grid2"><label class="field"><span>Distanca (km)</span><input name="km" inputmode="decimal" placeholder="npr. 5"></label><label class="field"><span>Vrijeme</span><input name="t" placeholder="npr. 30:00"></label></div>
             <button class="btn block" type="submit">Izračunaj tempo po km</button><div id="cout" class="mt-s"></div></form>`;
         return;
+      }
+      if ((tab === 'coop' || tab === 'int') && FS.trkExtra) {
+        if (!isK) { el.innerHTML = h`<div class="eyebrow">Trčanje</div><h1>${tab === 'coop' ? 'Cooperov test' : 'Intervali i tempo'}</h1>${seg}<div class="card cream"><div class="row"><span style="width:26px">${icon('lock')}</span><div class="grow" style="color:var(--navy)"><b>Dostupno klijenticama</b><div class="small">Prijavi se ili kontaktiraj trenericu.</div></div></div></div><a class="btn primary block mb" href="#/prijava">Prijava</a>`; return; }
+        el.innerHTML = h`${seg}${FS.trkExtra.html(tab)}`; return;
       }
       const P = FS.TRK[tab];
       if (!isK) {
@@ -92,6 +96,12 @@
     draw();
     bind(el, {
       'click:tab': (t) => { tab = t.dataset.t; try { history.replaceState(null, '', '#/trcanje?tab=' + tab); } catch (e) { /* ignoriši */ } draw(); },
+      'submit:coop': (f) => {
+        const x = FS.formData(f), d = parseFloat(String(x.d).replace(',', '.')), er = $('#cerr', el), o = $('#cout', el);
+        if (!(d >= 500 && d <= 5000)) { er.textContent = 'Upiši udaljenost u metrima (npr. 2000).'; er.hidden = false; return; }
+        er.hidden = true; const r = FS.coopCalc(d);
+        o.innerHTML = h`<div class="kv"><span>Okvirni VO₂max</span><b>${r.v.toFixed(1)} ml/kg/min</b></div><div class="kv"><span>Prosječan tempo</span><b>${fmt(r.pace)} po km</b></div><p class="small mt-s">Procjena po Cooperovoj formuli. Služi za praćenje napretka kroz vrijeme.</p>`.s;
+      },
       'change:done': (t) => { const d = doc(u); d.done[t.dataset.k] = t.checked; Store.save(); draw(); },
       'submit:pred': (f) => {
         const x = FS.formData(f), tsec = parse(x.t), dkm = parseFloat(x.d), er = $('#perr', el);
