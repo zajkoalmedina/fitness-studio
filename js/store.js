@@ -62,9 +62,9 @@
         { naziv: 'Dan 3 – Fullbody', vj: [{ id: 'iskorak', s: 3, r: '10', n: '' }, { id: 'lat', s: 3, r: '12', n: '' }, { id: 'bridge', s: 3, r: '15', n: '' }, { id: 'deadbug', s: 3, r: '8', n: '' }] }]
     };
     ana.programi = [progAna.id];
-    maja.programi = ['k_kuca_full_početni']; maja.dodijeljeno = ['k_kuca_full_početni'];
-    const sa = seedLogs(ana.id, 'k_teretana_donji_srednji');
-    const sm = seedLogs(maja.id, 'k_kuca_full_početni');
+    maja.programi = ['k_kuca_full_početni_0']; maja.dodijeljeno = ['k_kuca_full_početni_0'];
+    const sa = seedLogs(ana.id, 'k_teretana_donji_srednji_0');
+    const sm = seedLogs(maja.id, 'k_kuca_full_početni_0');
     const db = {
       v: 1, users: [trener, ana, maja, lejla], programi: [progAna], logs: [...sa.logs, ...sm.logs.slice(0, 5)], mjere: [...sa.mj, ...sm.mj.slice(0, 4)],
       pristup: [], kupovine: [{ id: uid(), userId: maja.id, programId: 'vodic-ishrana', datum: addDays(today(), -20), iznos: 25, demo: true }],

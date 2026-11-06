@@ -39,16 +39,20 @@
   };
 
   const out = [];
+  const kratko = (n) => String(n).replace(/^Trening \d+ · /, '').replace(/ · (Kućni|Teretana)$/, '').replace(/^Kućni · /, '');
   [['teretana', gymSpec], ['kuca', homeSpec]].forEach(([mj, spec]) => {
     FS.KAT.forEach(([kat, katNaziv]) => {
       NIV.forEach(([nivo, nivoNaziv]) => {
-        const dani = spec[kat](nivo); if (!dani.length) return;
-        const mjNaziv = mj === 'teretana' ? 'Teretana' : 'Kućni';
-        out.push({
-          id: 'k_' + mj + '_' + kat + '_' + nivo, naziv: mjNaziv + ' · ' + katNaziv + ' · ' + nivoNaziv,
-          opis: katNaziv + ' (' + (mj === 'teretana' ? 'teretana' : 'kod kuće') + ', ' + nivo + ' nivo). Biblioteka za trenericu: dodijeli klijenticu ili kopiraj trening u njen program.',
-          nivo, mj, kat, sedmica: 1, dana: dani.length, cijena: 0, tip: 'gotov', uShopu: false, samoTrener: true, per: { tip: 'nema', deload: 0 },
-          bilj: ['Biblioteka za trenericu. Drop set možeš uključiti uz svaku vježbu u uređivanju programa.'], dani
+        spec[kat](nivo).forEach((dan, di) => {
+          const mjNaziv = mj === 'teretana' ? 'Teretana' : 'Kućni';
+          const ime = kratko(dan.naziv);
+          dan.naziv = ime;
+          out.push({
+            id: 'k_' + mj + '_' + kat + '_' + nivo + '_' + di, naziv: mjNaziv + ' · ' + katNaziv + (['Full body', 'Glutes', 'Gluteus', 'Donji dio tijela', 'Gornji dio tijela', 'HIIT'].includes(ime) ? '' : ' · ' + ime) + ' · ' + nivoNaziv,
+            opis: 'Jedan trening: ' + ime + ' (' + (mj === 'teretana' ? 'teretana' : 'kod kuće') + ', ' + nivo + ' nivo). Dodijeli ga klijentici ili kopiraj u njen program.',
+            nivo, mj, kat, sedmica: 1, dana: 1, cijena: 0, tip: 'gotov', uShopu: false, samoTrener: true, per: { tip: 'nema', deload: 0 },
+            bilj: ['Pojedinačni trening iz biblioteke. Drop set možeš uključiti uz svaku vježbu u uređivanju.'], dani: [dan]
+          });
         });
       });
     });
