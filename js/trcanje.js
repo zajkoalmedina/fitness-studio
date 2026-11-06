@@ -58,9 +58,10 @@
 
   V.trcanje = (el, p, q) => {
     const u = Auth.user(), isK = u && (u.role === 'klijentica' || u.role === 'trener');
-    let tab = ['5k', '10k', 'kalk', 'coop', 'int'].includes(q.tab) ? q.tab : '5k';
+    const isT = !!u && u.role === 'trener'; /* Cooperov test i intervali: samo trenerica, ona ih prilagođava klijenticama */
+    let tab = ['5k', '10k', 'kalk'].concat(isT ? ['coop', 'int'] : []).includes(q.tab) ? q.tab : '5k';
     const draw = () => {
-      const seg = h`<div class="seg">${[['5k', 'Plan 5 km'], ['10k', 'Plan 10 km']].concat(FS.trkExtra ? FS.trkExtra.tabs : [], [['kalk', 'Kalkulator tempa']]).map(([k, l]) => h`<button data-act="tab" data-t="${k}" class="${tab === k ? 'on' : ''}">${l}</button>`)}</div>`;
+      const seg = h`<div class="seg">${[['5k', 'Plan 5 km'], ['10k', 'Plan 10 km']].concat(FS.trkExtra && isT ? FS.trkExtra.tabs : [], [['kalk', 'Kalkulator tempa']]).map(([k, l]) => h`<button data-act="tab" data-t="${k}" class="${tab === k ? 'on' : ''}">${l}</button>`)}</div>`;
       if (tab === 'kalk') {
         el.innerHTML = h`<div class="eyebrow">Alat</div><h1>Kalkulator tempa</h1>${seg}
           <form class="card" data-act="pred" novalidate><h3>Procjena rezultata i tempa za trening</h3><p class="muted small">Upiši koliko si nedavno trčala neku distancu. Procjena koristi Riegelovu formulu.</p>
