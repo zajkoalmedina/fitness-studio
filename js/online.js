@@ -29,6 +29,8 @@
     chat().push({ id: uid(), userId: u.id, from: 'klijent', ts: Date.now(), tekst: 'Video: ' + (e ? e.naziv : ex), read: false, media: { id, kind: 'video', mime: file.type || '', size: file.size, dur: 0 }, vj: { pid, ex, naziv: e ? e.naziv : ex } });
     Store.save(); toast('Video poslan trenerici.'); return true;
   };
+  /* video se šalje na WhatsApp trenerice (ne zauzima prostor u aplikaciji); poruka je unaprijed napisana */
+  const wa = (u, ex) => { const e = Store.ex(ex); return 'https://wa.me/' + ((FS.config && FS.config.whatsapp) || '38762734397') + '?text=' + encodeURIComponent('Zdravo, ' + u.ime + ' ovdje. Šaljem video vježbe: ' + (e ? e.naziv : ex) + '.'); };
   const dekoriraj = (el, prog) => {
     const u = FS.Auth.user(); if (!online(u) || !prog || prog.tip === 'vodic') return;
     el.querySelectorAll('.day-b ul.clean li').forEach((li) => {
@@ -36,9 +38,8 @@
       const a = li.querySelector('a[href^="#/vjezba/"]'); if (!a) return;
       const ex = a.getAttribute('href').split('/').pop(), fb = feedbackZa(u, prog.id, ex), sent = poslano(u, prog.id, ex);
       const box = document.createElement('div'); box.className = 'vidx small mt-s';
-      box.innerHTML = h`${fb ? h`<div class="fbox"><b>Trenerica:</b><ul>${(fb.kor && fb.kor.length ? fb.kor : [fb.tekst]).map((t) => h`<li>${t}</li>`)}</ul></div>` : sent ? h`<span class="badge">video poslan, čeka odgovor</span> ` : ''}<label class="btn sm" style="cursor:pointer">${icon('video')} Pošalji svoj video<input type="file" accept="video/*" hidden></label>`.s;
+      box.innerHTML = h`${fb ? h`<div class="fbox"><b>Trenerica:</b><ul>${(fb.kor && fb.kor.length ? fb.kor : [fb.tekst]).map((t) => h`<li>${t}</li>`)}</ul></div>` : sent ? h`<span class="badge">video poslan, čeka odgovor</span> ` : ''}<a class="btn sm" target="_blank" rel="noopener" href="${wa(u, ex)}">${icon('video')} Pošalji video na WhatsApp</a>`.s;
       (li.querySelector('.grow') || li).appendChild(box);
-      box.querySelector('input').addEventListener('change', async (e) => { const f = e.target.files && e.target.files[0]; e.target.value = ''; if (f && await posalji(u, prog.id, ex, f)) { box.remove(); dekoriraj(el, prog); } });
     });
   };
   const v0 = V.program;
@@ -122,7 +123,7 @@
     const n = FS.videiNovo();
     const due = Store.klijentice().filter((u) => u.aktivan !== false && FS.vrsta(u) === 'online').filter((u) => { const r = FS.pristupRec(u.id); return r && r.korekcija && r.korekcija <= today(); }).length;
     return h`<a class="card" href="#/planer" style="display:block"><b>Planer</b><div class="small muted">Sedmični raspored po satima: personalni termini i rad na planovima</div></a>
-      <a class="card" href="#/videi" style="display:block"><div class="row between"><b>Videi vježbi</b>${n ? h`<span class="badge" style="background:var(--rose-2);color:#fff">${n} novo</span>` : ''}</div><div class="small muted">Online klijentice šalju snimak izvođenja, ti odgovoriš korekcijama</div></a>
+      ${videos().length ? h`<a class="card" href="#/videi" style="display:block"><div class="row between"><b>Videi vježbi</b>${n ? h`<span class="badge" style="background:var(--rose-2);color:#fff">${n} novo</span>` : ''}</div><div class="small muted">Online klijentice šalju snimak izvođenja, ti odgovoriš korekcijama</div></a>` : ''}
       <a class="card" href="#/rokovi" style="display:block"><div class="row between"><b>Rokovi korekcija</b>${due ? h`<span class="badge warn">${due} čeka</span>` : ''}</div><div class="small muted">Kome je vrijeme za korekciju plana (obično svakih 14 dana)</div></a>`;
   };
 })();
