@@ -143,7 +143,8 @@
             <p class="muted small">Namijenjeno odraslim osobama (18+). Nije prikladno za trudnice i dojilje.</p>
             <div class="grid2"><label class="field"><span>Visina (cm)</span><input name="v" inputmode="decimal" placeholder="npr. 168" required></label>
             <label class="field"><span>Težina (kg)</span><input name="t" inputmode="decimal" placeholder="npr. 65" required></label></div>
-            <label class="field"><span>Godine</span><input name="g" inputmode="numeric" placeholder="npr. 30" required></label>
+            <div class="grid2"><label class="field"><span>Spol</span><select name="s">${opts([['z', 'Žensko'], ['m', 'Muško']], 'z')}</select></label>
+            <label class="field"><span>Godine</span><input name="g" inputmode="numeric" placeholder="npr. 30" required></label></div>
             <p class="err" id="err" hidden></p><button class="btn primary block" type="submit">Izračunaj BMI</button></form>
           <div id="out"></div>` : h`
           <form class="card" data-act="kal" novalidate>
@@ -168,11 +169,12 @@
         if (!(t >= 30 && t <= 300)) return fail('Unesi težinu između 30 i 300 kg.');
         $('#err', el).hidden = true;
         const m = v / 100, b = t / (m * m), [cat, tone] = bmiCat(b), pos = Math.min(100, Math.max(0, ((b - 15) / 25) * 100));
-        const u = Auth.user();
-        $('#out', el).innerHTML = h`<div class="card"><div class="eyebrow">Tvoj BMI</div><div class="row between"><div class="big">${r1(b)}</div><span class="badge ${tone}">${cat}</span></div>
+        const u = Auth.user(), mus = d.s === 'm', mt = Math.max(3, 1.2 * b + 0.23 * g - 10.8 * (mus ? 1 : 0) - 5.4);
+        $('#out', el).innerHTML = h`<div class="card"><div class="eyebrow">Tvoj BMI · ${mus ? 'muško' : 'žensko'}</div><div class="row between"><div class="big">${r1(b)}</div><span class="badge ${tone}">${cat}</span></div>
           <div class="meter"><i style="left:calc(${pos}% - 2px)"></i></div><div class="row between small"><span>15</span><span>18,5</span><span>25</span><span>30</span><span>40</span></div>
           <div class="divider"></div><div class="kv"><span>Zdrav raspon težine za tvoju visinu</span><b>${r1(18.5 * m * m)}–${r1(24.9 * m * m)} kg</b></div>
-          <p class="small mt-s">BMI ne razlikuje mišićnu od masne mase – kod osoba koje treniraju snagu može dati previsoku procjenu.</p>
+          <div class="kv"><span>Procjena masnog tkiva (okvirno)</span><b>oko ${Math.round(mt)} %</b></div>
+          <p class="small mt-s">BMI ne razlikuje mišićnu od masne mase – kod osoba koje treniraju snagu može dati previsoku procjenu. Procjena masnog tkiva je računica iz BMI-ja, spola i godina, pa se može razlikovati od stvarnog mjerenja.</p>
           ${u && u.role === 'klijentica' ? h`<button class="btn block mt-s" data-act="save" data-t="${t}">Sačuvaj težinu u moj napredak</button>` : ''}</div>`.s;
       },
       'click:mkjel': (b) => {
