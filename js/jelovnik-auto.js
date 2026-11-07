@@ -50,7 +50,7 @@
 
   /* jedan dan: kombinira obroke tako da se poklope i kalorije i makroi; vraća { dorucak: {id, por}, ... } */
   FS.autoDay = (target, seed, used, M, left, pref) => {
-    const R = (FS.RECEPTI_V || []).filter((r) => !(pref && pref.J && FS.alergMatch && FS.alergMatch(r, pref.J).length)), rand = rnd(hash(String(seed))), G = macros(target, M), SPLIT = target >= 2000 ? SPLIT5 : SPLIT4; let slots = Object.keys(SPLIT); const NC = slots.length > 4 ? 9 : 14;
+    const R = (FS.RECEPTI_V || []).filter((r) => !(pref && pref.J && FS.alergMatch && FS.alergMatch(r, pref.J).length) && (!(pref && pref.J) || !FS.dijOk || FS.dijOk(r, pref.J))), rand = rnd(hash(String(seed))), G = macros(target, M), SPLIT = target >= 2000 ? SPLIT5 : SPLIT4; let slots = Object.keys(SPLIT); const NC = slots.length > 4 ? 9 : 14;
     const cand = {}, WK = weekCounts(pref && pref.J, String(seed).split(':')[0]);
     const rules = (r) => {
       let s = isOwn(r) ? -0.15 : 0;

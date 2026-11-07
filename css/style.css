@@ -216,3 +216,15 @@ ul.clean li .figph{margin-right:10px}
 .pdfinfo{margin:0 0 8px}
 
 .fstill.big .fig{max-height:170px}.fstill.big{padding:8px}.rest{color:var(--gold,#f3b36b)}.restbar{position:sticky;top:8px;z-index:30;background:#f3b36b;color:#1d2b4a;border-radius:14px;padding:10px 14px;font-weight:700;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.restbar button{background:#1d2b4a;color:#fff;border:0;border-radius:10px;padding:6px 10px}
+
+/* planer termina */
+.tscroll{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+.tgrid{display:grid;grid-template-columns:34px repeat(7,minmax(0,1fr));font-size:11px}
+.tgh{padding:6px 0;text-align:center;font-weight:700;color:var(--muted,#7d5a68);border-bottom:1px solid var(--line)}.tgh.today{color:var(--rose-2,#c4506f)}
+.thc{height:40px;border-top:1px solid var(--line);font-size:11px;text-align:right;padding-right:4px;color:var(--muted,#7d5a68)}
+.tcol{position:relative;border-left:1px solid var(--line);background-image:linear-gradient(var(--line) 1px,transparent 1px);background-size:100% 40px;cursor:pointer}
+.tblk{position:absolute;left:1px;right:1px;border-radius:7px;padding:2px 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px;line-height:1.2;font-weight:700;border:0;text-align:left;cursor:pointer;background:var(--rose-2,#c4506f);color:#fff}
+.tblk.o{background:#f7ead0;color:#9a6b1f;border:1px solid #9a6b1f}
+.tblk small{display:block;font-size:9px;font-weight:600;opacity:.9}
+.tdot{display:inline-block;width:12px;height:12px;border-radius:4px;background:var(--rose-2,#c4506f);vertical-align:-1px}.tdot.o{background:#f7ead0;border:1px solid #9a6b1f}
+.fbox{background:#e2f3ea;color:#2f7d5b;padding:8px 10px;border-radius:10px;margin-bottom:6px}.fbox ul{margin:2px 0 0;padding-left:18px}

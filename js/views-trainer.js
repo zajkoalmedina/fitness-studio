@@ -176,6 +176,7 @@
       ${FS.perKlijentCard ? FS.perKlijentCard(u, Store.userPrograms(u)) : ''}
       ${FS.planCard(u)}
       ${FS.alergijeCard ? FS.alergijeCard(u.jelovnik, true) : ''}
+      ${FS.dijabetesCard ? FS.dijabetesCard(u.jelovnik, true) : ''}
       ${FS.fotoCard ? FS.fotoCard(u, true) : ''}
       <div class="card"><h3>Težina</h3>${FS.lineChart(wpts, { label: 'Težina' })}</div>
       ${FS.mjTable(mj)}

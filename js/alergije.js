@@ -57,4 +57,26 @@
       <label class="field"><span>Još nešto na šta si alergična (odvoji zarezom)</span><input data-act="algo" value="${J.alergijeOstalo || ''}" maxlength="120" placeholder="npr. celer, kivi, gljive"></label>
       <p class="small muted" style="margin-bottom:0">Provjera se radi po nazivu i popisu sastojaka. Uvijek pročitaj sastojke i ne oslanjaj se samo na aplikaciju, a kod teške alergije posavjetuj se s ljekarom.</p></div>`;
   };
+
+  /* ---------- dijabetes: najviše ugljikohidrata (UH) po obroku; recepti iznad granice se sakriju i izbace iz plana ---------- */
+  FS.imaDij = (J) => !!J && !!J.dijabetes;
+  FS.uhGranica = (r, J) => { const c = +(J && J.uhObrok) || 45; return /užin/i.test(r.obrok) ? Math.round(c / 2.5) : /voće|voce/i.test(r.obrok) ? Math.round(c / 1.5) : c; };
+  FS.dijOk = (r, J) => !FS.imaDij(J) || (+r.uh || 0) <= FS.uhGranica(r, J);
+  FS.dijPurge = (J) => {
+    let n = 0; const t = FS.today();
+    Object.keys(J.dani || {}).forEach((d) => {
+      if (d < t) return;
+      Object.keys(J.dani[d]).forEach((k) => { const e = J.dani[d][k], r = (FS.RECEPTI_V || []).find((x) => x.id === e.id); if (r && !FS.dijOk(r, J)) { delete J.dani[d][k]; n++; } });
+    });
+    return n;
+  };
+  FS.dijabetesCard = (J, ro) => {
+    J = J || {};
+    if (ro) return h`<div class="card ${J.dijabetes ? 'alert' : ''}"><h3 style="margin-top:0">Dijabetes</h3>${J.dijabetes ? h`<p style="margin:0"><b>Plan ishrane prilagođen: najviše ${+J.uhObrok || 45} g UH po glavnom obroku.</b></p>` : h`<p class="muted" style="margin:0">Klijentica nije označila dijabetes.</p>`}</div>`;
+    return h`<div class="card ${J.dijabetes ? 'alert' : ''}"><h3 style="margin-top:0">Dijabetes</h3>
+      <p class="small muted">Ako imaš dijabetes, uključi prilagodbu. Recepti s previše ugljikohidrata (UH) se sakriju, a iz tvog plana ishrane se automatski izbace.</p>
+      <label class="btn sm ${J.dijabetes ? 'primary' : ''}" style="cursor:pointer"><input type="checkbox" data-act="dij" ${J.dijabetes ? 'checked' : ''} style="display:none">Imam dijabetes</label>
+      ${J.dijabetes ? h`<label class="field mt-s"><span>Najviše UH po glavnom obroku</span><select data-act="dijuh">${[30, 45, 60].map((v) => h`<option value="${v}" ${(+J.uhObrok || 45) === v ? 'selected' : ''}>${v} g</option>`)}</select></label>
+        <p class="small muted" style="margin-bottom:0">Vrijednost dogovori s ljekarom ili nutricionistom. Užina je oko ${Math.round((+J.uhObrok || 45) / 2.5)} g. Plan ne zamjenjuje savjet ljekara: terapiju i doze ne mijenjaš prema aplikaciji.</p>` : ''}</div>`;
+  };
 })();

@@ -25,8 +25,8 @@
     if (q && q.tab && q.tab !== 'pregled') return r;
     const all = FS.obavijesti(), nov = all.filter((e) => e.ts > seen()), card = h`<div class="card"><div class="row between"><h3 style="margin:0">Obavijesti${nov.length ? ' (' + nov.length + ' novo)' : ''}</h3>${nov.length ? h`<button class="btn sm" data-obav="1">Označi viđeno</button>` : ''}</div>
       ${all.length ? all.slice(0, 12).map((e) => h`<a class="ex" href="#/trener/klijentica/${e.userId}" style="${e.ts > seen() ? '' : 'opacity:.6'}"><div class="ph" style="font-size:20px">${e.ikona}</div><div class="grow"><b>${e.txt}</b><div class="small">${vr(e.ts)}</div></div></a>`) : h`<p class="muted" style="margin:8px 0 0">Još nema aktivnosti klijenata.</p>`}</div>`;
-    const first = el.querySelector('.stats');
-    if (first) first.insertAdjacentHTML('beforebegin', card.s); else el.insertAdjacentHTML('afterbegin', card.s);
+    const tiles = FS.panelAlati ? FS.panelAlati().s : '', first = el.querySelector('.stats');
+    if (first) first.insertAdjacentHTML('beforebegin', tiles + card.s); else el.insertAdjacentHTML('afterbegin', tiles + card.s);
     return r;
   };
   document.addEventListener('click', (e) => {

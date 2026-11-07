@@ -219,6 +219,7 @@
   const planStart = {};
   const rasp = () => (Store.db.raspored = Store.db.raspored || []);
   const entryLabel = (e) => {
+    if (e.tip === 'termin') return 'Trening s trenericom, ' + FS.fmtSat(e.od) + '–' + FS.fmtSat(e.do);
     if (e.tip === 'odmor') return 'Odmor';
     if (e.tip === 'kond') return 'Kondicija (EMOM / HIIT / AMRAP)';
     if (e.tip === 'kardio') return 'Kardio / hodanje';
@@ -258,8 +259,8 @@
       e.preventDefault(); const fd = new FormData(f), uidv = f.dataset.uid, start = f.dataset.start, reps = +fd.get('rep') || 0;
       for (let w = 0; w <= reps; w++) for (let i = 0; i < 7; i++) {
         const iso = addDays(start, w * 7 + i), v = String(fd.get('s' + i) || ''), nota = String(fd.get('n' + i) || '').trim().slice(0, 150);
-        const prevE = rasp().find((x) => x.userId === uidv && x.datum === iso);
-        Store.db.raspored = rasp().filter((x) => !(x.userId === uidv && x.datum === iso));
+        const prevE = rasp().find((x) => x.userId === uidv && x.datum === iso && x.tip !== 'termin');
+        Store.db.raspored = rasp().filter((x) => !(x.userId === uidv && x.datum === iso && x.tip !== 'termin'));
         if (!v) continue;
         const en = { id: prevE ? prevE.id : uid(), userId: uidv, datum: iso, nota, ts: Date.now() };
         if (v.startsWith('dij|')) Object.assign(en, { tip: 'dij', faza: +v.split('|')[1] }); else if (v.startsWith('p|')) { const [, pid, di] = v.split('|'); Object.assign(en, { tip: 'dan', programId: pid, dan: +di }); } else en.tip = v;
@@ -648,7 +649,7 @@
     const hero = el.querySelector('section');
     if (vc && hero) hero.insertAdjacentHTML('afterend', vc.s);
     anchor.insertAdjacentHTML('beforebegin', sec.s);
-    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 177</p>');
+    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 178</p>');
   };
 
   /* Kalkulatori: veza na suplemente */

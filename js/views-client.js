@@ -6,7 +6,7 @@
   const { h, icon, bind, formData, opts, toast, openSheet, closeSheet, confirmSheet, Store, Auth, config, num, r1, fmtDate, today, uid, $, addDays, weekStart } = FS;
   const go = (hash) => { location.hash = hash; };
 
-  const subnav = (tab) => h`<div class="seg">${[['pregled', 'Pregled'], ['trening', 'Treninzi'], ['napredak', 'Napredak'], ['poruke', 'Poruke']].filter(([k]) => !(k === 'poruke' && FS.jeKupac && FS.jeKupac(Auth.user()))).map(([k, l]) => h`<a href="#/moj?tab=${k}" class="${tab === k ? 'on' : ''}">${l}</a>`)}</div>`;
+  const subnav = (tab) => h`<div class="seg">${[['pregled', 'Pregled'], ['trening', 'Treninzi'], ['napredak', 'Napredak'], ['poruke', 'Poruke']].filter(([k]) => !(k === 'poruke' && FS.jeKupac && FS.jeKupac(Auth.user())) && !(k === 'trening' && FS.vrsta(Auth.user()) === 'personalni')).map(([k, l]) => h`<a href="#/moj?tab=${k}" class="${tab === k ? 'on' : ''}">${l}</a>`)}</div>`;
 
   function passSheet(u, forced) {
     openSheet(h`<h2>${forced ? 'Postavi svoju lozinku' : 'Promjena lozinke'}</h2>${forced ? h`<p class="muted">Račun ti je napravila trenerica s privremenom lozinkom. Postavi svoju.</p>` : ''}
@@ -29,7 +29,9 @@
     const first = u.ime.split(' ')[0];
     let body = '';
 
-    if (tab === 'pregled') {
+    if (tab === 'pregled' && FS.personalHome && FS.vrsta(u) === 'personalni') {
+      body = FS.personalHome(u);
+    } else if (tab === 'pregled') {
       const ciljN = u.paket ? config.ciljPoPaketu[u.paket] : 0, wc = Store.weekCount(u.id), mon = today().slice(0, 7);
       const progs = Store.userPrograms(u);
       const last = mj[mj.length - 1];

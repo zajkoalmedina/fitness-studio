@@ -51,10 +51,10 @@
     const ALL = () => FS.RECEPTI_V || [];
     const klijentica = () => !!u && u.role !== 'trener';
     const JJ = () => (u && u.jelovnik) || {};
-    const R = () => (klijentica() && FS.imaAlergije && FS.imaAlergije(JJ()) ? ALL().filter((r) => !FS.alergMatch(r, JJ()).length) : ALL());
+    const R = () => (klijentica() && ((FS.imaAlergije && FS.imaAlergije(JJ())) || (FS.imaDij && FS.imaDij(JJ()))) ? ALL().filter((r) => !FS.alergMatch(r, JJ()).length && FS.dijOk(r, JJ())) : ALL());
     const sakriveno = () => ALL().length - R().length;
     const rid = (id) => ALL().find((x) => x.id === id);
-    const algCard = () => (klijentica() && has() && FS.alergijeCard ? FS.alergijeCard(JJ()) : '');
+    const algCard = () => (klijentica() && has() && FS.alergijeCard ? h`${FS.alergijeCard(JJ())}${FS.dijabetesCard ? FS.dijabetesCard(JJ()) : ''}` : '');
     const sadrzi = (r) => { const a = (FS.recAlergeni ? FS.recAlergeni(r) : []).map(FS.alergLabel); return a.length ? h`<p class="small muted mt-s" style="margin:0">Sadrži: ${a.join(', ')}</p>` : ''; };
     const makro = (r) => h`<div class="row wrap mt-s"><span class="pill">${r.kcal} kcal</span><span class="pill">P ${fx(r.p)} g</span><span class="pill">UH ${fx(r.uh)} g</span><span class="pill">M ${fx(r.m)} g</span></div>`;
     const savjetiLock = () => h`<div class="card note"><div class="row"><span style="width:26px">${icon('lock')}</span><div class="grow"><b>Savjeti o ishrani i suplementima</b><div class="small">Dostupno klijenticama nakon prijave u aplikaciju.</div></div></div><a class="btn block mt-s" href="#/prijava">Prijavi se</a></div>`;
@@ -72,7 +72,7 @@
     const recepti = () => {
       const g = has(), all = R().filter((r) => rf === 'sve' || (rf === 'bos' ? r.bos : r.obrok === rf));
       return h`<p class="muted">${R().length} recepata i namirnica sa kalorijama, makroima i vlaknima po porciji. Vrijednosti su okvirne i zavise od namirnica i veličine porcije.</p>
-        ${algCard()}${sakriveno() ? h`<div class="card note small">Zbog tvojih alergija sakriveno je ${sakriveno()} recepata.</div>` : ''}
+        ${algCard()}${sakriveno() ? h`<div class="card note small">Zbog tvojih postavki (alergije, dijabetes) sakriveno je ${sakriveno()} recepata.</div>` : ''}
         <div class="row wrap mb">${FILT.map(([k, l]) => h`<button class="btn sm ${rf === k ? 'primary' : ''}" data-act="rf" data-k="${k}">${l}</button>`)}</div>
         ${g ? '' : lockBox()}
         ${g ? all.map((r) => kartica(r)) : all.map((r) => SAMPLE.includes(r.id) ? kartica(r) : h`<div class="card"><div class="row between"><b>${r.naziv}</b><span class="badge">${r.obrok}</span></div><div class="row between small"><span>${r.kcal} kcal · P ${fx(r.p)} g</span><span>${icon('lock')}</span></div></div>`)}`;
@@ -157,6 +157,8 @@
       'click:dj': (t) => { datum = t.dataset.d; draw(); },
       'change:autoon': (t) => { const J = dnevnik(); J.auto = !!t.checked; if (J.auto && !J.planOd && Object.keys(J.dani || {}).length) J.planOd = today(); Store.save(); FS.toast(J.auto ? 'Plan će se obnavljati sam.' : 'Automatsko obnavljanje je isključeno.'); },
       'change:alg': (t) => { const J = dnevnik(); J.alergije = (J.alergije || []).filter((x) => x !== t.dataset.k); if (t.checked) J.alergije.push(t.dataset.k); algSave(J); },
+      'change:dij': (t) => { const J = dnevnik(); J.dijabetes = !!t.checked; if (!J.uhObrok) J.uhObrok = 45; const n = FS.dijPurge ? FS.dijPurge(J) : 0; Store.save(); FS.toast(J.dijabetes ? (n ? 'Prilagođeno dijabetesu. Izbačeno obroka: ' + n + '. Napravi plan ishrane ponovo.' : 'Plan ishrane je prilagođen dijabetesu.') : 'Prilagodba isključena.'); const y = window.scrollY; draw(); window.scrollTo(0, y); },
+      'change:dijuh': (t) => { const J = dnevnik(); J.uhObrok = +t.value; const n = FS.dijPurge ? FS.dijPurge(J) : 0; Store.save(); FS.toast(n ? 'Sačuvano. Izbačeno obroka: ' + n + '. Napravi plan ishrane ponovo.' : 'Sačuvano.'); draw(); },
       'change:algo': (t) => { const J = dnevnik(); J.alergijeOstalo = t.value.trim().slice(0, 120); algSave(J); },
       'change:rec': (t) => { const d = dnevnik().dani[datum] = dnevnik().dani[datum] || {}; if (t.value) d[t.dataset.k] = { id: t.value, por: (d[t.dataset.k] || {}).por || 1 }; else delete d[t.dataset.k]; Store.save(); draw(); },
       'change:por': (t) => { const d = dnevnik().dani[datum]; if (d && d[t.dataset.k]) { d[t.dataset.k].por = +t.value; Store.save(); draw(); } },
