@@ -160,7 +160,6 @@
     const u = Store.user(p.id);
     if (!u || u.role !== 'klijentica') { el.innerHTML = h`<div class="empty">Klijentica nije pronađena.</div><a class="btn block" href="#/trener?tab=klijentice">Nazad</a>`; return; }
     const logs = Store.logsOf(u.id), mj = Store.mjereOf(u.id), msgs = Store.db.poruke.filter((m) => m.userId === u.id).sort((a, b) => (a.datum < b.datum ? 1 : -1));
-    const assignable = Store.allPrograms().filter((x) => !(u.programi || []).includes(x.id));
     const wpts = mj.filter((m) => m.tezina).map((m) => ({ x: m.datum, y: m.tezina }));
     el.innerHTML = h`<a href="#/trener?tab=klijentice" class="small">← Sve klijentice</a>
       <div class="user-chip mb mt-s"><div class="avatar">${FS.initials(u.ime)}</div><div class="grow"><h1 style="margin:0;font-size:26px">${u.ime}</h1><div class="small">${u.email} · od ${fmtDate(u.kreirano)}${u.dob === '16-17' ? ' · 16–17 god. (saglasnost: ' + (u.saglasnost ? 'da' : 'ne') + ')' : ''}</div></div></div>
@@ -171,7 +170,7 @@
       <div class="card"><h3>Programi klijenta / klijentice</h3>
         ${Store.userPrograms(u).map((x) => h`<div class="row between" style="padding:6px 0"><a href="#/program/${x.id}?k=${u.id}" class="grow"><b style="color:var(--cream)">${x.naziv}</b><div class="small">${FS.accessLabel(x, u)}</div></a>${FS.access(u, x).trajno ? '' : h`<button class="btn sm" data-act="renew" data-id="${x.id}">Produži</button>`}<button class="icon-btn" data-act="unassign" data-id="${x.id}" aria-label="Ukloni">${icon('trash')}</button></div>`)}
         ${(u.programi || []).length ? '' : h`<p class="muted">Nema dodijeljenih programa.</p>`}
-        <div class="row mt-s"><select data-act="assignsel" class="grow"><option value="">Dodijeli program…</option>${assignable.map((x) => h`<option value="${x.id}">${x.naziv}</option>`)}</select><button class="btn sm" data-act="assign">Dodaj</button></div>
+        <div class="small muted mt-s">Dodijeli klijentici:</div><div class="row" style="gap:6px;flex-wrap:wrap"><button class="btn sm" data-act="dcijeli">Cijeli programi</button><button class="btn sm" data-act="dpojed">Pojedinačni treninzi</button><button class="btn sm" data-act="dkond">Kondicija</button></div>
         <a class="btn sm block mt-s" href="#/trener/program/novi?za=${u.id}">+ Napravi individualni program</a>
         <a class="btn sm block mt-s" href="#/trcanje?tab=plan&k=${u.id}">${FS.trkPlanOf(u) ? 'Uredi plan trčanja (Cooper)' : '+ Cooper / plan trčanja'}</a></div>
       ${FS.perKlijentCard ? FS.perKlijentCard(u, Store.userPrograms(u)) : ''}
@@ -209,6 +208,9 @@
       'change:paket': (s) => { u.paket = s.value || null; Store.save(); toast('Paket ažuriran.'); },
       'change:status': (s) => { u.aktivan = s.value === '1'; Store.save(); toast(u.aktivan ? 'Račun je aktivan.' : 'Račun je deaktiviran.'); },
       'click:renew': (b) => { (u.pstart = u.pstart || {})[b.dataset.id] = today(); Store.save(); toast('Pristup produžen: počinje od danas.'); rr(); },
+      'click:dcijeli': () => FS.dodjelaSheet(u, 'cijeli'),
+      'click:dpojed': () => FS.dodjelaSheet(u, 'pojed'),
+      'click:dkond': () => FS.dodjelaSheet(u, 'kond'),
       'click:assign': () => { let v = $('[data-act=assignsel]', el).value; if (!v) return; const src = Store.program(v);
         if (src && src.samoTrener && src.tip === 'gotov') { /* trening iz biblioteke: klijentica dobija svoj individualni program, bez oznaka biblioteke */
           const cp = JSON.parse(JSON.stringify(src)); delete cp.samoTrener; delete cp.mj; delete cp.kat; if (!cp.per || (cp.per.tip === 'nema' && !cp.per.deload)) delete cp.per;
