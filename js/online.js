@@ -50,6 +50,14 @@
     FS.onLeave && FS.onLeave(() => mo.disconnect());
   };
 
+  /* preuzimanje snimka na računar (da ga trenerica može obrisati iz aplikacije i osloboditi prostor) */
+  FS.preuzmi = async (mid, ime) => {
+    const b = await FS.fileStore.get(mid); if (!b) { toast('Snimak nije dostupan.'); return; }
+    const url = URL.createObjectURL(b), a = document.createElement('a'); a.href = url; a.download = ime; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
+  };
+  const obrisi = (m) => { if (m.media) FS.fileStore.del(m.media.id); const r = reply(m); Store.db.chat = chat().filter((x) => x.id !== m.id && !(r && x.id === r.id)); Store.save(); };
+  const mb = (n) => (n / 1048576).toFixed(n > 10485760 ? 0 : 1) + ' MB';
+
   /* ---------- trenerica: videi klijentica i korekcije ---------- */
   const SEL = {};
   V.videi = (el) => {
@@ -58,10 +66,12 @@
     FS.onLeave && FS.onLeave(() => urls.forEach((x) => URL.revokeObjectURL(x)));
     const ime = (id) => { const x = Store.user(id); return x ? x.ime : '?'; };
     el.innerHTML = h`<div class="eyebrow">Online klijentice</div><h1>Videi vježbi${novi ? h` <span class="badge" style="background:var(--rose-2);color:#fff">${novi}</span>` : ''}</h1>
+      ${ms.length ? h`<div class="card flat"><div class="row between"><span class="small">Videa: <b>${ms.length}</b> · zauzima oko <b>${mb(ms.reduce((t, m) => t + ((m.media && m.media.size) || 0), 0))}</b></span>${ms.some((m) => reply(m)) ? h`<button class="btn sm danger" data-clean="1">Obriši sve odgovorene</button>` : ''}</div><p class="small muted" style="margin:6px 0 0">Preuzmi video na računar pa ga obriši da ne zauzima prostor.</p></div>` : ''}
       <p class="small muted">Klijentice ti šalju snimak izvođenja ispod vježbe u svom planu. Označi jednu, više ili sve korekcije i pošalji. Odgovor odmah vide ispod te vježbe.</p>
       ${ms.length ? ms.map((m) => { const r = reply(m), sel = (SEL[m.id] = SEL[m.id] || new Set());
         return h`<div class="card" data-vid="${m.id}"><div class="row between"><div><b>${ime(m.userId)}</b> · ${m.vj.naziv}<div class="small muted">${timeOf(m.ts)}</div></div><span class="badge ${r ? 'ok' : 'warn'}">${r ? 'odgovoreno' : 'novo'}</span></div>
           <div class="cmedia mt-s" data-mid="${m.media ? m.media.id : ''}" data-kind="video">Video se učitava…</div>
+          <div class="row mt-s"><button class="btn sm grow" data-dl="${m.id}">Preuzmi</button><button class="btn sm danger grow" data-rm="${m.id}">Obriši video</button></div>
           ${r ? h`<div class="small mt-s"><b>Tvoj odgovor:</b> ${(r.kor && r.kor.length ? r.kor : [r.tekst]).join(' · ')}</div>` : h`
             <div class="row wrap mt-s">${KOR.map((k) => h`<button type="button" class="btn sm ${sel.has(k) ? 'primary' : ''}" data-k="${k}">${k}</button>`)}<button type="button" class="btn sm" data-all="1">Označi sve</button></div>
             <label class="field mt-s"><span>Svoja rečenica (nije obavezno)</span><input data-txt maxlength="200" placeholder="npr. odlično, samo uspori"></label>
@@ -72,6 +82,9 @@
       if (!b) { box.textContent = 'Video nije dostupan na ovom uređaju.'; box.classList.add('muted'); return; }
       const url = URL.createObjectURL(b); urls.push(url); box.innerHTML = `<video controls playsinline preload="metadata" src="${url}" style="width:100%;border-radius:12px"></video>`;
     });
+    el.querySelectorAll('[data-dl]').forEach((b) => b.addEventListener('click', () => { const m = chat().find((x) => x.id === b.dataset.dl); if (m && m.media) FS.preuzmi(m.media.id, (ime(m.userId) + '-' + m.vj.naziv + '-' + new Date(m.ts).toISOString().slice(0, 10)).replace(/[^\p{L}\p{N}\-]+/gu, '_') + '.mp4'); }));
+    el.querySelectorAll('[data-rm]').forEach((b) => b.addEventListener('click', async () => { const m = chat().find((x) => x.id === b.dataset.rm); if (!m || !await FS.confirmSheet({ title: 'Obrisati video?', text: 'Video i tvoj odgovor bit će trajno uklonjeni. Prvo ga preuzmi ako ti treba.', ok: 'Obriši', danger: true })) return; obrisi(m); toast('Video obrisan.'); if (FS.refreshNav) FS.refreshNav(); V.videi(el); }));
+    const cl = el.querySelector('[data-clean]'); if (cl) cl.addEventListener('click', async () => { const l = ms.filter((m) => reply(m)); if (!await FS.confirmSheet({ title: 'Obrisati ' + l.length + ' odgovorenih videa?', text: 'Videi i odgovori bit će trajno uklonjeni. Preuzmi ih prije ako ti trebaju.', ok: 'Obriši sve', danger: true })) return; l.forEach(obrisi); toast('Obrisano.'); V.videi(el); });
     el.querySelectorAll('[data-vid]').forEach((card) => {
       const id = card.dataset.vid, m = chat().find((x) => x.id === id), sel = SEL[id];
       const keep = () => { const t = card.querySelector('[data-txt]'); if (t) SEL[id + '|t'] = t.value; };

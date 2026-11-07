@@ -51,7 +51,7 @@
     const bubble = (m) => h`<div class="cb ${m.from === me ? 'me' : 'other'}" data-id="${m.id}">
       ${m.media ? h`<div class="cmedia" data-mid="${m.media.id}" data-kind="${m.media.kind}">${m.media.kind === 'video' ? 'Video se učitava…' : 'Glasovna poruka…'}</div>` : ''}
       ${m.tekst ? h`<div class="ctext">${m.tekst}</div>` : ''}
-      <div class="cmeta">${timeOf(m.ts)}${m.from === me ? h` · <button class="clink" data-act="cdel" data-id="${m.id}">obriši</button>` : ''}</div></div>`;
+      <div class="cmeta">${timeOf(m.ts)}${m.media && me === 'trener' ? h` · <button class="clink" data-dl="${m.media.id}|${m.media.kind}">preuzmi</button>` : ''}${m.from === me || me === 'trener' ? h` · <button class="clink" data-act="cdel" data-id="${m.id}">obriši</button>` : ''}</div></div>`;
 
     const draw = () => {
       const ms = list(userId);
@@ -122,6 +122,7 @@
         toast('Dodajem video…');
         await addMsg({ blob: f, kind: 'video', tekst: host.querySelector('textarea').value });
       });
+      host.querySelectorAll('[data-dl]').forEach((b) => b.addEventListener('click', () => FS.preuzmi && FS.preuzmi(b.dataset.dl.split('|')[0], 'poruka-' + Date.now() + (b.dataset.dl.endsWith('video') ? '.mp4' : '.m4a'))));
       host.querySelectorAll('[data-act=cdel]').forEach((b) => b.addEventListener('click', async () => {
         if (!await confirmSheet({ title: 'Obrisati poruku?', text: 'Poruka i njen snimak bit će uklonjeni.', ok: 'Obriši', danger: true })) return;
         const m = Store.db.chat.find((x) => x.id === b.dataset.id); if (m && m.media) MEDIA.del(m.media.id);
