@@ -7,14 +7,14 @@
   const jeT = () => { const u = FS.Auth.user(); return !!u && u.role === 'trener'; };
   const chat = () => (Store.db.chat = Store.db.chat || []);
   const MAXV = 80 * 1024 * 1024;
-  const KOR = ['Dublje spusti kukove', 'Leđa ravna', 'Koljena prema van', 'Uspori spuštanje', 'Gurni petama', 'Sve je ok'];
+  const KOR = ['Dublje spusti kukove', 'Leđa ravna', 'Koljena prema van', 'Uspori spuštanje', 'Gurni petama', 'Ramena dolje, dalje od ušiju', 'Stegni trbuh', 'Pogled ispred sebe', 'Puni raspon pokreta', 'Skupi lopatice', 'Ne zaključavaj laktove', 'Udahni dolje, izdahni gore', 'Smanji težinu, prvo tehnika', 'Sve je ok'];
   const timeOf = (ts) => { const d = new Date(ts); return d.getDate() + '.' + (d.getMonth() + 1) + '. ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
 
   const videos = () => chat().filter((m) => m.vj && m.from !== 'trener');
   const reply = (m) => chat().find((r) => r.odg === m.id);
   FS.videiNovo = () => (jeT() ? videos().filter((m) => !reply(m)).length : 0);
   /* zadnji odgovor trenerice za ovu vježbu u ovom programu */
-  const feedbackZa = (u, pid, ex) => chat().filter((r) => r.userId === u.id && r.from === 'trener' && r.odg && r.vj && r.vj.pid === pid && r.vj.ex === ex).sort((a, b) => b.ts - a.ts)[0];
+  const feedbackZa = (u, pid, ex) => chat().filter((r) => r.userId === u.id && r.from === 'trener' && (r.odg || r.kor) && r.vj && r.vj.pid === pid && r.vj.ex === ex).sort((a, b) => b.ts - a.ts)[0];
   const poslano = (u, pid, ex) => videos().filter((m) => m.userId === u.id && m.vj.pid === pid && m.vj.ex === ex).sort((a, b) => b.ts - a.ts)[0];
 
   /* ---------- klijentica: video ispod vježbe u programu ---------- */
@@ -60,15 +60,28 @@
   const mb = (n) => (n / 1048576).toFixed(n > 10485760 ? 0 : 1) + ' MB';
 
   /* ---------- trenerica: videi klijentica i korekcije ---------- */
-  const SEL = {};
+  const SEL = {}, NK = { k: '', ex: '', sel: new Set(), txt: '' };
   V.videi = (el) => {
     if (!jeT()) { el.innerHTML = h`<div class="empty">Samo za trenericu.</div>`; return; }
     const ms = videos().sort((a, b) => b.ts - a.ts), novi = ms.filter((m) => !reply(m)).length, urls = [];
     FS.onLeave && FS.onLeave(() => urls.forEach((x) => URL.revokeObjectURL(x)));
     const ime = (id) => { const x = Store.user(id); return x ? x.ime : '?'; };
-    el.innerHTML = h`<div class="eyebrow">Online klijentice</div><h1>Videi vježbi${novi ? h` <span class="badge" style="background:var(--rose-2);color:#fff">${novi}</span>` : ''}</h1>
+    const onl = Store.klijentice().filter((u) => u.aktivan !== false && FS.vrsta(u) === 'online');
+    if (!NK.k || !onl.some((u) => u.id === NK.k)) NK.k = onl[0] && onl[0].id;
+    const kcl = onl.find((u) => u.id === NK.k), exs = [];
+    if (kcl) Store.userPrograms(kcl).filter((x) => x.tip !== 'vodic').forEach((pr) => (pr.dani || []).forEach((d) => (d.vj || []).forEach((x) => { const e = Store.ex(x.id); if (e && !exs.some((y) => y.pid === pr.id && y.id === e.id)) exs.push({ pid: pr.id, id: e.id, naziv: e.naziv }); })));
+    if (!exs.some((y) => y.pid + '|' + y.id === NK.ex)) NK.ex = exs[0] ? exs[0].pid + '|' + exs[0].id : '';
+    const nova = h`<div class="card"><h3 style="margin-top:0">Nova korekcija vježbe</h3><p class="small muted">Pogledaj video na WhatsAppu, a ovdje izaberi vježbu i korekcije. Klijentica ih vidi ispod te vježbe u svom planu.</p>
+      ${onl.length ? h`<label class="field"><span>Klijentica</span><select data-nk="k">${onl.map((u) => h`<option value="${u.id}" ${u.id === NK.k ? 'selected' : ''}>${u.ime}</option>`)}</select></label>
+      <label class="field"><span>Vježba</span><select data-nk="ex">${exs.map((x) => h`<option value="${x.pid}|${x.id}" ${x.pid + '|' + x.id === NK.ex ? 'selected' : ''}>${x.naziv}</option>`)}</select></label>
+      <div class="row wrap mt-s">${KOR.map((k) => h`<button type="button" class="btn sm ${NK.sel.has(k) ? 'primary' : ''}" data-nkk="${k}">${k}</button>`)}<button type="button" class="btn sm" data-nkall="1">Označi sve</button></div>
+      <label class="field mt-s"><span>Svoja rečenica (nije obavezno)</span><input data-nk="txt" maxlength="200" value="${NK.txt}" placeholder="npr. odlično, samo uspori spuštanje"></label>
+      <button class="btn primary block" data-nksend="1">Pošalji korekciju${NK.sel.size ? ' (' + NK.sel.size + ')' : ''}</button>` : h`<p class="muted" style="margin:0">Nema online klijentica. Vrstu klijentice postavi na njenom profilu.</p>`}</div>`;
+    const posl = chat().filter((r) => r.from === 'trener' && r.kor && r.vj).sort((a, b) => b.ts - a.ts).slice(0, 8);
+    el.innerHTML = h`<div class="eyebrow">Online klijentice</div><h1>Korekcije vježbi</h1>${nova}
+      ${posl.length ? h`<h3>Zadnje poslane korekcije</h3>${posl.map((r) => h`<div class="card flat"><div class="row between"><b>${(Store.user(r.userId) || {}).ime || '?'} · ${r.vj.naziv}</b><span class="small muted">${timeOf(r.ts)}</span></div><div class="small">${r.kor.join(' · ')}</div></div>`)}` : ''}
+      ${ms.length ? h`<h3>Videi u aplikaciji${novi ? h` <span class="badge" style="background:var(--rose-2);color:#fff">${novi} novo</span>` : ''}</h3>` : ''}
       ${ms.length ? h`<div class="card flat"><div class="row between"><span class="small">Videa: <b>${ms.length}</b> · zauzima oko <b>${mb(ms.reduce((t, m) => t + ((m.media && m.media.size) || 0), 0))}</b></span>${ms.some((m) => reply(m)) ? h`<button class="btn sm danger" data-clean="1">Obriši sve odgovorene</button>` : ''}</div><p class="small muted" style="margin:6px 0 0">Preuzmi video na računar pa ga obriši da ne zauzima prostor.</p></div>` : ''}
-      <p class="small muted">Klijentice ti šalju snimak izvođenja ispod vježbe u svom planu. Označi jednu, više ili sve korekcije i pošalji. Odgovor odmah vide ispod te vježbe.</p>
       ${ms.length ? ms.map((m) => { const r = reply(m), sel = (SEL[m.id] = SEL[m.id] || new Set());
         return h`<div class="card" data-vid="${m.id}"><div class="row between"><div><b>${ime(m.userId)}</b> · ${m.vj.naziv}<div class="small muted">${timeOf(m.ts)}</div></div><span class="badge ${r ? 'ok' : 'warn'}">${r ? 'odgovoreno' : 'novo'}</span></div>
           <div class="cmedia mt-s" data-mid="${m.media ? m.media.id : ''}" data-kind="video">Video se učitava…</div>
@@ -77,7 +90,16 @@
             <div class="row wrap mt-s">${KOR.map((k) => h`<button type="button" class="btn sm ${sel.has(k) ? 'primary' : ''}" data-k="${k}">${k}</button>`)}<button type="button" class="btn sm" data-all="1">Označi sve</button></div>
             <label class="field mt-s"><span>Svoja rečenica (nije obavezno)</span><input data-txt maxlength="200" placeholder="npr. odlično, samo uspori"></label>
             <button class="btn primary block" data-send="1">Pošalji korekciju${sel.size ? ' (' + sel.size + ')' : ''}</button>`}</div>`; })
-        : h`<div class="card flat center"><p class="muted">Još nema videa od klijentica.</p></div>`}`;
+        : ''}`;
+    el.querySelectorAll('[data-nk]').forEach((i) => i.addEventListener(i.tagName === 'SELECT' ? 'change' : 'input', () => { NK[i.dataset.nk] = i.value; if (i.dataset.nk === 'k') { NK.ex = ''; V.videi(el); } }));
+    el.querySelectorAll('[data-nkk]').forEach((b) => b.addEventListener('click', () => { NK.sel.has(b.dataset.nkk) ? NK.sel.delete(b.dataset.nkk) : NK.sel.add(b.dataset.nkk); V.videi(el); }));
+    const nka = el.querySelector('[data-nkall]'); if (nka) nka.addEventListener('click', () => { if (NK.sel.size === KOR.length) NK.sel.clear(); else KOR.forEach((k) => NK.sel.add(k)); V.videi(el); });
+    const nks = el.querySelector('[data-nksend]'); if (nks) nks.addEventListener('click', () => {
+      const kor = [...NK.sel].concat(NK.txt.trim() ? [NK.txt.trim()] : []); if (!NK.k || !NK.ex) { toast('Izaberi klijenticu i vježbu.'); return; } if (!kor.length) { toast('Označi bar jednu korekciju ili napiši rečenicu.'); return; }
+      const [pid, ex] = NK.ex.split('|'), e = Store.ex(ex);
+      chat().push({ id: uid(), userId: NK.k, from: 'trener', ts: Date.now(), tekst: (e ? e.naziv + ': ' : '') + kor.join(' · '), kor, read: false, vj: { pid, ex, naziv: e ? e.naziv : ex } });
+      NK.sel = new Set(); NK.txt = ''; Store.save(); toast('Korekcija poslana klijentici.'); V.videi(el);
+    });
     el.querySelectorAll('.cmedia[data-mid]').forEach(async (box) => {
       const b = box.dataset.mid ? await FS.fileStore.get(box.dataset.mid) : null;
       if (!b) { box.textContent = 'Video nije dostupan na ovom uređaju.'; box.classList.add('muted'); return; }
@@ -123,7 +145,7 @@
     const n = FS.videiNovo();
     const due = Store.klijentice().filter((u) => u.aktivan !== false && FS.vrsta(u) === 'online').filter((u) => { const r = FS.pristupRec(u.id); return r && r.korekcija && r.korekcija <= today(); }).length;
     return h`<a class="card" href="#/planer" style="display:block"><b>Planer</b><div class="small muted">Sedmični raspored po satima: personalni termini i rad na planovima</div></a>
-      ${videos().length ? h`<a class="card" href="#/videi" style="display:block"><div class="row between"><b>Videi vježbi</b>${n ? h`<span class="badge" style="background:var(--rose-2);color:#fff">${n} novo</span>` : ''}</div><div class="small muted">Online klijentice šalju snimak izvođenja, ti odgovoriš korekcijama</div></a>` : ''}
+      ${true ? h`<a class="card" href="#/videi" style="display:block"><div class="row between"><b>Korekcije vježbi</b>${n ? h`<span class="badge" style="background:var(--rose-2);color:#fff">${n} novo</span>` : ''}</div><div class="small muted">Izaberi vježbu i korekcije za klijenticu (videe gledaš na WhatsAppu)</div></a>` : ''}
       <a class="card" href="#/rokovi" style="display:block"><div class="row between"><b>Rokovi korekcija</b>${due ? h`<span class="badge warn">${due} čeka</span>` : ''}</div><div class="small muted">Kome je vrijeme za korekciju plana (obično svakih 14 dana)</div></a>`;
   };
 })();
