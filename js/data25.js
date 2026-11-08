@@ -10,7 +10,12 @@
     E('reachcrunch', 'Reach Crunch', 'Core', 'početni', 'Bez opreme (prostirka)',
       'Lezi na leđa, koljena savijena, stopala na podu. Ruke ispružene prema stropu.|Pogled prema rukama, brada odmaknuta od grudi.|Izdahni i podigni lopatice s poda, ruke idu prema koljenima ili stropu, 2 s.|Polako se spusti 2 s i ponovi bez odmaranja glave na podu.',
       'Pokret vodi trbuh, ne vrat.|Donji dio leđa ostaje na podu.|Izdahni kad se dižeš, udahni kad se spuštaš.',
-      'Povlačenje vrata rukama.|Zamah umjesto kontrole.|Podizanje cijelog trupa do sjedenja.')
+      'Povlačenje vrata rukama.|Zamah umjesto kontrole.|Podizanje cijelog trupa do sjedenja.'),
+    E('lowskip', 'Low Skip', 'Kardio', 'početni', 'Bez opreme',
+      'Stani uspravno, stopala u širini kukova, ruke savijene uz tijelo. Pogled ispred.|Lagano trči u mjestu uz niske, kratke korake: stopalo se podigne tek nekoliko centimetara od poda.|Doskači na prednji dio stopala i odmah promijeni nogu, ritam oko 2 koraka u sekundi.|Ruke naizmjenično prate korake, a disanje ostaje ravnomjerno.',
+      'Ostani na prednjem dijelu stopala, lagano i tiho.|Trup uspravan, ramena opuštena.|Dobro je i za zagrijavanje i kao lagani kardio.',
+      'Tvrdo udaranje petama.|Previsoko podizanje koljena.|Nagnut trup i zadržavanje daha.')
   ].forEach((a) => { if (!FS.EXERCISES.some((e) => e.id === a.id)) FS.EXERCISES.push(a); });
-  Object.assign(FS.VIDEOS = FS.VIDEOS || {}, { donkeykick: 'videos/donkeykick.mp4', reachcrunch: 'videos/reachcrunch.mp4', hipthrust: 'videos/hipthrust.mp4', highknees: 'videos/highknees.mp4', jumpingjack: 'videos/jumpingjack.mp4', standabd: 'videos/standabd.mp4', clamshell: 'videos/clamshell.mp4' });
+  if (FS.ENG) FS.ENG.lowskip = 'Low skip';
+  Object.assign(FS.VIDEOS = FS.VIDEOS || {}, { donkeykick: 'videos/donkeykick.mp4', reachcrunch: 'videos/reachcrunch.mp4', hipthrust: 'videos/hipthrust.mp4', lowskip: 'videos/lowskip.mp4', jumpingjack: 'videos/jumpingjack.mp4', standabd: 'videos/standabd.mp4', clamshell: 'videos/clamshell.mp4' });
 })();
