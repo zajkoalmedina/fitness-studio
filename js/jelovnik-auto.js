@@ -83,6 +83,7 @@
       if (r.cheat) sc += cheatDan && slot === cheatSlot ? -2 : 30;
       if (slot === 'dorucak') sc += isEgg(r) ? -0.55 : (isSweetB(r) && !r.cheat ? 0.55 : 0.25);
       if (slot === 'uzina') sc += isJog(r) ? -0.6 : isCok(r) ? 0.1 : 0;
+      if (r.dod) sc += slot === 'uzina' ? 0.4 : 0.06;
       if (r.whey) sc += slot === 'uzina' ? 0.5 : (/poslije treninga/i.test(r.naziv) ? (trening ? -1.6 : 0.25) : -0.1);
       if (slot === 'd1' || slot === 'd2') sc += r.obrok === 'Voće' ? -0.3 : isCok(r) ? -0.35 : (isJog(r) ? -0.15 : 0.1);
       if (slot === 'vecera') sc += isTuna(r) ? (WK.tuna >= 4 ? 0.4 : -0.5) : 0;
