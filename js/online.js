@@ -8,6 +8,13 @@
   const chat = () => (Store.db.chat = Store.db.chat || []);
   const MAXV = 80 * 1024 * 1024;
   const KOR = ['Dublje spusti kukove', 'Leđa ravna', 'Koljena prema van', 'Uspori spuštanje', 'Gurni petama', 'Ramena dolje, dalje od ušiju', 'Stegni trbuh', 'Pogled ispred sebe', 'Puni raspon pokreta', 'Skupi lopatice', 'Ne zaključavaj laktove', 'Udahni dolje, izdahni gore', 'Smanji težinu, prvo tehnika', 'Sve je ok'];
+  /* prijedlozi korekcija prilagođeni vježbi: njeni savjeti i česte greške iz biblioteke + par općih */
+  const low = (t) => t.charAt(0).toLowerCase() + t.slice(1);
+  const korZa = (exId) => {
+    const e = Store.ex(exId), t = (x) => String(x).replace(/\.$/, ''), out = [];
+    if (e) { (e.savjeti || []).slice(0, 4).forEach((x) => out.push(t(x))); (e.greske || []).slice(0, 4).forEach((x) => out.push('Pazi: ' + low(t(x)))); }
+    return out.concat(['Uspori pokret', 'Smanji težinu, prvo tehnika', 'Sve je ok']);
+  };
   const timeOf = (ts) => { const d = new Date(ts); return d.getDate() + '.' + (d.getMonth() + 1) + '. ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
 
   const videos = () => chat().filter((m) => m.vj && m.from !== 'trener');
@@ -74,7 +81,7 @@
     const nova = h`<div class="card"><h3 style="margin-top:0">Nova korekcija vježbe</h3><p class="small muted">Pogledaj video na WhatsAppu, a ovdje izaberi vježbu i korekcije. Klijentica ih vidi ispod te vježbe u svom planu.</p>
       ${onl.length ? h`<label class="field"><span>Klijentica</span><select data-nk="k">${onl.map((u) => h`<option value="${u.id}" ${u.id === NK.k ? 'selected' : ''}>${u.ime}</option>`)}</select></label>
       <label class="field"><span>Vježba</span><select data-nk="ex">${exs.map((x) => h`<option value="${x.pid}|${x.id}" ${x.pid + '|' + x.id === NK.ex ? 'selected' : ''}>${x.naziv}</option>`)}</select></label>
-      <div class="row wrap mt-s">${KOR.map((k) => h`<button type="button" class="btn sm ${NK.sel.has(k) ? 'primary' : ''}" data-nkk="${k}">${k}</button>`)}<button type="button" class="btn sm" data-nkall="1">Označi sve</button></div>
+      <div class="row wrap mt-s">${korZa(NK.ex.split('|')[1]).map((k) => h`<button type="button" class="btn sm ${NK.sel.has(k) ? 'primary' : ''}" data-nkk="${k}">${k}</button>`)}<button type="button" class="btn sm" data-nkall="1">Označi sve</button></div>
       <label class="field mt-s"><span>Svoja rečenica (nije obavezno)</span><input data-nk="txt" maxlength="200" value="${NK.txt}" placeholder="npr. odlično, samo uspori spuštanje"></label>
       <button class="btn primary block" data-nksend="1">Pošalji korekciju${NK.sel.size ? ' (' + NK.sel.size + ')' : ''}</button>` : h`<p class="muted" style="margin:0">Nema online klijentica. Vrstu klijentice postavi na njenom profilu.</p>`}</div>`;
     const posl = chat().filter((r) => r.from === 'trener' && r.kor && r.vj).sort((a, b) => b.ts - a.ts).slice(0, 8);
@@ -87,13 +94,13 @@
           <div class="cmedia mt-s" data-mid="${m.media ? m.media.id : ''}" data-kind="video">Video se učitava…</div>
           <div class="row mt-s"><button class="btn sm grow" data-dl="${m.id}">Preuzmi</button><button class="btn sm danger grow" data-rm="${m.id}">Obriši video</button></div>
           ${r ? h`<div class="small mt-s"><b>Tvoj odgovor:</b> ${(r.kor && r.kor.length ? r.kor : [r.tekst]).join(' · ')}</div>` : h`
-            <div class="row wrap mt-s">${KOR.map((k) => h`<button type="button" class="btn sm ${sel.has(k) ? 'primary' : ''}" data-k="${k}">${k}</button>`)}<button type="button" class="btn sm" data-all="1">Označi sve</button></div>
+            <div class="row wrap mt-s">${korZa(m.vj.ex).map((k) => h`<button type="button" class="btn sm ${sel.has(k) ? 'primary' : ''}" data-k="${k}">${k}</button>`)}<button type="button" class="btn sm" data-all="1">Označi sve</button></div>
             <label class="field mt-s"><span>Svoja rečenica (nije obavezno)</span><input data-txt maxlength="200" placeholder="npr. odlično, samo uspori"></label>
             <button class="btn primary block" data-send="1">Pošalji korekciju${sel.size ? ' (' + sel.size + ')' : ''}</button>`}</div>`; })
         : ''}`;
-    el.querySelectorAll('[data-nk]').forEach((i) => i.addEventListener(i.tagName === 'SELECT' ? 'change' : 'input', () => { NK[i.dataset.nk] = i.value; if (i.dataset.nk === 'k') { NK.ex = ''; V.videi(el); } }));
+    el.querySelectorAll('[data-nk]').forEach((i) => i.addEventListener(i.tagName === 'SELECT' ? 'change' : 'input', () => { NK[i.dataset.nk] = i.value; if (i.dataset.nk === 'k' || i.dataset.nk === 'ex') { if (i.dataset.nk === 'k') NK.ex = ''; NK.sel = new Set(); V.videi(el); } }));
     el.querySelectorAll('[data-nkk]').forEach((b) => b.addEventListener('click', () => { NK.sel.has(b.dataset.nkk) ? NK.sel.delete(b.dataset.nkk) : NK.sel.add(b.dataset.nkk); V.videi(el); }));
-    const nka = el.querySelector('[data-nkall]'); if (nka) nka.addEventListener('click', () => { if (NK.sel.size === KOR.length) NK.sel.clear(); else KOR.forEach((k) => NK.sel.add(k)); V.videi(el); });
+    const nka = el.querySelector('[data-nkall]'); if (nka) nka.addEventListener('click', () => { const kk = korZa(NK.ex.split('|')[1]); if (kk.every((k) => NK.sel.has(k))) NK.sel.clear(); else kk.forEach((k) => NK.sel.add(k)); V.videi(el); });
     const nks = el.querySelector('[data-nksend]'); if (nks) nks.addEventListener('click', () => {
       const kor = [...NK.sel].concat(NK.txt.trim() ? [NK.txt.trim()] : []); if (!NK.k || !NK.ex) { toast('Izaberi klijenticu i vježbu.'); return; } if (!kor.length) { toast('Označi bar jednu korekciju ili napiši rečenicu.'); return; }
       const [pid, ex] = NK.ex.split('|'), e = Store.ex(ex);
@@ -112,7 +119,7 @@
       const id = card.dataset.vid, m = chat().find((x) => x.id === id), sel = SEL[id];
       const keep = () => { const t = card.querySelector('[data-txt]'); if (t) SEL[id + '|t'] = t.value; };
       card.querySelectorAll('[data-k]').forEach((b) => b.addEventListener('click', () => { keep(); sel.has(b.dataset.k) ? sel.delete(b.dataset.k) : sel.add(b.dataset.k); V.videi(el); }));
-      const all = card.querySelector('[data-all]'); if (all) all.addEventListener('click', () => { keep(); if (sel.size === KOR.length) sel.clear(); else KOR.forEach((k) => sel.add(k)); V.videi(el); });
+      const all = card.querySelector('[data-all]'); if (all) all.addEventListener('click', () => { keep(); const kk = korZa(m.vj.ex); if (kk.every((k) => sel.has(k))) sel.clear(); else kk.forEach((k) => sel.add(k)); V.videi(el); });
       const t = card.querySelector('[data-txt]'); if (t && SEL[id + '|t']) t.value = SEL[id + '|t'];
       const snd = card.querySelector('[data-send]');
       if (snd) snd.addEventListener('click', () => {
