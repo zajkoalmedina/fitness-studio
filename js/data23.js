@@ -16,5 +16,5 @@
       'Što manje pomoći nogama, tim bolje.|Prsa prema šipci, ne bradom.|Kad lako radiš 3 serije od 10, spusti pomoć ili pređi na zgib.',
       'Odgurivanje nogama.|Podizanje ramena prema ušima.|Prebrzo spuštanje.')
   ].forEach((a) => { if (!FS.EXERCISES.some((e) => e.id === a.id)) FS.EXERCISES.push(a); });
-  Object.assign(FS.VIDEOS = FS.VIDEOS || {}, { toestobar: 'videos/toestobar.mp4', dbrowbent: 'videos/dbrowbent.mp4', assistedpullup: 'videos/assistedpullup.mp4' });
+  Object.assign(FS.VIDEOS = FS.VIDEOS || {}, { zidsjed: 'videos/zidsjed.mp4', benchdip: 'videos/benchdip.mp4', bandgm: 'videos/bandgm.mp4', frogpump: 'videos/frogpump.mp4', toestobar: 'videos/toestobar.mp4', dbrowbent: 'videos/dbrowbent.mp4', assistedpullup: 'videos/assistedpullup.mp4' });
 })();
