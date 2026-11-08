@@ -19,3 +19,15 @@
     R('c03', 'Cheat obrok: burger i pečeni krompirići', 'Ručak', 780, 38, 70, 36, 5, ['1 burger u lepinji', 'porcija pečenog krompira (150 g)'], 'Jedan cheat obrok sedmično, a ostatak dana ostaje po planu.', true)
   ]);
 })();
+/* sezonsko voće (mjeseci kad je u ponudi u BiH); plan ishrane bira samo ono što je u sezoni */
+(function () {
+  const FS = (window.FS = window.FS || {});
+  const Y = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], r = (a, b) => Y.filter((m) => (a <= b ? m >= a && m <= b : m >= a || m <= b));
+  FS.SEZONA = { v01: r(8, 4), v02: r(8, 2), v04: r(11, 4), v05: r(11, 2), v06: r(8, 11), v07: r(7, 10), v08: r(6, 9), v09: r(5, 7), v10: r(5, 8), v11: r(6, 9), v12: r(6, 9), v13: r(7, 9), v14: r(7, 9), v15: r(10, 4), v16: r(8, 10), v19: r(11, 4), v20: r(6, 8), v22: r(10, 12),
+    u01: r(6, 9), u02: r(5, 8), u04: r(6, 9), u05: r(6, 9), u12: r(8, 4), u13: r(10, 4) };
+  FS.uSezoni = (rec, iso) => { const s = FS.SEZONA[rec.id]; if (!s) return true; const m = /^\d{4}-(\d\d)/.exec(String(iso)); return !m || s.includes(+m[1]); };
+  const R = (id, naziv, kcal, p, uh, m, v, sast, priprema) => ({ id, naziv, obrok: 'Užina', kcal, p, uh, m, v, sast, priprema, cilj: '', okvir: true, jogurt100: false });
+  FS.RECEPTI_V = (FS.RECEPTI_V || []).concat([
+    R('u12', 'Grčki jogurt s jabukom i cimetom', 190, 18.5, 30, 0.4, 3, ['200 g grčkog jogurta 0% masti', '1 manja jabuka', 'prstohvat cimeta'], 'Jabuku narezati na kockice, dodati u jogurt i posuti cimetom.'),
+    R('u13', 'Grčki jogurt s kivijem', 160, 17.5, 22, 0.6, 3, ['200 g grčkog jogurta 0% masti', '2 kivija'], 'Kivi oljuštiti, narezati i staviti preko jogurta.')]);
+})();

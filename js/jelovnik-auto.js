@@ -72,7 +72,7 @@
     const trening = !!(pref && pref.tr && pref.tr(iso)), pDef = (a) => Math.max(0, 1 - a / G.p);
     const cheatDan = !dij && WK.cheat === 0 && wd === 5, cheatSlot = hash(String(seed)) % 2 ? 'dorucak' : 'rucak';
     if (dij) { const c = +J.uhObrok || 45, sn = Math.round(c / 2.5); G.uh = Math.min(G.uh, 0.8 * (3 * c + 2 * sn)); }
-    const R = (FS.RECEPTI_V || []).filter((r) => !isGrah(r) && !(J && FS.alergMatch && FS.alergMatch(r, J).length) && (!J || !FS.dijOk || FS.dijOk(r, J)) && !(dij && r.cheat));
+    const R = (FS.RECEPTI_V || []).filter((r) => (!FS.uSezoni || FS.uSezoni(r, iso)) && !isGrah(r) && !(J && FS.alergMatch && FS.alergMatch(r, J).length) && (!J || !FS.dijOk || FS.dijOk(r, J)) && !(dij && r.cheat));
     const ne = (pref && pref.ne) || [], voli = (pref && pref.voli) || [];
     const rules = (r, slot) => {
       let sc = isOwn(r) ? -0.15 : 0;
