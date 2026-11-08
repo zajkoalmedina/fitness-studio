@@ -14,6 +14,7 @@
     R('u09', 'Proteinski puding (domaći)', 'Užina', 225, 30.6, 21, 2.5, 1, ['30 g whey proteina (vanilija ili čokolada)', '200 ml mlijeka 0,5%', '10 g kukuruznog škroba'], 'Škrob razmutiti u hladnom mlijeku, kuhati uz miješanje dok ne zgusne, skloniti s vatre i umiješati whey. Hladiti u frižideru.'),
     R('u10', 'Whey protein u vodi (1 mjerica, 30 g)', 'Užina', 120, 24, 3, 1.5, 0, ['30 g whey proteina', '250 ml vode'], 'Protresti u šejkeru. Dobra opcija kad ti fale proteini, a nemaš prostora za još jedan obrok.'),
     R('u11', 'Whey protein s bananom (poslije treninga)', 'Užina', 210, 25, 26, 1.8, 3, ['30 g whey proteina', '1 banana (oko 100 g)', '250 ml vode'], 'Izmiksati ili protresti u šejkeru. Najbolje u roku od sat vremena poslije treninga.'),
+    R('u14', 'Whey protein s mlijekom (30 g whey + 250 ml)', 'Užina', 208, 32, 15, 3, 0, ['30 g whey proteina', '250 ml mlijeka 0,5% masti'], 'Protresti u šejkeru. Dobra opcija kad ti fale proteini.'),
     R('c01', 'Cheat doručak: palačinke s bananom i Nutellom', 'Doručak', 535, 15, 78, 18, 4, ['3 manje palačinke (1 jaje, 60 g brašna, 150 ml mlijeka)', '1 banana', '1 kašika Nutelle (15 g)'], 'Ispeci tanke palačinke, premaži Nutellom i dodaj narezanu bananu. Jednom sedmično, bez grižnje savjesti.', true),
     R('c02', 'Cheat obrok: domaća pizza (2 kriške)', 'Ručak', 620, 28, 70, 25, 4, ['2 kriške pizze (oko 250 g)', 'salata od paradajza'], 'Jedna slobodna poslastica sedmično. Pojedi polako i uživaj.', true),
     R('c03', 'Cheat obrok: burger i pečeni krompirići', 'Ručak', 780, 38, 70, 36, 5, ['1 burger u lepinji', 'porcija pečenog krompira (150 g)'], 'Jedan cheat obrok sedmično, a ostatak dana ostaje po planu.', true)
@@ -42,13 +43,11 @@
     R('n04', 'Ćureća prsa (šunka) s krastavcem (100 g)', 110, 20, 3, 2, 1, ['100 g ćurećih prsa u šunki', '1 krastavac'], 'Narezati krastavac i poslužiti uz narezak.'),
     R('n05', 'Bademi (30 g)', 174, 6.3, 6, 15, 3.5, ['30 g badema, oko šaka'], 'Šaka badema je dobra porcija masnoća.'),
     R('n06', 'Orasi (30 g)', 196, 4.6, 4, 19.5, 2, ['30 g oraha, oko 6 polovica'], 'Šaka oraha, odlična dopuna za zdrave masti.'),
-    R('n07', 'Avokado s limunom (pola)', 160, 2, 8.5, 15, 6.5, ['1/2 avokada', 'limun', 'so'], 'Avokado prepoloviti, pokapati limunom i posoliti.'),
     R('n08', 'Integralni hljeb s maslacem od kikirikija', 175, 8, 17, 9, 3, ['1 kriška integralnog hljeba', '1 kašika maslaca od kikirikija (16 g)'], 'Namazati i pojesti.'),
     R('n09', 'Banana s maslacem od kikirikija', 183, 4.8, 26, 8.4, 3, ['1 banana', '1 kašika maslaca od kikirikija (16 g)'], 'Bananu narezati i preliti maslacem od kikirikija.'),
     R('n10', 'Hurme (3 komada)', 170, 1, 45, 0.2, 4, ['3 hurme (60 g)'], 'Brz izvor ugljikohidrata, npr. prije treninga.'),
     R('n11', 'Rižine galete s mladim sirom i paradajzom (3 komada)', 160, 9, 25, 3, 2, ['3 rižine galete', '50 g mladog sira', '1 paradajz'], 'Namazati sirom i dodati paradajz.'),
     R('n12', 'Kefir (250 ml)', 140, 8, 10, 7, 0, ['250 ml kefira'], 'Piti hladno.'),
-    R('n13', 'Humus s mrkvom i krastavcem (60 g humusa)', 110, 5, 12, 6, 4, ['60 g humusa', '1 mrkva', '1/2 krastavca'], 'Povrće narezati na štapiće i umakati u humus.'),
-    R('n14', 'Proteinska pločica (1 komad)', 200, 20, 17, 7, 3, ['1 proteinska pločica (oko 50 g)'], 'Provjeri deklaraciju proizvođača jer se vrijednosti razlikuju.')
+    R('n13', 'Humus s mrkvom i krastavcem (60 g humusa)', 110, 5, 12, 6, 4, ['60 g humusa', '1 mrkva', '1/2 krastavca'], 'Povrće narezati na štapiće i umakati u humus.')
   ]);
 })();
