@@ -69,6 +69,7 @@
   FS.autoDay = (target, seed, used, M, left, pref) => {
     const J = pref && pref.J, dij = !!(J && J.dijabetes), rand = rnd(hash(String(seed))), G = Object.assign({}, macros(target, M));
     const iso = String(seed).split(':')[0], WK = weekCounts(J, iso), wd = /^\d{4}-\d\d-\d\d$/.test(iso) ? (new Date(iso + 'T12:00:00').getDay() + 6) % 7 : 0;
+    const trening = !!(pref && pref.tr && pref.tr(iso)), pDef = (a) => Math.max(0, 1 - a / G.p);
     const cheatDan = !dij && WK.cheat === 0 && wd === 5, cheatSlot = hash(String(seed)) % 2 ? 'dorucak' : 'rucak';
     if (dij) { const c = +J.uhObrok || 45, sn = Math.round(c / 2.5); G.uh = Math.min(G.uh, 0.8 * (3 * c + 2 * sn)); }
     const R = (FS.RECEPTI_V || []).filter((r) => !isGrah(r) && !(J && FS.alergMatch && FS.alergMatch(r, J).length) && (!J || !FS.dijOk || FS.dijOk(r, J)) && !(dij && r.cheat));
@@ -82,6 +83,7 @@
       if (r.cheat) sc += cheatDan && slot === cheatSlot ? -2 : 30;
       if (slot === 'dorucak') sc += isEgg(r) ? -0.55 : (isSweetB(r) && !r.cheat ? 0.55 : 0.25);
       if (slot === 'uzina') sc += isJog(r) ? -0.6 : isCok(r) ? 0.1 : 0;
+      if (r.whey) sc += slot === 'uzina' ? 0.5 : (/poslije treninga/i.test(r.naziv) ? (trening ? -1.6 : 0.25) : -0.1);
       if (slot === 'd1' || slot === 'd2') sc += r.obrok === 'Voće' ? -0.3 : isCok(r) ? -0.35 : (isJog(r) ? -0.15 : 0.1);
       if (slot === 'vecera') sc += isTuna(r) ? (WK.tuna >= 4 ? 0.4 : -0.5) : 0;
       sc -= Math.min(2, FS.recTags(r).filter((t) => voli.includes(t)).length) * 0.18;
@@ -108,7 +110,7 @@
           if (new Set(ids2).size < ids2.length) return;
           const bos = WK.bos + pick.filter((c) => BOS.has(c.r.id)).length, leg = WK.leg + pick.filter((c) => isLeg(c.r)).length;
           sc += (bos > 2 ? 30 : 0) + (leg > 2 ? 30 : 0) + (uz > 1 ? 1 : 0) + (slots.length - 4) * 0.12;
-          const wu = dij ? 2.2 : 1;
+          const wu = dij ? 2.2 : 1; if (p < 0.92 * G.p) sc += 8 * pDef(p);
           const e = 5 * Math.abs(k - target) / target + 0.9 * (Math.abs(p - G.p) / G.p + wu * Math.abs(u - G.uh) / G.uh + Math.abs(m - G.m) / G.m) / (2 + wu) * 3 + sc * 0.12;
           if (!best || e < best.e) best = { e, slots, pick: pick.slice() };
           return;
@@ -167,13 +169,14 @@
 
   /* više dana odjednom; ne ponavlja iste recepte uzastopno */
   /* popunjava samo dane bez plana (za sedmični plan koji se sam obnavlja); vraća broj popunjenih dana */
+  const trDan = (u) => (iso) => (FS.Store.db.raspored || []).some((e) => e.userId === u.id && e.datum === iso && e.tip === 'dan') || (FS.Store.db.logs || []).some((l) => l.userId === u.id && l.datum === iso);
   FS.autoFill = (u, startIso, days) => {
     const J = u.jelovnik; if (!J || !(+J.cilj >= 800)) return 0;
     let prev = new Set(), n = 0;
     for (let i = 0; i < days; i++) {
       const iso = FS.addDays(startIso, i), ex = (J.dani = J.dani || {})[iso];
       if (ex && Object.keys(ex).length) { prev = new Set(Object.values(ex).map((x) => x.id)); continue; }
-      const d = FS.autoDay(+J.cilj, iso + ':' + (J.autoSeed || 0), prev, J.makro, J.ostaci === 'svaki' || (J.ostaci === 'neki' && [0, 2, 4].includes(i % 7)), { voli: J.voli || [], ne: J.ne || [], J });
+      const d = FS.autoDay(+J.cilj, iso + ':' + (J.autoSeed || 0), prev, J.makro, J.ostaci === 'svaki' || (J.ostaci === 'neki' && [0, 2, 4].includes(i % 7)), { voli: J.voli || [], ne: J.ne || [], J, tr: trDan(u) });
       if (Object.keys(d).length) { J.dani[iso] = d; prev = new Set(Object.values(d).map((x) => x.id)); n++; }
     }
     if (n) FS.Store.save();
@@ -186,7 +189,7 @@
     let used = new Set(), prev = new Set();
     for (let i = 0; i < days; i++) {
       const iso = FS.addDays(startIso, i);
-      const d = FS.autoDay(target, iso + ':' + (J.autoSeed = (J.autoSeed || 0)), prev, M || J.makro, J.ostaci === 'svaki' || (J.ostaci === 'neki' && [0, 2, 4].includes(i % 7)), { voli: J.voli || [], ne: J.ne || [], J });
+      const d = FS.autoDay(target, iso + ':' + (J.autoSeed = (J.autoSeed || 0)), prev, M || J.makro, J.ostaci === 'svaki' || (J.ostaci === 'neki' && [0, 2, 4].includes(i % 7)), { voli: J.voli || [], ne: J.ne || [], J, tr: trDan(u) });
       J.dani[iso] = d; prev = new Set(Object.values(d).map((x) => x.id));
       used = new Set([...used, ...prev]);
     }
