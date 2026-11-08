@@ -130,3 +130,4 @@ details.day[open]>summary::after{transform:rotate(-135deg);margin-bottom:-4px}
 .day-b ul.clean li>b{font-family:var(--serif);font-size:18px;color:var(--rose-2)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 .fab[hidden]{display:none!important}
+.card.cream .stat b{color:var(--rose-2)}

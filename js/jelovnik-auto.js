@@ -30,7 +30,7 @@
   const isGrah = (r) => /grah/i.test(r.naziv + ' ' + (r.sast || []).join(' '));
   const isLeg = (r) => /grah|leć|grašak|mahun/i.test(r.naziv + ' ' + (r.sast || []).join(' '));
   const weekCounts = (J, iso) => {
-    const c = { bos: 0, grah: 0, leg: 0, used: new Set(), prosla: new Set() };
+    const c = { bos: 0, grah: 0, leg: 0, cheat: 0, tuna: 0, used: new Set(), prosla: new Set() };
     if (!J || !J.dani || !/^\d{4}-\d\d-\d\d$/.test(iso)) return c;
     const wd = (new Date(iso + 'T12:00:00').getDay() + 6) % 7, R = FS.RECEPTI_V || [];
     for (let i = 0; i < wd; i++) {   /* samo dani te sedmice prije ovog dana */
@@ -38,7 +38,7 @@
       const d = J.dani[di]; if (!d) continue;
       new Set(Object.values(d).map((e) => e.id)).forEach((id) => {
         const r = R.find((x) => x.id === id); if (!r) return;
-        c.used.add(id); if (BOS.has(id)) c.bos++; if (isGrah(r)) c.grah++; if (isLeg(r)) c.leg++;
+        c.used.add(id); if (r.cheat) c.cheat++; if (/tun[aeiou]/i.test(r.naziv + ' ' + (r.sast || []).join(' '))) c.tuna++; if (BOS.has(id)) c.bos++; if (isGrah(r)) c.grah++; if (isLeg(r)) c.leg++;
       });
     }
     for (let i = wd + 1; i <= wd + 7; i++) { const d = J.dani[FS.addDays(iso, -i)]; if (d) Object.values(d).forEach((e) => c.prosla.add(e.id)); }
@@ -48,51 +48,79 @@
   /* ciljni makroi: ako nisu zadati, 25 % proteina, 25 % masti, ostalo UH */
   const macros = (T, M) => (M && M.p > 0 ? M : { p: (T * 0.25) / 4, m: (T * 0.25) / 9, uh: (T * 0.5) / 4 });
 
-  /* jedan dan: kombinira obroke tako da se poklope i kalorije i makroi; vraća { dorucak: {id, por}, ... } */
+  /* jedan dan: kombinira obroke tako da se poklope kalorije i makroi, uvijek s JEDNOM porcijom svakog recepta (bez množenja).
+     Doručak: najviše jaja. Užina: grčki jogurt s voćem, voće, crna čokolada. Večera: tuna i lagana jela. Jednom sedmično cheat obrok. Grah se ne bira.
+     Dijabetes: plan se vodi prema ugljikohidratima (UH po obroku i u danu). */
+  const isEgg = (r) => /jaj|omlet|kajgan/i.test(r.naziv);
+  const isTuna = (r) => /tun[aeiou]/i.test(r.naziv + ' ' + (r.sast || []).join(' '));
+  const isSweetB = (r) => /palačink|zobena|zobene|griz|sutlijaš|smoothie|proja/i.test(r.naziv);
+  const isJog = (r) => /grčki jogurt|skyr/i.test(r.naziv);
+  const isCok = (r) => /čokolad/i.test(r.naziv) && !r.cheat;
+  const POOLS = {
+    dorucak: (r) => r.obrok === 'Doručak' || (r.obrok === 'Večera' && isEgg(r)),
+    rucak: (r) => r.obrok === 'Ručak',
+    uzina: (r) => (r.obrok === 'Užina' || r.obrok === 'Voće') && !r.jogurt100 && r.kcal <= 330,
+    vecera: (r) => r.obrok === 'Večera' || (r.obrok === 'Ručak' && r.kcal <= 480 && !r.cheat),
+    d1: (r) => (r.obrok === 'Užina' || r.obrok === 'Voće') && !r.jogurt100 && r.kcal <= 260,
+    d2: (r) => (r.obrok === 'Užina' || r.obrok === 'Voće') && !r.jogurt100 && r.kcal <= 260
+  };
+  const FRAC = { dorucak: 0.24, rucak: 0.32, uzina: 0.11, vecera: 0.24, d1: 0.09, d2: 0.09 };
+  const CONFIGS = [['dorucak', 'uzina', 'rucak', 'vecera'], ['dorucak', 'uzina', 'rucak', 'vecera', 'd1'], ['dorucak', 'uzina', 'rucak', 'vecera', 'd1', 'd2']];
   FS.autoDay = (target, seed, used, M, left, pref) => {
-    const R = (FS.RECEPTI_V || []).filter((r) => !(pref && pref.J && FS.alergMatch && FS.alergMatch(r, pref.J).length) && (!(pref && pref.J) || !FS.dijOk || FS.dijOk(r, pref.J))), rand = rnd(hash(String(seed))), G = macros(target, M), SPLIT = target >= 2000 ? SPLIT5 : SPLIT4; let slots = Object.keys(SPLIT); const NC = slots.length > 4 ? 9 : 14;
-    const cand = {}, WK = weekCounts(pref && pref.J, String(seed).split(':')[0]);
-    const rules = (r) => {
-      let s = isOwn(r) ? -0.15 : 0;
-      if (WK.used.has(r.id)) s += 0.6;
-      else if (WK.prosla.has(r.id)) s += 0.3;
-      if (BOS.has(r.id)) s += WK.bos >= 2 ? 30 : (WK.bos === 1 ? 0.35 : -0.2);
-      if (isGrah(r)) s += WK.grah >= 1 ? 30 : 0.15;
-      if (isLeg(r)) s += WK.leg >= 2 ? 30 : (WK.leg === 1 ? 0.5 : 0);
-      return s;
+    const J = pref && pref.J, dij = !!(J && J.dijabetes), rand = rnd(hash(String(seed))), G = Object.assign({}, macros(target, M));
+    const iso = String(seed).split(':')[0], WK = weekCounts(J, iso), wd = /^\d{4}-\d\d-\d\d$/.test(iso) ? (new Date(iso + 'T12:00:00').getDay() + 6) % 7 : 0;
+    const cheatDan = !dij && WK.cheat === 0 && wd === 5, cheatSlot = hash(String(seed)) % 2 ? 'dorucak' : 'rucak';
+    if (dij) { const c = +J.uhObrok || 45, sn = Math.round(c / 2.5); G.uh = Math.min(G.uh, 0.8 * (3 * c + 2 * sn)); }
+    const R = (FS.RECEPTI_V || []).filter((r) => !isGrah(r) && !(J && FS.alergMatch && FS.alergMatch(r, J).length) && (!J || !FS.dijOk || FS.dijOk(r, J)) && !(dij && r.cheat));
+    const ne = (pref && pref.ne) || [], voli = (pref && pref.voli) || [];
+    const rules = (r, slot) => {
+      let sc = isOwn(r) ? -0.15 : 0;
+      if (WK.used.has(r.id)) sc += 1.0; else if (WK.prosla.has(r.id)) sc += 0.35;
+      if (used && used.has(r.id)) sc += 0.5;
+      if (BOS.has(r.id)) sc += WK.bos >= 2 ? 30 : (WK.bos === 1 ? 0.35 : -0.1);
+      if (isLeg(r)) sc += WK.leg >= 2 ? 30 : (WK.leg === 1 ? 0.5 : 0);
+      if (r.cheat) sc += cheatDan && slot === cheatSlot ? -2 : 30;
+      if (slot === 'dorucak') sc += isEgg(r) ? -0.55 : (isSweetB(r) && !r.cheat ? 0.55 : 0.25);
+      if (slot === 'uzina') sc += isJog(r) ? -0.6 : isCok(r) ? 0.1 : 0;
+      if (slot === 'd1' || slot === 'd2') sc += r.obrok === 'Voće' ? -0.3 : isCok(r) ? -0.35 : (isJog(r) ? -0.15 : 0.1);
+      if (slot === 'vecera') sc += isTuna(r) ? (WK.tuna >= 4 ? 0.4 : -0.5) : 0;
+      sc -= Math.min(2, FS.recTags(r).filter((t) => voli.includes(t)).length) * 0.18;
+      return sc;
     };
-    slots.forEach((slot) => {
-      const goal = target * SPLIT[slot], list = [];
-      const ne = (pref && pref.ne) || [], voli = (pref && pref.voli) || [];
-      let pool = R.filter((r) => GRP[slot].includes(r.obrok) && r.kcal > 0);
+    const cand = {};
+    Object.keys(POOLS).forEach((slot) => {
+      let pool = R.filter((r) => POOLS[slot](r) && r.kcal > 0);
+      if (slot === 'dorucak') { const jaja = pool.filter((r) => isEgg(r) || (r.cheat && cheatDan && cheatSlot === 'dorucak')); if (jaja.length >= 3 && (rand() < 0.8 || (cheatDan && cheatSlot === 'dorucak'))) pool = jaja; }
       const bezNe = pool.filter((r) => !FS.recTags(r).some((t) => ne.includes(t)));
-      if (bezNe.length >= 3) pool = bezNe; // ako bi ostalo premalo jela, ne isključuj sve
-      pool.forEach((r) => POR.forEach((f) => {
-        const lik = FS.recTags(r).filter((t) => voli.includes(t)).length;
-        const sc = Math.abs(r.kcal * f - goal) / goal + 0.05 * Math.abs(f - 1) + (used && used.has(r.id) ? 0.35 : 0) + rand() * 0.15 - Math.min(2, lik) * 0.18 + rules(r);
-        list.push({ r, f, sc });
-      }));
-      cand[slot] = list.sort((a, b) => a.sc - b.sc).slice(0, NC);
+      if (bezNe.length >= 3) pool = bezNe;
+      const goal = target * FRAC[slot], uhG = dij ? ((+J.uhObrok || 45) * (slot === 'uzina' || slot === 'd1' || slot === 'd2' ? 0.4 : 0.9)) : 0;
+      cand[slot] = pool.map((r) => ({ r, sc: rules(r, slot) + 0.5 * Math.min(1.5, Math.abs(r.kcal - goal) / goal) + (dij ? 0.4 * Math.abs(r.uh - uhG) / Math.max(10, uhG) : 0) + rand() * 0.18 }))
+        .sort((a, b) => a.sc - b.sc).slice(0, slot === 'd1' || slot === 'd2' ? 5 : slot === 'uzina' ? 6 : 7);
     });
-    slots = slots.filter((sl) => cand[sl].length);
     let best = null;
-    const pick = [];
-    const rec = (i, k, p, u, m, sc) => {
-      if (i === slots.length) {
-        const ids = new Set(pick.map((c) => c.r.id)), rr = [...ids].map((id) => pick.find((c) => c.r.id === id).r);
-        const bos = WK.bos + rr.filter((r) => BOS.has(r.id)).length, grah = WK.grah + rr.filter(isGrah).length, leg = WK.leg + rr.filter(isLeg).length;
-        sc += (bos > 2 ? 30 : 0) + (grah > 1 ? 30 : 0) + (leg > 2 ? 30 : 0);
-        const e = Math.abs(k - target) / target + 0.5 * (Math.abs(p - G.p) / G.p + Math.abs(u - G.uh) / G.uh + Math.abs(m - G.m) / G.m) / 3 + sc * 0.15;
-        if (!best || e < best.e) best = { e, pick: pick.slice() };
-        return;
-      }
-      let list = cand[slots[i]];
-      if (left && slots[i] === 'vecera' && slots[1] === 'rucak') { const rr = pick[1].r; list = POR.map((f) => ({ r: rr, f, sc: 0.05 * Math.abs(f - 1) - 0.2, ostatak: true })); } // večera = ostatak ručka
-      list.forEach((c) => { pick[i] = c; rec(i + 1, k + c.r.kcal * c.f, p + c.r.p * c.f, u + c.r.uh * c.f, m + c.r.m * c.f, sc + c.sc); });
-    };
-    rec(0, 0, 0, 0, 0, 0);
+    CONFIGS.forEach((slots) => {
+      if (slots.some((sl) => !cand[sl].length)) return;
+      const pick = [];
+      const rec = (i, k, p, u, m, sc) => {
+        if (i === slots.length) {
+          const ids = pick.map((c) => c.r.id), uz = pick.filter((c) => isCok(c.r)).length;
+          const ids2 = pick.filter((c) => !c.ostatak).map((c) => c.r.id);
+          if (new Set(ids2).size < ids2.length) return;
+          const bos = WK.bos + pick.filter((c) => BOS.has(c.r.id)).length, leg = WK.leg + pick.filter((c) => isLeg(c.r)).length;
+          sc += (bos > 2 ? 30 : 0) + (leg > 2 ? 30 : 0) + (uz > 1 ? 1 : 0) + (slots.length - 4) * 0.12;
+          const wu = dij ? 2.2 : 1;
+          const e = 5 * Math.abs(k - target) / target + 0.9 * (Math.abs(p - G.p) / G.p + wu * Math.abs(u - G.uh) / G.uh + Math.abs(m - G.m) / G.m) / (2 + wu) * 3 + sc * 0.12;
+          if (!best || e < best.e) best = { e, slots, pick: pick.slice() };
+          return;
+        }
+        let list = cand[slots[i]];
+        if (left && slots[i] === 'vecera') { const rr = pick[slots.indexOf('rucak')]; if (rr && !rr.r.cheat) list = [{ r: rr.r, sc: -0.2, ostatak: true }]; }
+        list.forEach((c) => { pick[i] = c; rec(i + 1, k + c.r.kcal, p + c.r.p, u + c.r.uh, m + c.r.m, sc + c.sc); });
+      };
+      rec(0, 0, 0, 0, 0, 0);
+    });
     const day = {};
-    if (best) slots.forEach((slot, i) => { day[slot] = { id: best.pick[i].r.id, por: best.pick[i].f }; if (best.pick[i].ostatak) day[slot].ostatak = true; if (used) used.add(best.pick[i].r.id); });
+    if (best) best.slots.forEach((slot, i) => { day[slot] = { id: best.pick[i].r.id, por: 1 }; if (best.pick[i].ostatak) day[slot].ostatak = true; if (used) used.add(best.pick[i].r.id); });
     return day;
   };
 
@@ -145,7 +173,7 @@
     for (let i = 0; i < days; i++) {
       const iso = FS.addDays(startIso, i), ex = (J.dani = J.dani || {})[iso];
       if (ex && Object.keys(ex).length) { prev = new Set(Object.values(ex).map((x) => x.id)); continue; }
-      const d = FS.autoDay(+J.cilj, iso + ':' + (J.autoSeed || 0), prev, J.makro, J.ostaci === 'svaki' || (J.ostaci !== 'ne' && [0, 2, 4].includes(i % 7)), { voli: J.voli || [], ne: J.ne || [], J });
+      const d = FS.autoDay(+J.cilj, iso + ':' + (J.autoSeed || 0), prev, J.makro, J.ostaci === 'svaki' || (J.ostaci === 'neki' && [0, 2, 4].includes(i % 7)), { voli: J.voli || [], ne: J.ne || [], J });
       if (Object.keys(d).length) { J.dani[iso] = d; prev = new Set(Object.values(d).map((x) => x.id)); n++; }
     }
     if (n) FS.Store.save();
@@ -158,7 +186,7 @@
     let used = new Set(), prev = new Set();
     for (let i = 0; i < days; i++) {
       const iso = FS.addDays(startIso, i);
-      const d = FS.autoDay(target, iso + ':' + (J.autoSeed = (J.autoSeed || 0)), prev, M || J.makro, J.ostaci === 'svaki' || (J.ostaci !== 'ne' && [0, 2, 4].includes(i % 7)), { voli: J.voli || [], ne: J.ne || [], J });
+      const d = FS.autoDay(target, iso + ':' + (J.autoSeed = (J.autoSeed || 0)), prev, M || J.makro, J.ostaci === 'svaki' || (J.ostaci === 'neki' && [0, 2, 4].includes(i % 7)), { voli: J.voli || [], ne: J.ne || [], J });
       J.dani[iso] = d; prev = new Set(Object.values(d).map((x) => x.id));
       used = new Set([...used, ...prev]);
     }
