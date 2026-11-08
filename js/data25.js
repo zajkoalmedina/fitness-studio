@@ -12,5 +12,5 @@
       'Pokret vodi trbuh, ne vrat.|Donji dio leđa ostaje na podu.|Izdahni kad se dižeš, udahni kad se spuštaš.',
       'Povlačenje vrata rukama.|Zamah umjesto kontrole.|Podizanje cijelog trupa do sjedenja.')
   ].forEach((a) => { if (!FS.EXERCISES.some((e) => e.id === a.id)) FS.EXERCISES.push(a); });
-  Object.assign(FS.VIDEOS = FS.VIDEOS || {}, { donkeykick: 'videos/donkeykick.mp4', reachcrunch: 'videos/reachcrunch.mp4', hipthrust: 'videos/hipthrust.mp4', standabd: 'videos/standabd.mp4', clamshell: 'videos/clamshell.mp4' });
+  Object.assign(FS.VIDEOS = FS.VIDEOS || {}, { donkeykick: 'videos/donkeykick.mp4', reachcrunch: 'videos/reachcrunch.mp4', hipthrust: 'videos/hipthrust.mp4', highknees: 'videos/highknees.mp4', jumpingjack: 'videos/jumpingjack.mp4', standabd: 'videos/standabd.mp4', clamshell: 'videos/clamshell.mp4' });
 })();
