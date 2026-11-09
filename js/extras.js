@@ -245,7 +245,7 @@
       <form data-act="plansave" data-uid="${u.id}" data-start="${start}" novalidate>
         ${days.map((d, i) => h`<div class="field" style="margin-bottom:8px"><span>${dl(d)}${d === today() ? ' (danas)' : ''}</span>
           <select name="s${i}">${opts(o, val(cur(d)))}</select>
-          <input name="n${i}" maxlength="150" placeholder="Napomena (nije obavezno)" value="${(cur(d) && cur(d).nota) || ''}" style="margin-top:4px"></div>`)}
+          <input name="n${i}" maxlength="150" placeholder="Napomena (nije obavezno)" value="${(cur(d) && cur(d).nota) || ''}" style="margin-top:4px">${(() => { const e = cur(d); if (!e || e.tip !== 'dan') return ''; const pr = Store.program(e.programId); if (!pr) return ''; const st = u.pstart && u.pstart[pr.id], w = st ? Math.min(parseInt(pr.sedmica, 10) || 1, Math.max(1, Math.floor((FS.parse(d) - FS.parse(st)) / 86400000 / 7) + 1)) : FS.currentWeek(u, pr); return h`<a class="btn sm primary block mt-s" href="#/trener/dan/${pr.id}?d=${e.dan}&w=${w}&k=${u.id}">Otvori trening (kg, zadnji put, uredi)</a>`; })()}</div>`)}
         <label class="field"><span>Ponovi isti raspored još</span><select name="rep">${opts([['0', 'Ne ponavljaj'], ['1', '1 sedmicu'], ['3', '3 sedmice'], ['7', '7 sedmica'], ['11', '11 sedmica (do 12 ukupno)']], '0')}</select></label>
         <button class="btn primary block" type="submit">Sačuvaj raspored</button></form></div>`;
   };
@@ -649,7 +649,7 @@
     const hero = el.querySelector('section');
     if (vc && hero) hero.insertAdjacentHTML('afterend', vc.s);
     anchor.insertAdjacentHTML('beforebegin', sec.s);
-    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 199</p>');
+    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 200</p>');
   };
 
   /* Kalkulatori: veza na suplemente */
