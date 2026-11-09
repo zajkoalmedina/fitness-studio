@@ -14,8 +14,17 @@
     E('lowskip', 'Low Skip', 'Kardio', 'početni', 'Bez opreme',
       'Stani uspravno, stopala u širini kukova, ruke savijene uz tijelo. Pogled ispred.|Lagano trči u mjestu uz niske, kratke korake: stopalo se podigne tek nekoliko centimetara od poda.|Doskači na prednji dio stopala i odmah promijeni nogu, ritam oko 2 koraka u sekundi.|Ruke naizmjenično prate korake, a disanje ostaje ravnomjerno.',
       'Ostani na prednjem dijelu stopala, lagano i tiho.|Trup uspravan, ramena opuštena.|Dobro je i za zagrijavanje i kao lagani kardio.',
-      'Tvrdo udaranje petama.|Previsoko podizanje koljena.|Nagnut trup i zadržavanje daha.')
+      'Tvrdo udaranje petama.|Previsoko podizanje koljena.|Nagnut trup i zadržavanje daha.'),
+    E('buttkicks', 'Butt Kicks', 'Kardio', 'početni', 'Bez opreme',
+      'Stani uspravno, ruke savijene uz tijelo. Pogled ispred.|Lagano trči u mjestu i pete podiži prema stražnjici.|Koljena ostaju ispod kukova, noge se savijaju iza tijela.|Ritam oko 2 koraka u sekundi, ruke naizmjenično prate noge.',
+      'Doskoči na prednji dio stopala, lagano i tiho.|Trup uspravan, ne naginji se naprijed.|Dobro je za zagrijavanje stražnje strane natkoljenice.',
+      'Naginjanje trupa naprijed.|Tvrdo udaranje petama.|Koljena idu naprijed umjesto da ostanu ispod kukova.'),
+    E('bandlateralwalk', 'Banded Lateral Walk', 'Gluteus', 'početni', 'Mini guma',
+      'Stavi gumu oko gležnjeva ili iznad koljena. Stopala u širini kukova, koljena blago savijena, trup lagano nagnut naprijed.|Pogled ispred, ruke ispred tijela radi ravnoteže.|Korak u stranu vodećom nogom 1 s, guma ostaje zategnuta.|Druga noga prati do širine kukova, ne spajaj stopala. Nakon koraka u jednu stranu vrati se u drugu.',
+      'Koljena prate smjer prstiju, ne padaju prema unutra.|Drži blagi čučanj cijelo vrijeme.|Korake radi polako i kontrolirano.',
+      'Spajanje stopala između koraka.|Naginjanje trupa u stranu.|Koljena padaju prema unutra.')
   ].forEach((a) => { if (!FS.EXERCISES.some((e) => e.id === a.id)) FS.EXERCISES.push(a); });
+  const sb = FS.EXERCISES.find((e) => e.id === 'singlebridge'); if (sb) sb.naziv = 'Single Leg Glute Bridge';
   if (FS.ENG) FS.ENG.lowskip = 'Low skip';
-  Object.assign(FS.VIDEOS = FS.VIDEOS || {}, { donkeykick: 'videos/donkeykick.mp4', reachcrunch: 'videos/reachcrunch.mp4', hipthrust: 'videos/hipthrust.mp4', lowskip: 'videos/lowskip.mp4', jumpingjack: 'videos/jumpingjack.mp4', standabd: 'videos/standabd.mp4', clamshell: 'videos/clamshell.mp4' });
+  Object.assign(FS.VIDEOS = FS.VIDEOS || {}, { donkeykick: 'videos/donkeykick.mp4', reachcrunch: 'videos/reachcrunch.mp4', hipthrust: 'videos/hipthrust.mp4', lowskip: 'videos/lowskip.mp4', bandlateralwalk: 'videos/bandlateralwalk.mp4', buttkicks: 'videos/buttkicks.mp4', bridge: 'videos/bridge.mp4', singlebridge: 'videos/singlebridge.mp4', jumpingjack: 'videos/jumpingjack.mp4', standabd: 'videos/standabd.mp4', clamshell: 'videos/clamshell.mp4' });
 })();
