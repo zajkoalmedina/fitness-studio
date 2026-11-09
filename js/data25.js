@@ -30,10 +30,14 @@
     E('squatreachjump', 'Squat Reach Jump', 'Kardio', 'srednji', 'Bez opreme',
       'Stani u širini ramena. Pogled ispred.|Pregni se u čučanj i dodirni stopala ili pod rukama, leđa duga.|Snažno se odrazi i skoči uvis s rukama ispruženim iznad glave.|Doskoči mekano na prednji dio stopala i odmah se spusti natrag do poda. Tempo: dolje 1 s, skok eksplozivno.',
       'Spuštaj se kontrolirano, koljena prate smjer prstiju.|Ruke idu što više iznad glave.|Ako je pretežak, radi bez skoka i samo se podigni na prste.',
-      'Zaokruženo donje leđa pri spuštanju.|Tvrd doskok na ravna stopala.|Ruke ostaju ispred tijela umjesto da idu iznad glave.')
+      'Zaokruženo donje leđa pri spuštanju.|Tvrd doskok na ravna stopala.|Ruke ostaju ispred tijela umjesto da idu iznad glave.'),
+    E('staticlunge', 'Static Lunge', 'Noge', 'početni', 'Bez opreme',
+      'Stani u iskorak: jedna noga ispred, druga iza, razmak oko jedne duge stope. Prednje stopalo čvrsto na podu, zadnja peta podignuta. Pogled ispred.|Spusti se ravno dolje dok zadnje koljeno ne bude tik iznad poda, 2 s. Prednje koljeno prati smjer prstiju.|Odgurni se prednjom nogom i podigni se do skoro ispruženih nogu, 1 s.|Cijelo vrijeme ostaješ u istom iskoraku, bez koraka naprijed ili nazad. Poslije serije zamijeni nogu.',
+      'Trup ostaje uspravan, težina na prednjoj nozi.|Spuštaj se ravno dolje, ne naprijed.|Ruke možeš sklopiti ispred sebe ili staviti na kukove.',
+      'Prednje koljeno ide daleko ispred prstiju.|Naginjanje trupa naprijed.|Ljuljanje i gubljenje ravnoteže zbog preuskog razmaka stopala.')
   ].forEach((a) => { if (!FS.EXERCISES.some((e) => e.id === a.id)) FS.EXERCISES.push(a); });
   const sb = FS.EXERCISES.find((e) => e.id === 'singlebridge'); if (sb) sb.naziv = 'Single Leg Glute Bridge';
   const fh = FS.EXERCISES.find((e) => e.id === 'firehydrant'); if (fh) fh.naziv = 'Fire Hydrant';
   if (FS.ENG) FS.ENG.lowskip = 'Low skip';
-  Object.assign(FS.VIDEOS = FS.VIDEOS || {}, { donkeykick: 'videos/donkeykick.mp4', reachcrunch: 'videos/reachcrunch.mp4', hipthrust: 'videos/hipthrust.mp4', lowskip: 'videos/lowskip.mp4', firehydrant: 'videos/firehydrant.mp4', mountainclimb: 'videos/mountainclimb.mp4', burpee: 'videos/burpee.mp4', squatjump: 'videos/squatjump.mp4', squatreachjump: 'videos/squatreachjump.mp4', bandlateralwalk: 'videos/bandlateralwalk.mp4', buttkicks: 'videos/buttkicks.mp4', bridge: 'videos/bridge.mp4', singlebridge: 'videos/singlebridge.mp4', jumpingjack: 'videos/jumpingjack.mp4', standabd: 'videos/standabd.mp4', clamshell: 'videos/clamshell.mp4' });
+  Object.assign(FS.VIDEOS = FS.VIDEOS || {}, { donkeykick: 'videos/donkeykick.mp4', reachcrunch: 'videos/reachcrunch.mp4', hipthrust: 'videos/hipthrust.mp4', lowskip: 'videos/lowskip.mp4', staticlunge: 'videos/staticlunge.mp4', iskorak: 'videos/iskorak.mp4', firehydrant: 'videos/firehydrant.mp4', mountainclimb: 'videos/mountainclimb.mp4', burpee: 'videos/burpee.mp4', squatjump: 'videos/squatjump.mp4', squatreachjump: 'videos/squatreachjump.mp4', bandlateralwalk: 'videos/bandlateralwalk.mp4', buttkicks: 'videos/buttkicks.mp4', bridge: 'videos/bridge.mp4', singlebridge: 'videos/singlebridge.mp4', jumpingjack: 'videos/jumpingjack.mp4', standabd: 'videos/standabd.mp4', clamshell: 'videos/clamshell.mp4' });
 })();
