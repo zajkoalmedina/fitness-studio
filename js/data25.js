@@ -34,10 +34,22 @@
     E('staticlunge', 'Static Lunge', 'Noge', 'početni', 'Bez opreme',
       'Stani u iskorak: jedna noga ispred, druga iza, razmak oko jedne duge stope. Prednje stopalo čvrsto na podu, zadnja peta podignuta. Pogled ispred.|Spusti se ravno dolje dok zadnje koljeno ne bude tik iznad poda, 2 s. Prednje koljeno prati smjer prstiju.|Odgurni se prednjom nogom i podigni se do skoro ispruženih nogu, 1 s.|Cijelo vrijeme ostaješ u istom iskoraku, bez koraka naprijed ili nazad. Poslije serije zamijeni nogu.',
       'Trup ostaje uspravan, težina na prednjoj nozi.|Spuštaj se ravno dolje, ne naprijed.|Ruke možeš sklopiti ispred sebe ili staviti na kukove.',
-      'Prednje koljeno ide daleko ispred prstiju.|Naginjanje trupa naprijed.|Ljuljanje i gubljenje ravnoteže zbog preuskog razmaka stopala.')
+      'Prednje koljeno ide daleko ispred prstiju.|Naginjanje trupa naprijed.|Ljuljanje i gubljenje ravnoteže zbog preuskog razmaka stopala.'),
+    E('bandrdl', 'Banded Romanian Deadlift', 'Gluteus', 'početni', 'Duga guma',
+      'Stani na sredinu gume, stopala u širini kukova, krajeve gume uhvati rukama ispred bedara. Koljena blago savijena.|Pogled prema podu malo ispred sebe, leđa duga i ravna.|Kukove povuci nazad i spusti trup prema naprijed, guma klizi niz noge, 3 s. Spusti se dok ne osjetiš istezanje stražnje strane nogu.|Gurni kukove naprijed, stisni gluteus i uspravi se 2 s.',
+      'Pokret dolazi iz kukova, ne iz savijanja leđa.|Guma ide blizu nogu.|Koljena ostaju blago savijena cijelo vrijeme.',
+      'Zaokruživanje leđa.|Pretvaranje pokreta u čučanj.|Guma se udaljava od nogu.'),
+    E('bandpress', 'Banded Overhead Press', 'Ramena', 'početni', 'Duga guma',
+      'Stani na sredinu gume, stopala u širini kukova. Krajeve gume uhvati i podigni ruke na visinu ramena, laktovi ispod ručnih zglobova.|Stegni trbuh i gluteus, pogled ispred.|Pritisni ruke ravno iznad glave dok se laktovi ne ispruže, 2 s.|Polako spusti ruke do ramena 2 s.',
+      'Rebra ostaju spuštena, ne izvijaj donji dio leđa.|Ruke idu uz uši, ne ispred glave.|Ramena ne podižeš prema ušima.',
+      'Izvijanje leđa pri pritisku.|Zamah koljenima.|Laktovi idu daleko u stranu.'),
+    E('bandtriceps', 'Banded Overhead Triceps Extension', 'Ruke', 'početni', 'Duga guma',
+      'Stani uspravno. Jedan kraj gume drži donja ruka iza leđa (na donjem dijelu leđa), drugi kraj ruka iznad glave, lakat savijen, dlan iza glave.|Lakat gornje ruke pokazuje prema stropu i ostaje uz glavu. Pogled ispred.|Ispruži ruku prema stropu 2 s dok guma ne bude zategnuta.|Polako se spusti do savijenog lakta 2 s. Poslije serije zamijeni ruke.',
+      'Nadlaktica miruje, radi samo podlaktica.|Rebra i trup ostaju mirni.|Počni s lakšom gumom da lakat ostane uz glavu.',
+      'Lakat se širi u stranu.|Naginjanje trupa naprijed.|Zamah umjesto kontrole.')
   ].forEach((a) => { if (!FS.EXERCISES.some((e) => e.id === a.id)) FS.EXERCISES.push(a); });
   const sb = FS.EXERCISES.find((e) => e.id === 'singlebridge'); if (sb) sb.naziv = 'Single Leg Glute Bridge';
   const fh = FS.EXERCISES.find((e) => e.id === 'firehydrant'); if (fh) fh.naziv = 'Fire Hydrant';
   if (FS.ENG) FS.ENG.lowskip = 'Low skip';
-  Object.assign(FS.VIDEOS = FS.VIDEOS || {}, { donkeykick: 'videos/donkeykick.mp4', reachcrunch: 'videos/reachcrunch.mp4', hipthrust: 'videos/hipthrust.mp4', lowskip: 'videos/lowskip.mp4', staticlunge: 'videos/staticlunge.mp4', firehydrant: 'videos/firehydrant.mp4', mountainclimb: 'videos/mountainclimb.mp4', burpee: 'videos/burpee.mp4', squatjump: 'videos/squatjump.mp4', squatreachjump: 'videos/squatreachjump.mp4', bandlateralwalk: 'videos/bandlateralwalk.mp4', buttkicks: 'videos/buttkicks.mp4', bridge: 'videos/bridge.mp4', singlebridge: 'videos/singlebridge.mp4', jumpingjack: 'videos/jumpingjack.mp4', standabd: 'videos/standabd.mp4', clamshell: 'videos/clamshell.mp4' });
+  Object.assign(FS.VIDEOS = FS.VIDEOS || {}, { donkeykick: 'videos/donkeykick.mp4', reachcrunch: 'videos/reachcrunch.mp4', hipthrust: 'videos/hipthrust.mp4', lowskip: 'videos/lowskip.mp4', bandrdl: 'videos/bandrdl.mp4', bandpress: 'videos/bandpress.mp4', bandtriceps: 'videos/bandtriceps.mp4', staticlunge: 'videos/staticlunge.mp4', firehydrant: 'videos/firehydrant.mp4', mountainclimb: 'videos/mountainclimb.mp4', burpee: 'videos/burpee.mp4', squatjump: 'videos/squatjump.mp4', squatreachjump: 'videos/squatreachjump.mp4', bandlateralwalk: 'videos/bandlateralwalk.mp4', buttkicks: 'videos/buttkicks.mp4', bridge: 'videos/bridge.mp4', singlebridge: 'videos/singlebridge.mp4', jumpingjack: 'videos/jumpingjack.mp4', standabd: 'videos/standabd.mp4', clamshell: 'videos/clamshell.mp4' });
 })();
