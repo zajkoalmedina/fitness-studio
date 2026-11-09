@@ -6,12 +6,14 @@
     ['nema', 'Bez periodizacije (stalno isto)'],
     ['linearna', 'Linearna – intenzitet raste, volumen pada'],
     ['blok', 'Blok – akumulacija pa intenzifikacija'],
-    ['valovita', 'Valovita – teški, srednji i lagani dani']
+    ['valovita', 'Valovita – teški, srednji i lagani dani'],
+    ['pump', 'Pump hipertrofija – adaptacija, progresija, pump serije, deload']
   ];
   FS.PER_OPIS = {
     nema: 'Isti broj serija i ponavljanja svake sedmice. Napredak ide povećanjem težine kad ti postane lako.',
     linearna: 'Kroz sedmice postepeno raste težina, a ponavljanja i serije lagano padaju. Pogodno za pripremu snage.',
     blok: 'Prvi blok (akumulacija): volumen postepeno raste uz istu težinu. Drugi blok (intenzifikacija): težina raste, volumen pada.',
+    pump: 'Hipertrofija u 4 sedmice: 1. adaptacija i tehnika (10–15 ponavljanja), 2. progresivno opterećenje (8–12), 3. veći stimulans s pump serijama 15–25 ponavljanja na kraju treninga (drop set), 4. deload.',
     valovita: 'Unutar sedmice se smjenjuju teški dan (manje ponavljanja, veća težina), srednji dan i lagani dan (više ponavljanja, manja težina).'
   };
   FS.DELOAD_OPC = [['0', 'Bez deloada'], ['3', 'Svake 3. sedmice'], ['4', 'Svake 4. sedmice'], ['5', 'Svake 5. sedmice'], ['6', 'Svake 6. sedmice']];
@@ -66,6 +68,10 @@
       const A = Math.max(1, Math.ceil(T * 0.6));
       if (t <= A) Object.assign(info, { faza: 'Akumulacija', setsAdj: Math.floor((2 * (t - 1)) / A), loadPct: 100, repShift: 0, rir: '2–3' });
       else { const I = Math.max(1, T - A), j = t - A; Object.assign(info, { faza: 'Intenzifikacija', setsAdj: j > Math.ceil(I / 2) ? -1 : 0, loadPct: Math.round(105 + (I > 1 ? (5 * (j - 1)) / (I - 1) : 0)), repShift: -2, rir: '1–2' }); }
+    } else if (per.tip === 'pump') {
+      if (t <= 1) Object.assign(info, { faza: 'Adaptacija i tehnika', loadPct: 100, rir: '3–4' });
+      else if (t === 2) Object.assign(info, { faza: 'Progresivno opterećenje', loadPct: 105, rir: '2–3' });
+      else Object.assign(info, { faza: 'Pump', loadPct: 110, rir: '1–2', pump: true });
     } else if (per.tip === 'valovita') {
       Object.assign(info, { faza: 'Valovita', loadPct: 100 + Math.min(10, 2 * (t - 1)), rir: '1–3' });
     } else Object.assign(info, { faza: 'Standardno', loadPct: 100 });
@@ -84,6 +90,7 @@
       x = { ...x0, id: k.id, n: k.n || '', r: k.r || x0.r, s: k.s != null ? k.s : x0.s, p: k.p != null ? k.p : x0.p };
       ov = { id: x.id, n: x.n, p: x.p };
     }
+    if (x.id === 'zidsjed') return { s: x.s, r: hasTimeUnit(x.r) ? x.r : '30 s', pct: null, tag: '', ...ov };   /* wall sit: štoperica u sekundama, ne ponavljanja */
     if (x.fix) return { s: x.s, r: x.r, pct: null, tag: '', ...ov };   /* cirkuiti i kardio: serije i trajanje se ne mijenjaju po sedmici */
     const wi = FS.weekInfo(p, week), loaded = isLoaded(x.id);
     let s = x.s, r = x.r, pct = null, tag = '';
@@ -104,7 +111,18 @@
     return { s, r, pct: pct && pct !== 100 ? pct : null, tag, ...ov };
   };
 
-  FS.weekDays = (p, week) => (p.dani || []).map((d, di) => ({ naziv: d.naziv, vj: d.vj.map((x) => ({ ...x, ...FS.applyWeek(p, week, di, x) })).filter((x) => !x.skip) }));
+  FS.weekDays = (p, week) => {
+    const wi = FS.weekInfo(p, week);
+    return (p.dani || []).map((d, di) => {
+      const vj = d.vj.map((x) => ({ ...x, ...FS.applyWeek(p, week, di, x) })).filter((x) => !x.skip);
+      if (wi.pump && !wi.deload) {   /* pump sedmica: označene vježbe (ili zadnja opterećena) idu na 15–25 ponavljanja s drop setom */
+        let idx = vj.map((x, i) => (x.pump ? i : -1)).filter((i) => i >= 0);
+        if (!idx.length) { for (let i = vj.length - 1; i >= 0; i--) if (isLoaded(vj[i].id) && !hasTimeUnit(vj[i].r)) { idx = [i]; break; } }
+        idx.forEach((i) => { vj[i] = { ...vj[i], r: '15–25', ds: true, tag: 'pump', s: Math.max(vj[i].s, 3) }; });
+      }
+      return { naziv: d.naziv, vj };
+    });
+  };
 
 
   /* koji se dani rade u kojoj sedmici: [{i: indeks dana, opt: opcionalni trening}] */

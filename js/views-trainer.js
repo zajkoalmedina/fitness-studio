@@ -168,7 +168,7 @@
       ${FS.pristupCard ? FS.pristupCard(u) : ''}
       <div class="stats"><div class="stat"><b>${logs.length}</b><span>treninga</span></div><div class="stat"><b>${Store.weekCount(u.id)}</b><span>ove sedmice</span></div><div class="stat"><b>${wpts.length ? wpts[wpts.length - 1].y : '–'}</b><span>težina (kg)</span></div></div>
       <div class="card"><h3>Programi klijenta / klijentice</h3>
-        ${Store.userPrograms(u).map((x) => h`<div class="row between" style="padding:6px 0"><a href="#/program/${x.id}?k=${u.id}" class="grow"><b style="color:var(--cream)">${x.naziv}</b><div class="small">${FS.accessLabel(x, u)}</div></a>${FS.access(u, x).trajno ? '' : h`<button class="btn sm" data-act="renew" data-id="${x.id}">Produži</button>`}<button class="icon-btn" data-act="unassign" data-id="${x.id}" aria-label="Ukloni">${icon('trash')}</button></div>`)}
+        ${Store.userPrograms(u).map((x) => h`<div class="row between" style="padding:6px 0"><a href="#/program/${x.id}?k=${u.id}" class="grow"><b style="color:var(--cream)">${x.naziv}</b><div class="small">${FS.accessLabel(x, u)}</div></a><a class="btn sm" href="#/trener/dan/${x.id}?d=0&w=${FS.currentWeek(u, x)}&k=${u.id}">Treninzi</a>${FS.access(u, x).trajno ? '' : h`<button class="btn sm" data-act="renew" data-id="${x.id}">Produži</button>`}<button class="icon-btn" data-act="unassign" data-id="${x.id}" aria-label="Ukloni">${icon('trash')}</button></div>`)}
         ${(u.programi || []).length ? '' : h`<p class="muted">Nema dodijeljenih programa.</p>`}
         <div class="small muted mt-s">Dodijeli klijentici:</div><div class="row" style="gap:6px;flex-wrap:wrap"><button class="btn sm" data-act="dcijeli">Cijeli programi</button><button class="btn sm" data-act="dpojed">Pojedinačni treninzi</button><button class="btn sm" data-act="dkond">Kondicija</button></div>
         <a class="btn sm block mt-s" href="#/trener/program/novi?za=${u.id}">+ Napravi individualni program</a>
@@ -254,9 +254,10 @@
           <div class="divider"></div><h3>Periodizacija i deload</h3>
           <div class="grid2"><label class="field"><span>Periodizacija</span><select data-act="pt">${opts(FS.PER_TIPOVI, FS.perOf(P).tip)}</select></label><label class="field"><span>Deload</span><select data-act="pd">${opts(FS.DELOAD_OPC, String(FS.perOf(P).deload))}</select></label></div>
           <p class="small">${FS.PER_OPIS[FS.perOf(P).tip]}${FS.perOf(P).deload ? ' ' + FS.DELOAD_OPIS : ''}</p>
+          <div class="row wrap mt-s mb"><button type="button" class="btn sm" data-act="presetlin">Linearna + deload 4.</button><button type="button" class="btn sm" data-act="presetpump">Pump hipertrofija (4 sedmice)</button></div>
           <div class="row wrap">${Array.from({ length: parseInt(P.sedmica, 10) || 1 }, (_, i) => { const x = FS.weekInfo(P, i + 1); return h`<span class="pill" title="${x.faza}">${i + 1}. ${x.deload ? 'deload' : x.faza.toLowerCase()}</span>`; })}</div></div>
         <div class="card"><div class="eyebrow">Direktnih serija sedmično (sedmica 1)</div><div class="row wrap mt-s">${FS.MISICI.map((m) => [m, FS.weekVolume(P, 1)[m]]).filter((x) => x[1] > 0).map(([m, v]) => h`<span class="pill">${m} <b>${v}</b></span>`)}</div><p class="small mt-s">Pregledni okvir: oko 10 do 20 serija po mišićnoj grupi sedmično za rast, početnicama dovoljno 6 do 10.</p></div>
-        ${P.dani.map((d, di) => h`<div class="card"><div class="row"><input data-act="dn" data-di="${di}" value="${d.naziv}" maxlength="60" class="grow"><button class="icon-btn" data-act="rmday" data-di="${di}" aria-label="Ukloni dan">${icon('trash')}</button></div>
+        ${P.dani.map((d, di) => h`<div class="card"><div class="row"><input data-act="dn" data-di="${di}" value="${d.naziv}" maxlength="60" class="grow">${isNew ? '' : h`<a class="btn sm" href="#/trener/dan/${P.id}?d=${di}&w=1">Otvori</a>`}<button class="icon-btn" data-act="rmday" data-di="${di}" aria-label="Ukloni dan">${icon('trash')}</button></div>
           ${d.vj.map((x, xi) => h`<div class="card flat" style="margin:10px 0 0;padding:10px;${x.p === 0 ? 'border-left:4px solid var(--beige)' : (xi > 0 && d.vj[xi - 1].p === 0 ? 'border-left:4px solid var(--beige)' : '')}">
             ${x.p === 0 ? h`<div class="small" style="color:var(--beige);margin-bottom:6px"><b>Superserija</b> · odmah poslije ove ide sljedeća vježba</div>` : (xi > 0 && d.vj[xi - 1].p === 0 ? h`<div class="small" style="color:var(--beige);margin-bottom:6px"><b>Superserija</b> · par prethodne vježbe</div>` : '')}
             <div class="row"><select data-act="xe" data-di="${di}" data-xi="${xi}" class="grow">${opts(exOpts(), x.id)}</select><button class="icon-btn" data-act="xup" data-di="${di}" data-xi="${xi}" aria-label="Pomjeri gore">↑</button><button class="icon-btn" data-act="xdn" data-di="${di}" data-xi="${xi}" aria-label="Pomjeri dolje">↓</button><button class="icon-btn" data-act="rmex" data-di="${di}" data-xi="${xi}" aria-label="Ukloni">${icon('trash')}</button></div>
@@ -277,6 +278,8 @@
       'input:f': (t) => { P[t.dataset.k] = t.value; },
       'change:f': (t) => { P[t.dataset.k] = t.value; },
       'change:shop': (t) => { P.uShopu = t.checked; },
+      'click:presetlin': () => { P.per = { tip: 'linearna', deload: 4 }; draw(); toast('Linearna periodizacija s deloadom svake 4. sedmice.'); },
+      'click:presetpump': () => { P.per = { tip: 'pump', deload: 4 }; P.sedmica = 4; draw(); toast('Pump plan: 4 sedmice, zadnja je deload.'); },
       'change:pt': (t) => { P.per = { tip: t.value, deload: FS.perOf(P).deload }; draw(); },
       'change:pd': (t) => { P.per = { tip: FS.perOf(P).tip, deload: parseInt(t.value, 10) || 0 }; draw(); },
       'input:dn': (t) => { P.dani[t.dataset.di].naziv = t.value; },

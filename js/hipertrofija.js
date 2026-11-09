@@ -10,6 +10,7 @@
     ['3', 'Veći hipertrofijski stimulans', 'Glavne vježbe 6–12, završne pump serije 15–25 ponavljanja', 'Glavne vježbe teže, a pump serije na kraju treninga na lakšim izolacijama i spravama. Zadnje serije blizu otkaza (1 do 2 u rezervi).'],
     ['4', 'Deload (oporavak)', 'Smanji broj serija i ukupni zamor', 'Oko 30 do 50 % manje serija, težine ostaju iste ili nešto lakše, bez serija do otkaza.']
   ];
+  FS.HIPER_TAB = TAB;
   const KORACI = [
     ['Izaberi broj treninga sedmično', 'Svaku mišićnu grupu treniraj 2× sedmično. 3 dana: full body. 4 dana: gornji/donji dio. 5 dana: donji, gornji, donji, push, pull ili akcenat na gluteus.'],
     ['Odredi serije po mišićnoj grupi', 'Početnice 8 do 12 direktnih serija sedmično po mišićnoj grupi, srednje iskusne 10 do 16, napredne 12 do 20. Povećavaj postepeno, po jednu seriju, ne na svim vježbama odjednom.'],
@@ -27,7 +28,7 @@
     'Za pump serije kvačicom označi Drop set, a za superseriju „Superserija“. Klijentica dobija objašnjenje klikom na oznaku.',
     'Za vježbe na vrijeme upiši sekunde (npr. 30 s), pa se pojavljuje štoperica.',
     'Biblioteka treninga (samo trenerica): dodijeli trening klijentici, a ona ga vidi kao svoj individualni program. Zatim ga po potrebi uredi.',
-    'Periodizacija programa u uređivanju: linearna ili valovita, sa deloadom.'
+    'Periodizacija programa u uređivanju: linearna, valovita ili „Pump hipertrofija“ (4 sedmice, pump serije 15–25 u 3. sedmici, deload u 4.). Cijeli trening po sedmici otvaraš gumbom „Otvori“.'
   ];
   V.hipertrofija = (el) => {
     if (!jeT()) { el.innerHTML = h`<div class="empty">Ova stranica je samo za trenericu.</div><a class="btn block" href="#/">Početna</a>`; return; }
