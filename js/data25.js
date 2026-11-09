@@ -22,9 +22,18 @@
     E('bandlateralwalk', 'Banded Lateral Walk', 'Gluteus', 'početni', 'Mini guma',
       'Stavi gumu oko gležnjeva ili iznad koljena. Stopala u širini kukova, koljena blago savijena, trup lagano nagnut naprijed.|Pogled ispred, ruke ispred tijela radi ravnoteže.|Korak u stranu vodećom nogom 1 s, guma ostaje zategnuta.|Druga noga prati do širine kukova, ne spajaj stopala. Nakon koraka u jednu stranu vrati se u drugu.',
       'Koljena prate smjer prstiju, ne padaju prema unutra.|Drži blagi čučanj cijelo vrijeme.|Korake radi polako i kontrolirano.',
-      'Spajanje stopala između koraka.|Naginjanje trupa u stranu.|Koljena padaju prema unutra.')
+      'Spajanje stopala između koraka.|Naginjanje trupa u stranu.|Koljena padaju prema unutra.'),
+    E('squatjump', 'Squat Jump', 'Kardio', 'srednji', 'Bez opreme',
+      'Stani u širini ramena, prsti blago prema van. Pogled ispred.|Spusti se u čučanj, kukovi nazad, grudi uspravne, ruke ispred tijela.|Snažno odrazi i skoči uvis, ruke zamahom pomažu.|Doskoči na prednji dio stopala, savij koljena i odmah u idući čučanj. Tempo: dolje 1 s, skok eksplozivno.',
+      'Doskok tih i mekan, koljena prate smjer prstiju.|Čučanj dubok onoliko koliko možeš zadržati ravna leđa.|Ako je skok pretežak, radi običan čučanj.',
+      'Koljena padaju prema unutra pri doskoku.|Tvrd doskok na ravna stopala.|Zaokruživanje leđa u čučnju.'),
+    E('squatreachjump', 'Squat Reach Jump', 'Kardio', 'srednji', 'Bez opreme',
+      'Stani u širini ramena. Pogled ispred.|Pregni se u čučanj i dodirni stopala ili pod rukama, leđa duga.|Snažno se odrazi i skoči uvis s rukama ispruženim iznad glave.|Doskoči mekano na prednji dio stopala i odmah se spusti natrag do poda. Tempo: dolje 1 s, skok eksplozivno.',
+      'Spuštaj se kontrolirano, koljena prate smjer prstiju.|Ruke idu što više iznad glave.|Ako je pretežak, radi bez skoka i samo se podigni na prste.',
+      'Zaokruženo donje leđa pri spuštanju.|Tvrd doskok na ravna stopala.|Ruke ostaju ispred tijela umjesto da idu iznad glave.')
   ].forEach((a) => { if (!FS.EXERCISES.some((e) => e.id === a.id)) FS.EXERCISES.push(a); });
   const sb = FS.EXERCISES.find((e) => e.id === 'singlebridge'); if (sb) sb.naziv = 'Single Leg Glute Bridge';
+  const fh = FS.EXERCISES.find((e) => e.id === 'firehydrant'); if (fh) fh.naziv = 'Fire Hydrant';
   if (FS.ENG) FS.ENG.lowskip = 'Low skip';
-  Object.assign(FS.VIDEOS = FS.VIDEOS || {}, { donkeykick: 'videos/donkeykick.mp4', reachcrunch: 'videos/reachcrunch.mp4', hipthrust: 'videos/hipthrust.mp4', lowskip: 'videos/lowskip.mp4', bandlateralwalk: 'videos/bandlateralwalk.mp4', buttkicks: 'videos/buttkicks.mp4', bridge: 'videos/bridge.mp4', singlebridge: 'videos/singlebridge.mp4', jumpingjack: 'videos/jumpingjack.mp4', standabd: 'videos/standabd.mp4', clamshell: 'videos/clamshell.mp4' });
+  Object.assign(FS.VIDEOS = FS.VIDEOS || {}, { donkeykick: 'videos/donkeykick.mp4', reachcrunch: 'videos/reachcrunch.mp4', hipthrust: 'videos/hipthrust.mp4', lowskip: 'videos/lowskip.mp4', firehydrant: 'videos/firehydrant.mp4', mountainclimb: 'videos/mountainclimb.mp4', burpee: 'videos/burpee.mp4', squatjump: 'videos/squatjump.mp4', squatreachjump: 'videos/squatreachjump.mp4', bandlateralwalk: 'videos/bandlateralwalk.mp4', buttkicks: 'videos/buttkicks.mp4', bridge: 'videos/bridge.mp4', singlebridge: 'videos/singlebridge.mp4', jumpingjack: 'videos/jumpingjack.mp4', standabd: 'videos/standabd.mp4', clamshell: 'videos/clamshell.mp4' });
 })();
