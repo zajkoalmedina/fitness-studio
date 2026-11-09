@@ -228,3 +228,4 @@ ul.clean li .figph{margin-right:10px}
 .tblk small{display:block;font-size:9px;font-weight:600;opacity:.9}
 .tdot{display:inline-block;width:12px;height:12px;border-radius:4px;background:var(--rose-2,#c4506f);vertical-align:-1px}.tdot.o{background:#f7ead0;border:1px solid #9a6b1f}
 .fbox{background:#e2f3ea;color:#2f7d5b;padding:8px 10px;border-radius:10px;margin-bottom:6px}.fbox ul{margin:2px 0 0;padding-left:18px}
+.restbar[hidden]{display:none!important}
