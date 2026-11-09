@@ -3,7 +3,7 @@
 (function () {
   const FS = (window.FS = window.FS || {});
   /* Visoka koljena (highknees) se brišu iz galerije; zamjenjuje ih Low Skip (niski skip) svugdje gdje su bila */
-  const ZAM = { highknees: 'lowskip', bocarodl: 'bandrdl', bocapotisak: 'bandpress', bocatriceps: 'bandtriceps' };
+  const ZAM = { highknees: 'lowskip', bocarodl: 'bandrdl', bocapotisak: 'bandpress', bocatriceps: 'bandtriceps', bocaveslanje: 'bandbentrow', veslanjeguma: 'bandbentrow', towelpull: 'bandpullapart' };
   const zam = (o, seen) => {
     if (!o || typeof o !== 'object' || seen.has(o)) return 0; seen.add(o); let n = 0;
     if (Array.isArray(o)) { o.forEach((x, i) => { if (typeof x === 'string' && ZAM[x]) { o[i] = ZAM[x]; n++; } else n += zam(x, seen); }); return n; }

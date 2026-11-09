@@ -46,10 +46,26 @@
     E('bandtriceps', 'Banded Overhead Triceps Extension', 'Ruke', 'početni', 'Duga guma',
       'Stani uspravno. Jedan kraj gume drži donja ruka iza leđa (na donjem dijelu leđa), drugi kraj ruka iznad glave, lakat savijen, dlan iza glave.|Lakat gornje ruke pokazuje prema stropu i ostaje uz glavu. Pogled ispred.|Ispruži ruku prema stropu 2 s dok guma ne bude zategnuta.|Polako se spusti do savijenog lakta 2 s. Poslije serije zamijeni ruke.',
       'Nadlaktica miruje, radi samo podlaktica.|Rebra i trup ostaju mirni.|Počni s lakšom gumom da lakat ostane uz glavu.',
-      'Lakat se širi u stranu.|Naginjanje trupa naprijed.|Zamah umjesto kontrole.')
+      'Lakat se širi u stranu.|Naginjanje trupa naprijed.|Zamah umjesto kontrole.'),
+    E('bandbentrow', 'Banded Bent-Over Row', 'Leđa', 'početni', 'Duga guma',
+      'Stani na sredinu gume, stopala u širini kukova, krajeve gume uhvati rukama. Koljena blago savijena.|Povuci kukove nazad i nagni trup naprijed, leđa duga, pogled prema podu.|Povuci laktove prema kukovima, stisni lopatice, 2 s.|Polako ispruži ruke do kraja, 2 s, bez podizanja trupa.',
+      'Trup ostaje nagnut cijelo vrijeme.|Laktovi idu uz tijelo prema kukovima.|Prvo stisni lopatice, pa tek onda savij laktove.',
+      'Zaokruživanje leđa.|Zamah trupom.|Podizanje ramena prema ušima.'),
+    E('banddeadlift', 'Banded Deadlift', 'Gluteus', 'početni', 'Duga guma',
+      'Stani na sredinu gume, stopala u širini kukova, krajeve gume uhvati rukama ispred bedara.|Pogled prema podu malo ispred, leđa duga.|Povuci kukove nazad i spusti trup do visine koljena, 3 s, ruke ostaju ispružene uz noge.|Gurni kukove naprijed i uspravi se 2 s, na vrhu stisni gluteus.',
+      'Pokret dolazi iz kukova, ne iz leđa.|Guma ide uz noge.|Na vrhu ne izvijaj donji dio leđa.',
+      'Zaokruživanje leđa.|Guma se udaljava od nogu.|Previše savijanja koljena.'),
+    E('bandsuperman', 'Banded Superman', 'Leđa', 'početni', 'Duga guma',
+      'Lezi potrbuške na prostirku, ruke ispružene ispred sebe, guma zategnuta između šaka. Pogled prema podu.|Stegni gluteus i trbuh.|Istovremeno podigni ruke, grudi i noge od poda, 2 s, vrat ostaje u liniji kralježnice.|Zadrži 1 s, pa se polako spusti 2 s.',
+      'Pokret dolazi iz leđa i gluteusa.|Ne podižeš glavu, pogled ostaje na podu.|Guma ostaje zategnuta cijelo vrijeme.',
+      'Podizanje glave i zabacivanje vrata.|Zamah umjesto kontrole.|Savijanje koljena.'),
+    E('bandpullapart', 'Banded Pull Apart', 'Leđa', 'početni', 'Duga guma',
+      'Stani uspravno, stopala u širini kukova. Gumu drži ispred sebe u visini grudi, ruke ispružene, dlanovi dolje.|Stegni trbuh, pogled ispred.|Razvuci gumu u stranu dok ruke ne budu u liniji s ramenima, 2 s, stisni lopatice.|Polako vrati ruke ispred sebe 2 s.',
+      'Ramena ostaju spuštena, daleko od ušiju.|Ruke ostaju ispružene i u visini ramena.|Pokret dolazi iz lopatica.',
+      'Podizanje ramena prema ušima.|Izvijanje leđa.|Zamah umjesto kontrole.')
   ].forEach((a) => { if (!FS.EXERCISES.some((e) => e.id === a.id)) FS.EXERCISES.push(a); });
   const sb = FS.EXERCISES.find((e) => e.id === 'singlebridge'); if (sb) sb.naziv = 'Single Leg Glute Bridge';
   const fh = FS.EXERCISES.find((e) => e.id === 'firehydrant'); if (fh) fh.naziv = 'Fire Hydrant';
   if (FS.ENG) FS.ENG.lowskip = 'Low skip';
-  Object.assign(FS.VIDEOS = FS.VIDEOS || {}, { donkeykick: 'videos/donkeykick.mp4', reachcrunch: 'videos/reachcrunch.mp4', hipthrust: 'videos/hipthrust.mp4', lowskip: 'videos/lowskip.mp4', bandrdl: 'videos/bandrdl.mp4', bandpress: 'videos/bandpress.mp4', bandtriceps: 'videos/bandtriceps.mp4', staticlunge: 'videos/staticlunge.mp4', firehydrant: 'videos/firehydrant.mp4', mountainclimb: 'videos/mountainclimb.mp4', burpee: 'videos/burpee.mp4', squatjump: 'videos/squatjump.mp4', squatreachjump: 'videos/squatreachjump.mp4', bandlateralwalk: 'videos/bandlateralwalk.mp4', buttkicks: 'videos/buttkicks.mp4', bridge: 'videos/bridge.mp4', singlebridge: 'videos/singlebridge.mp4', jumpingjack: 'videos/jumpingjack.mp4', standabd: 'videos/standabd.mp4', clamshell: 'videos/clamshell.mp4' });
+  Object.assign(FS.VIDEOS = FS.VIDEOS || {}, { donkeykick: 'videos/donkeykick.mp4', reachcrunch: 'videos/reachcrunch.mp4', hipthrust: 'videos/hipthrust.mp4', lowskip: 'videos/lowskip.mp4', bandbentrow: 'videos/bandbentrow.mp4', banddeadlift: 'videos/banddeadlift.mp4', bandsuperman: 'videos/bandsuperman.mp4', bandpullapart: 'videos/bandpullapart.mp4', bandrdl: 'videos/bandrdl.mp4', bandpress: 'videos/bandpress.mp4', bandtriceps: 'videos/bandtriceps.mp4', staticlunge: 'videos/staticlunge.mp4', firehydrant: 'videos/firehydrant.mp4', mountainclimb: 'videos/mountainclimb.mp4', burpee: 'videos/burpee.mp4', squatjump: 'videos/squatjump.mp4', squatreachjump: 'videos/squatreachjump.mp4', bandlateralwalk: 'videos/bandlateralwalk.mp4', buttkicks: 'videos/buttkicks.mp4', bridge: 'videos/bridge.mp4', singlebridge: 'videos/singlebridge.mp4', jumpingjack: 'videos/jumpingjack.mp4', standabd: 'videos/standabd.mp4', clamshell: 'videos/clamshell.mp4' });
 })();
