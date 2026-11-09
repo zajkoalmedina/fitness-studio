@@ -118,7 +118,7 @@
     const pr = Store.program(pid); if (!pr || !pr.dani[+d]) return null;
     const wk = Math.min(pr.sedmica || 1, Math.max(1, parseInt(w, 10) || 1)); return FS.weekDays(pr, wk)[+d];
   }
-  const srcSig = (src) => src ? src.vj.map((x) => [x.id, x.s, x.r, x.pct, x.p, x.fix, x.ss].join(':')).join('|') : '';
+  const srcSig = (src) => src ? src.vj.map((x) => [x.id, x.s, x.r, x.pct, x.p, x.fix, x.ss, x.kgw, x.tag].join(':')).join('|') : '';
   function buildDraft(u, q) {
     const d = { uid: u.id, start: Date.now(), programId: null, dan: '', vjezbe: [], rpe: '', biljeska: '' };
     const src = q.p ? sourceDay(q.p, q.d, q.f, q.w || FS.currentWeek(u, Store.program(q.p))) : null;
@@ -128,7 +128,7 @@
         const last = Store.lastSets(u.id, x.id), n = x.s || 3, base = x.pct ? Store.baseKg(u.id, x.id) : 0;
         const pk = FS.predlogKg ? FS.predlogKg(u.id, x, q.w || FS.currentWeek(u, Store.program(q.p)), Store.program(q.p)) : null;
         const sug = pk ? pk.kg : (base ? Math.round((base * x.pct / 100) / (base >= 20 ? 2.5 : 1)) * (base >= 20 ? 2.5 : 1) : 0);
-        d.vjezbe.push({ id: x.id, n: x.n || '', pz: x.pz, ds: !!x.ds, sw: (String(x.r).match(/^\s*(\d+)\s*s\b/) || [])[1] ? +String(x.r).match(/^\s*(\d+)\s*s\b/)[1] : 0, pauza: FS.pauza ? FS.pauza(x) : 0, cilj: x.r + (pk ? ' · prijedlog ' + sug + ' kg (prošli put ' + pk.prev + ' kg: ' + pk.txt + ')' : x.pct ? ' · ≈ ' + x.pct + ' % težine iz 1. sedmice' + (sug ? ' (prijedlog ' + sug + ' kg)' : '') : ''), serije: Array.from({ length: n }, (_, i) => ({ kg: sug ? String(sug) : (last && last[i] && last[i].kg ? String(last[i].kg) : ''), rep: String(parseInt(x.r, 10) || ''), ok: false })) });
+        d.vjezbe.push({ id: x.id, n: x.n || '', pz: x.pz, ds: !!x.ds, sw: (String(x.r).match(/^\s*(\d+)\s*s\b/) || [])[1] ? +String(x.r).match(/^\s*(\d+)\s*s\b/)[1] : 0, pauza: FS.pauza ? FS.pauza(x) : 0, cilj: x.r + (pk && pk.manual ? ' · prijedlog ' + sug + ' kg (zadala trenerica)' : pk ? ' · prijedlog ' + sug + ' kg (prošli put ' + pk.prev + ' kg: ' + pk.txt + ')' : x.pct ? ' · ≈ ' + x.pct + ' % težine iz 1. sedmice' + (sug ? ' (prijedlog ' + sug + ' kg)' : '') : ''), serije: Array.from({ length: n }, (_, i) => ({ kg: sug ? String(sug) : (last && last[i] && last[i].kg ? String(last[i].kg) : ''), rep: String(parseInt(x.r, 10) || ''), ok: false })) });
       });
     }
     return d;

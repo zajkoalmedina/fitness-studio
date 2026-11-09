@@ -53,7 +53,7 @@
           const pk = kl && FS.predlogKg ? FS.predlogKg(kl.id, x, week, P) : null;
           const baseKg = kl && x.pct ? S.baseKg(kl.id, x.id) : 0;
           const sug = pk ? pk.kg : (baseKg ? Math.round((baseKg * x.pct / 100) / (baseKg >= 20 ? 2.5 : 1)) * (baseKg >= 20 ? 2.5 : 1) : 0);
-          const cilj = x.r + (pk ? ' · prijedlog ' + sug + ' kg (prošli put ' + pk.prev + ' kg: ' + pk.txt + ')' : x.pct ? ' · ≈ ' + x.pct + ' % težine iz 1. sedmice' + (sug ? ' (prijedlog ' + sug + ' kg)' : '') : '');
+          const cilj = x.r + (pk && pk.manual ? ' · prijedlog ' + sug + ' kg (zadala trenerica)' : pk ? ' · prijedlog ' + sug + ' kg (prošli put ' + pk.prev + ' kg: ' + pk.txt + ')' : x.pct ? ' · ≈ ' + x.pct + ' % težine iz 1. sedmice' + (sug ? ' (prijedlog ' + sug + ' kg)' : '') : '');
           const pa = FS.pauza ? FS.pauza(x) : 0, b = bi >= 0 ? base.vj[bi] : null;
           return h`<div class="card"><div class="row between"><div class="grow"><a href="#/vjezba/${x.id}"><b style="color:var(--cream);font-size:17px">${e.naziv}</b></a>
             <div class="small">Cilj: ${cilj}</div>${pa ? h`<div class="small rest">Pauza između serija: ${pz(pa)}</div>` : (pa === 0 ? h`<div class="small rest">Bez pauze: odmah sljedeća vježba</div>` : '')}${x.n ? h`<div class="small" style="color:var(--beige)">${x.n}</div>` : ''}${x.ds ? h`<div class="mt-s"><span class="chip on">${x.tag === 'pump' ? 'Pump: drop set na zadnjoj seriji' : 'Drop set na zadnjoj seriji'}</span></div>` : ''}${last && !dlog ? h`<div class="small">Zadnji put: ${last.map((s) => (+s.kg > 0 ? s.kg + ' kg × ' : '') + s.rep).join(' · ')}</div>` : ''}</div></div>
@@ -64,6 +64,8 @@
               <div class="grid3 mt-s"><label class="field" style="margin:0"><span>Serije</span><input data-act="xs" data-i="${bi}" inputmode="numeric" value="${b.s}"></label><label class="field" style="margin:0;grid-column:span 2"><span>Ponavljanja</span><input data-act="xr" data-i="${bi}" value="${b.r}" maxlength="30"></label></div>
               <div class="grid2 mt-s"><label class="field" style="margin:0"><span>Pauza (s)</span><input data-act="xp" data-i="${bi}" inputmode="numeric" placeholder="auto" value="${b.fix && b.p != null && b.p !== 0 ? b.p : ''}"></label><label class="check" style="margin:0;align-self:end"><input type="checkbox" data-act="xds" data-i="${bi}" ${b.ds ? 'checked' : ''}><span>Drop set</span></label></div>
               <label class="check mt-s"><input type="checkbox" data-act="xpump" data-i="${bi}" ${b.pump ? 'checked' : ''}><span>Pump vježba (15–25 ponavljanja u pump sedmici)</span></label>
+              <div class="card flat mt-s" style="padding:10px"><b class="small">Cilj samo za sedmicu ${week}</b><div class="small muted">Automatski: ${x.tag === 'pump' ? 'pump 15–25 ponavljanja, lakša težina' : x.r}. Upiši da promijeniš samo ovu sedmicu, prazno = automatski.</div>
+                <div class="grid3 mt-s"><label class="field" style="margin:0"><span>Serije</span><input data-act="wos" data-i="${bi}" inputmode="numeric" value="${(b.wo && b.wo[week] && b.wo[week].s) || ''}" placeholder="${x.s}"></label><label class="field" style="margin:0"><span>Ponavljanja</span><input data-act="wor" data-i="${bi}" value="${(b.wo && b.wo[week] && b.wo[week].r) || ''}" placeholder="${x.r}"></label><label class="field" style="margin:0"><span>Kg</span><input data-act="wok" data-i="${bi}" inputmode="decimal" value="${(b.wo && b.wo[week] && b.wo[week].kg) || ''}" placeholder="${sug || 'auto'}"></label></div></div>
               <input class="mt-s" data-act="xn" data-i="${bi}" value="${b.n || ''}" placeholder="Napomena uz vježbu" maxlength="120"></details>` : ''}</div>`;
         })}
         <button class="btn block mb" data-act="add">+ Dodaj vježbu</button>
@@ -72,6 +74,7 @@
     draw();
     const mark = () => { dirty = true; const b = el.querySelector('[data-act=save]'); if (b) b.disabled = false; };
     const B = (t) => P.dani[di].vj[+t.dataset.i];
+    const wo = (t, k) => { const x = B(t); x.wo = x.wo || {}; const o = (x.wo[week] = x.wo[week] || {}); const v = String(t.value).trim(); if (v === '') delete o[k]; else o[k] = k === 'r' ? v : (parseFloat(v.replace(',', '.')) || 0); if (!Object.keys(o).length) delete x.wo[week]; if (!Object.keys(x.wo).length) delete x.wo; mark(); };
     bind(el, {
       'click:wk': (t) => { week = +t.dataset.w; draw(); },
       'click:dy': (t) => { di = +t.dataset.i; draw(); },
@@ -82,6 +85,7 @@
       'input:xp': (t) => { const x = B(t), v = parseInt(t.value, 10); if (t.value.trim() !== '' && v >= 0 && v <= 900) { x.fix = true; x.p = v; } else { delete x.fix; delete x.p; } mark(); },
       'change:xds': (t) => { const x = B(t); if (t.checked) x.ds = true; else delete x.ds; mark(); },
       'change:xpump': (t) => { const x = B(t); if (t.checked) x.pump = true; else delete x.pump; mark(); },
+      'input:wos': (t) => wo(t, 's'), 'input:wor': (t) => wo(t, 'r'), 'input:wok': (t) => wo(t, 'kg'),
       'click:xup': (t) => { const a = P.dani[di].vj, i = +t.dataset.i; if (i > 0) { [a[i - 1], a[i]] = [a[i], a[i - 1]]; mark(); draw(); } },
       'click:xdn': (t) => { const a = P.dani[di].vj, i = +t.dataset.i; if (i < a.length - 1) { [a[i + 1], a[i]] = [a[i], a[i + 1]]; mark(); draw(); } },
       'click:rm': (t) => { if (P.dani[di].vj.length < 2) { FS.toast('Dan mora imati barem jednu vježbu.'); return; } P.dani[di].vj.splice(+t.dataset.i, 1); mark(); draw(); },

@@ -40,6 +40,7 @@
   /* prijedlog težine za sljedeći trening prema zadnjem odrađenom (dvostruka progresija):
      sve serije do gornje granice ponavljanja → + korak; ispod donje granice → ista težina; deload sedmica → ≈ 90 % */
   FS.predlogKg = (uid, x, week, prog) => {
+    if (x.kgw > 0) return { kg: +x.kgw, prev: 0, txt: '', manual: true };   /* trenerica je zadala težinu za ovu sedmicu */
     if (!isLoaded(x.id) || hasTimeUnit(x.r)) return null;
     const last = FS.Store.lastSets(uid, x.id); if (!last) return null;
     const done = last.filter((z) => z.ok !== false && +z.kg > 0 && +z.rep > 0); if (!done.length) return null;
@@ -47,6 +48,7 @@
     const nums = String(x.r).match(/\d+/g) || ['8'], lo = +nums[0], hi = +(nums[1] || nums[0]);
     const atTop = done.filter((z) => +z.kg === top);
     const info = prog ? FS.weekInfo(prog, week) : { deload: false };
+    if (x.tag === 'pump') return { kg: Math.max(step, rd(top * 0.7)), prev: top, txt: 'pump serija 15–25 ponavljanja: lakša težina (oko 70 %), do blizu otkaza' };
     if (info.deload) return { kg: rd(top * 0.9), prev: top, txt: 'deload: oko 90 % prošle težine' };
     if (atTop.length >= Math.min(done.length, x.s || done.length) && atTop.every((z) => +z.rep >= hi)) return { kg: top + step, prev: top, txt: 'sve serije do ' + hi + ' ponavljanja, povećaj' };
     if (atTop.some((z) => +z.rep < lo)) return { kg: top, prev: top, txt: 'ostani na istoj težini dok ne dostigneš ' + lo + ' ponavljanja u svim serijama' };
@@ -118,8 +120,9 @@
       if (wi.pump && !wi.deload) {   /* pump sedmica: označene vježbe (ili zadnja opterećena) idu na 15–25 ponavljanja s drop setom */
         let idx = vj.map((x, i) => (x.pump ? i : -1)).filter((i) => i >= 0);
         if (!idx.length) { for (let i = vj.length - 1; i >= 0; i--) if (isLoaded(vj[i].id) && !hasTimeUnit(vj[i].r)) { idx = [i]; break; } }
-        idx.forEach((i) => { vj[i] = { ...vj[i], r: '15–25', ds: true, tag: 'pump', s: Math.max(vj[i].s, 3) }; });
+        idx.forEach((i) => { vj[i] = { ...vj[i], r: '15–25', ds: true, tag: 'pump', pct: 70, s: Math.max(vj[i].s, 3) }; });
       }
+      vj.forEach((x, i) => { const o = x.wo && x.wo[week]; if (o) vj[i] = { ...x, r: o.r || x.r, s: o.s > 0 ? o.s : x.s, kgw: o.kg > 0 ? o.kg : 0, man: true }; });
       return { naziv: d.naziv, vj };
     });
   };
