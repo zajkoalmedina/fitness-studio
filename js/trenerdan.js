@@ -5,6 +5,17 @@
   const GOT = () => (FS.GOTOVI || []);
   const V = (FS.views = FS.views || {});
   const Store = () => FS.Store;
+  const S0 = Store;
+  const dd = (iso) => FS.parse(iso);
+  /* početak programa za klijenticu: najraniji od datuma početka, rasporeda i upisanih treninga tog programa */
+  FS.progStart = (u, pr) => {
+    const S = Store(), c = [];
+    if (u.pstart && u.pstart[pr.id]) c.push(u.pstart[pr.id]);
+    (S.db.raspored || []).forEach((e) => { if (e.userId === u.id && e.tip === 'dan' && e.programId === pr.id) c.push(e.datum); });
+    S.logsOf(u.id).forEach((l) => { if (l.programId === pr.id) c.push(l.datum); });
+    return c.length ? c.sort()[0] : FS.today();
+  };
+  FS.weekZaDatum = (u, pr, iso) => Math.min(parseInt(pr.sedmica, 10) || 1, Math.max(1, Math.floor(Math.round((dd(iso) - dd(FS.progStart(u, pr))) / 86400000) / 7) + 1));
 
   V.trener_dan = (el, p, q) => {
     const u = FS.Auth.user();
@@ -15,7 +26,8 @@
     const P = JSON.parse(JSON.stringify(src));
     const kl = q.k && S.user(q.k) ? S.user(q.k) : (P.vlasnik && S.user(P.vlasnik) ? S.user(P.vlasnik) : null);
     FS.perKlijent = kl;
-    let week = Math.min(parseInt(P.sedmica, 10) || 1, Math.max(1, parseInt(q.w, 10) || (kl ? FS.currentWeek(kl, P) : 1)));
+    let week = Math.min(parseInt(P.sedmica, 10) || 1, Math.max(1, parseInt(q.w, 10) || (kl ? FS.weekZaDatum(kl, P, FS.today()) : 1)));
+    const wLogs = (w) => { if (!kl) return []; const a = dd(FS.progStart(kl, P)); a.setDate(a.getDate() + 7 * (w - 1)); const b = new Date(a); b.setDate(b.getDate() + 6); const iso = (x) => x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0'); const lo = iso(a), hi = iso(b); return S0().logsOf(kl.id).filter((l) => l.programId === P.id && l.datum >= lo && l.datum <= hi); };
     let di = Math.max(0, Math.min(P.dani.length - 1, parseInt(q.d, 10) || 0));
     let dirty = false;
     const pz = (s) => (s >= 60 && s % 60 === 0 ? s / 60 + ' min' : s + ' s');
@@ -24,13 +36,16 @@
       FS.perKlijent = kl;
       const wi = FS.weekInfo(P, week), days = FS.weekDays(P, week), plan = FS.weekPlan(P, week);
       if (!plan.some((z) => z.i === di) && plan.length) di = plan[0].i;
+      const dn0 = days[di] && days[di].naziv, dlog = wLogs(week).filter((l) => l.dan === dn0).sort((a, b) => (a.datum < b.datum ? 1 : -1))[0] || null;
+      const used = {};
       const d = days[di], base = P.dani[di], bidx = base.vj.map((b, k) => k).filter((k) => !FS.applyWeek(P, week, di, base.vj[k]).skip);
       const exOpts = S.exercises().map((e) => [e.id, `${e.grupa} · ${e.naziv}`]);
       el.innerHTML = h`<a href="#/trener/program/${P.id}" class="small">← Uredi program</a>
         <div class="eyebrow mt-s">${P.naziv}${kl ? ' · ' + kl.ime : ''}</div><h1>${d.naziv}</h1>
-        <div class="weeks" role="tablist">${Array.from({ length: parseInt(P.sedmica, 10) || 1 }, (_, i) => i + 1).map((n) => h`<button class="wk ${n === week ? 'on' : ''}" data-act="wk" data-w="${n}"><span class="wk-l">Sed.</span><b>${n}</b></button>`)}</div>
+        <div class="weeks" role="tablist">${Array.from({ length: parseInt(P.sedmica, 10) || 1 }, (_, i) => i + 1).map((n) => h`<button class="wk ${n === week ? 'on' : ''} ${wLogs(n).length ? 'done' : ''}" data-act="wk" data-w="${n}"><span class="wk-l">Sed.</span><b>${n}</b>${wLogs(n).length ? h`<i>✓</i>` : ''}</button>`)}</div>
         <div class="weekinfo"><b class="serif">Sedmica ${week} · ${wi.deload ? 'Deload' : wi.faza}</b><div class="small mt-s">Težina oko ${wi.loadPct} % težine iz 1. sedmice. Rezerva: ${wi.rir} ponavljanja.${wi.pump ? ' Pump serije 15–25 ponavljanja s drop setom na kraju.' : ''}</div></div>
         <div class="row wrap mt-s mb">${plan.map((z) => h`<button class="chip ${z.i === di ? 'on' : ''}" data-act="dy" data-i="${z.i}">${P.dani[z.i].naziv.replace(/^Faza \d · /, '')}</button>`)}</div>
+        ${dlog ? h`<div class="card note"><b>✓ Odrađeno ${FS.fmtDate(dlog.datum)}</b><div class="small">${dlog.trajanje ? dlog.trajanje + ' min' : ''}${dlog.rpe ? ' · napor ' + dlog.rpe + '/10' : ''}${dlog.biljeska ? ' · „' + dlog.biljeska + '“' : ''}</div><div class="small">Dolje su serije tačno kako ih je klijentica upisala.</div></div>` : (kl ? h`<div class="small" style="color:var(--beige)">Ova sedmica: trening još nije upisan.</div>` : '')}
         <p class="small" style="color:var(--beige)">Ovako trening vidi klijentica (bez štoperice). Vježbe uređuješ ispod svake kartice, a izmjena vrijedi za sve sedmice, sedmične razlike dolaze iz periodizacije.</p>
         ${d.vj.map((x) => {
           const bi = bidx[d.vj.indexOf(x)] != null ? bidx[d.vj.indexOf(x)] : -1;
@@ -41,9 +56,9 @@
           const cilj = x.r + (pk ? ' · prijedlog ' + sug + ' kg (prošli put ' + pk.prev + ' kg: ' + pk.txt + ')' : x.pct ? ' · ≈ ' + x.pct + ' % težine iz 1. sedmice' + (sug ? ' (prijedlog ' + sug + ' kg)' : '') : '');
           const pa = FS.pauza ? FS.pauza(x) : 0, b = bi >= 0 ? base.vj[bi] : null;
           return h`<div class="card"><div class="row between"><div class="grow"><a href="#/vjezba/${x.id}"><b style="color:var(--cream);font-size:17px">${e.naziv}</b></a>
-            <div class="small">Cilj: ${cilj}</div>${pa ? h`<div class="small rest">Pauza između serija: ${pz(pa)}</div>` : (pa === 0 ? h`<div class="small rest">Bez pauze: odmah sljedeća vježba</div>` : '')}${x.n ? h`<div class="small" style="color:var(--beige)">${x.n}</div>` : ''}${x.ds ? h`<div class="mt-s"><span class="chip on">${x.tag === 'pump' ? 'Pump: drop set na zadnjoj seriji' : 'Drop set na zadnjoj seriji'}</span></div>` : ''}${last ? h`<div class="small">Zadnji put: ${last.map((s) => (+s.kg > 0 ? s.kg + ' kg × ' : '') + s.rep).join(' · ')}</div>` : ''}</div></div>
+            <div class="small">Cilj: ${cilj}</div>${pa ? h`<div class="small rest">Pauza između serija: ${pz(pa)}</div>` : (pa === 0 ? h`<div class="small rest">Bez pauze: odmah sljedeća vježba</div>` : '')}${x.n ? h`<div class="small" style="color:var(--beige)">${x.n}</div>` : ''}${x.ds ? h`<div class="mt-s"><span class="chip on">${x.tag === 'pump' ? 'Pump: drop set na zadnjoj seriji' : 'Drop set na zadnjoj seriji'}</span></div>` : ''}${last && !dlog ? h`<div class="small">Zadnji put: ${last.map((s) => (+s.kg > 0 ? s.kg + ' kg × ' : '') + s.rep).join(' · ')}</div>` : ''}</div></div>
             <div class="setrow small mt-s" style="margin-bottom:4px"><span></span><span class="center">kg</span><span class="center">ponavljanja</span><span></span></div>
-            ${Array.from({ length: x.s }, (_, si) => h`<div class="setrow"><span class="n">${si + 1}</span><input readonly value="${sug ? sug : (last && last[si] && last[si].kg ? last[si].kg : '')}" placeholder="0"><input readonly value="${parseInt(x.r, 10) || ''}" placeholder="0"><button class="ok" type="button" tabindex="-1" aria-hidden="true">✓</button></div>`)}
+            ${(() => { const lv = dlog && dlog.vjezbe.filter((z) => z.id === x.id)[(used[x.id] = (used[x.id] || 0) + 1) - 1]; if (lv) { return lv.serije.map((z, si) => h`<div class="setrow"><span class="n">${si + 1}</span><input readonly value="${z.kg || ''}" placeholder="0"><input readonly value="${z.rep || ''}" placeholder="0"><button class="ok on" type="button" tabindex="-1" aria-hidden="true">✓</button></div>`); } return Array.from({ length: x.s }, (_, si) => h`<div class="setrow"><span class="n">${si + 1}</span><input readonly value="${sug ? sug : (last && last[si] && last[si].kg ? last[si].kg : '')}" placeholder="0"><input readonly value="${parseInt(x.r, 10) || ''}" placeholder="0"><button class="ok" type="button" tabindex="-1" aria-hidden="true">✓</button></div>`); })()}
             ${b ? h`<details class="mt-s"><summary style="cursor:pointer"><b>Uredi vježbu</b></summary>
               <div class="row mt-s"><select data-act="xe" data-i="${bi}" class="grow">${opts(exOpts, b.id)}</select><button class="icon-btn" data-act="xup" data-i="${bi}" aria-label="Gore">↑</button><button class="icon-btn" data-act="xdn" data-i="${bi}" aria-label="Dolje">↓</button><button class="icon-btn" data-act="rm" data-i="${bi}" aria-label="Ukloni">✕</button></div>
               <div class="grid3 mt-s"><label class="field" style="margin:0"><span>Serije</span><input data-act="xs" data-i="${bi}" inputmode="numeric" value="${b.s}"></label><label class="field" style="margin:0;grid-column:span 2"><span>Ponavljanja</span><input data-act="xr" data-i="${bi}" value="${b.r}" maxlength="30"></label></div>
