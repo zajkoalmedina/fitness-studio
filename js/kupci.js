@@ -12,13 +12,15 @@
   /* ---------- evidencija pristupa (jedan zapis po klijentu: vrsta, istek, gratis) ---------- */
   FS.pristupRec = (id) => recs().find((x) => x.id === id) || null;
   FS.setPristup = (id, patch) => { let r = FS.pristupRec(id); if (!r) { r = { id, userId: id }; recs().push(r); } Object.assign(r, patch); Store.save(); return r; };
-  FS.VRSTE = [['online', 'Online coaching'], ['personalni', 'Personalni treninzi'], ['program', 'Kupac programa (pristup ističe)']];
+  FS.VRSTE = [['online', 'Online coaching'], ['personalni', 'Personalni treninzi'], ['program', 'Kupac programa (pristup ističe)'], ['trcanje', 'Samo trčanje (pristup do kraja plana)']];
+  FS.jeTrcanje = (u) => !!u && u.role !== 'trener' && FS.vrsta(u) === 'trcanje';
   FS.vrsta = (u) => { const r = FS.pristupRec(u.id); return (r && r.vrsta) || (u.paket ? 'online' : null); };
   FS.jeKupac = (u) => !!u && u.role !== 'trener' && FS.vrsta(u) === 'program';
-  FS.accountExpired = (u) => { if (!u || u.role === 'trener') return false; const r = FS.pristupRec(u.id); return !!(r && r.vrsta === 'program' && r.istice && today() > r.istice); };
+  FS.accountExpired = (u) => { if (!u || u.role === 'trener') return false; const r = FS.pristupRec(u.id); return !!(r && (r.vrsta === 'program' || r.vrsta === 'trcanje') && r.istice && today() > r.istice); };
   FS.danaDoIsteka = (u) => { const r = FS.pristupRec(u.id); return r && r.istice ? dayDiff(today(), r.istice) : null; };
   FS.vrstaTag = (u) => {
     const v = FS.vrsta(u), r = FS.pristupRec(u.id) || {};
+    if (v === 'trcanje') { const d = FS.danaDoIsteka(u); return 'Samo trčanje' + (d == null ? '' : d < 0 ? ' · istekao' : ' · još ' + (d + 1) + ' d'); }
     if (v === 'program') { const d = FS.danaDoIsteka(u); return 'Kupac programa' + (d == null ? '' : d < 0 ? ' · istekao' : ' · još ' + (d + 1) + ' d'); }
     return (v === 'online' ? 'Online' + (u.paket ? ' ' + u.paket : '') : v === 'personalni' ? 'Personalni' : 'nerazvrstan/a') + (r.gratis ? ' · gratis ishrana' : '');
   };
@@ -97,7 +99,7 @@
     const r = FS.pristupRec(u.id) || {}, d = FS.danaDoIsteka(u), progs = Store.userPrograms(u).filter((p) => p.tip !== 'vodic' && p.sedmica);
     return h`<div class="card"><h3 style="margin-top:0">Vrsta klijenta i pristup</h3>
       <label class="field"><span>Vrsta</span><select data-pk="vrsta" data-uid="${u.id}">${opts([['', 'Nije određeno'], ...FS.VRSTE], FS.vrsta(u) || '')}</select></label>
-      ${FS.vrsta(u) === 'program' ? h`<div class="grid2"><label class="field" style="margin:0"><span>Pristup do</span><input type="date" data-pk="istice" data-uid="${u.id}" value="${r.istice || ''}"></label>
+      ${FS.vrsta(u) === 'program' || FS.vrsta(u) === 'trcanje' ? h`<div class="grid2"><label class="field" style="margin:0"><span>Pristup do</span><input type="date" data-pk="istice" data-uid="${u.id}" value="${r.istice || ''}"></label>
         <div style="display:flex;align-items:flex-end"><button class="btn sm block" data-pk-click="prod" data-uid="${u.id}">Produži 30 dana</button></div></div>
         <p class="small ${d != null && d < 0 ? 'err' : 'muted'} mt-s">${d == null ? 'Nema datuma isteka.' : d < 0 ? 'Pristup je istekao, klijent se ne može prijaviti.' : 'Ističe za ' + (d + 1) + ' dana, a zatim se klijent više ne može prijaviti.'}</p>` : ''}
       <label class="check mt-s" style="display:flex;gap:10px"><input type="checkbox" data-pk="gratis" data-uid="${u.id}" ${r.gratis ? 'checked' : ''}><span>Gratis plan ishrane (akcija prvih ${LIMIT()}; dodijeljeno ${FS.gratisBroj()}/${LIMIT()})</span></label>
@@ -109,7 +111,9 @@
     const id = t.dataset.uid, u = Store.user(id); if (!u) return;
     if (k === 'vrsta') {
       const patch = { vrsta: t.value || null };
-      if (t.value === 'program') { const r = FS.pristupRec(id) || {}; if (!r.istice) patch.istice = addDays(today(), DANA()); } else patch.istice = null;
+      if (t.value === 'program') { const r = FS.pristupRec(id) || {}; if (!r.istice) patch.istice = addDays(today(), DANA()); }
+      else if (t.value === 'trcanje') { const pl = FS.trkPlanOf && FS.trkPlanOf(u); patch.istice = addDays(today(), (pl ? pl.tjedni.length : 10) * 7 + 3); }
+      else patch.istice = null;
       FS.setPristup(id, patch);
     } else if (k === 'istice') FS.setPristup(id, { istice: t.value || null });
     else if (k === 'gratis') {
@@ -135,7 +139,7 @@
 
   /* ---------- lista klijenata po vrstama ---------- */
   FS.vrstaChips = (kl, cur) => {
-    const F = [['online', 'Online', (u) => FS.vrsta(u) === 'online'], ['personalni', 'Personalni', (u) => FS.vrsta(u) === 'personalni'], ['sve', 'Svi', () => true],
+    const F = [['online', 'Online', (u) => FS.vrsta(u) === 'online'], ['personalni', 'Personalni', (u) => FS.vrsta(u) === 'personalni'], ['trcanje', 'Samo trčanje', (u) => FS.vrsta(u) === 'trcanje' && !FS.accountExpired(u)], ['sve', 'Svi', () => true],
       ['program', 'Kupci programa', (u) => FS.vrsta(u) === 'program' && !FS.accountExpired(u)], ['istekli', 'Istekli', (u) => FS.accountExpired(u)], ['nerazv', 'Nerazvrstani', (u) => !FS.vrsta(u)]];
     return { chips: h`<div class="chips mb">${F.map(([k, l, fn]) => h`<a class="chip ${cur === k ? 'on' : ''}" href="#/trener?tab=klijentice&v=${k}">${l} (${kl.filter(fn).length})</a>`)}</div>`, filter: (F.find((x) => x[0] === cur) || F[0])[2] };
   };

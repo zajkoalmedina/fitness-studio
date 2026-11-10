@@ -58,6 +58,7 @@
   FS.trkPlanOf = (u) => { const p = u && (Store.db.programi || []).find((x) => x.trk && x.vlasnik === u.id); return p ? p.trk : null; };
   FS.trkPlanSet = (u, plan) => { const id = 'trk_' + u.id, L = Store.db.programi; let p = L.find((x) => x.id === id);
     if (!p) { p = { id, naziv: plan.naziv, opis: 'Plan trčanja prilagođen tebi.', nivo: 'početni', sedmica: 1, dana: 1, cijena: 0, tip: 'individualni', uShopu: false, vlasnik: u.id, dani: [{ naziv: 'Plan trčanja', vj: [] }] }; L.push(p); }
+    if (FS.vrsta && FS.vrsta(u) === 'trcanje') FS.setPristup(u.id, { istice: FS.addDays(today(), (plan.tjedni || []).length * 7 + 3) });   /* pristup traje do kraja plana (+3 dana) */
     p.naziv = plan.naziv; p.trk = plan; u.programi = u.programi || []; if (!u.programi.includes(id)) u.programi.push(id); (u.pstart = u.pstart || {})[id] = today(); };
   FS.trkPlanDel = (u) => { const id = 'trk_' + u.id; Store.db.programi = Store.db.programi.filter((x) => x.id !== id); u.programi = (u.programi || []).filter((x) => x !== id); };
   const doc = (u) => { const L = (Store.db.upitnici = Store.db.upitnici || []); let d = L.find((x) => x.userId === u.id && x.tip === 'trk'); if (!d) { d = { id: 'trk_' + u.id, userId: u.id, tip: 'trk', datum: today(), done: {} }; L.push(d); } d.done = d.done || {}; return d; };

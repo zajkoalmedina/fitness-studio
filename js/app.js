@@ -35,9 +35,11 @@
     const u = Auth.user();
     const acc = u ? (u.role === 'trener' ? ['#/trener', 'Panel', 'users'] : ['#/moj', 'Moj prostor', 'user']) : ['#/prijava', 'Prijava', 'user'];
     const items0 = [['#/', 'Početna', 'home', ['home']], ['#/programi', 'Programi', 'list', ['programi', 'program', 'dijastaza', 'kondicija', 'kond']], ['#/vjezbe', 'Vježbe', 'dumbbell', ['vjezbe', 'vjezba']], ['#/alati', 'Alati', 'calc', ['alati', 'ishrana', 'suplementi']], [acc[0], acc[1], acc[2], ['prijava', 'moj', 'trening_novi', 'trener', 'trener_klijentica', 'trener_program']]];
-    const items = items0.filter((it) => it[0] !== '#/vjezbe' || (u && u.role === 'trener'));
+    let items = items0.filter((it) => it[0] !== '#/vjezbe' || (u && u.role === 'trener'));
+    const onlyRun = !!(u && FS.jeTrcanje && FS.jeTrcanje(u)); if (onlyRun) items = [['#/trcanje', 'Trčanje', 'list', ['trcanje']], ['#/prijava', 'Račun', 'user', ['prijava']]];
     if (u && u.role === 'trener') items.splice(items.length - 1, 0, ['#/poruke', 'Poruke', 'chat', ['poruke']]); /* poruke klijentica uvijek pri ruci, sa značkom nepročitanih */
-    const fab = $('#fab'); if (fab) fab.hidden = !!(u && u.role === 'trener'); /* plutajući Instagram gumb je za klijentice, trenerici zaklanja sadržaj */
+    const pk = document.querySelector('a.pill[href="#/paketi"]'); if (pk) pk.hidden = onlyRun;
+    const fab = $('#fab'); if (fab) fab.hidden = !!(u && (u.role === 'trener' || (FS.jeTrcanje && FS.jeTrcanje(u)))); /* plutajući Instagram gumb je za klijentice, trenerici zaklanja sadržaj */
     $('#tabbar').innerHTML = h`${items.map(([href, label, ic, names]) => h`<a class="tab ${names.includes(name) ? 'on' : ''}" href="${href}" ${names.includes(name) ? 'aria-current="page"' : ''}>${icon(ic)}<span>${label}${href === '#/trener' && FS.obavNovo && FS.obavNovo() ? h` <b style="background:var(--rose-2);color:#fff;border-radius:99px;padding:0 6px;font-size:11px">${FS.obavNovo()}</b>` : ''}${href === '#/poruke' && FS.porukeNovo && FS.porukeNovo() ? h` <b style="background:var(--rose-2);color:#fff;border-radius:99px;padding:0 6px;font-size:11px">${FS.porukeNovo()}</b>` : ''}</span></a>`)}`.s;
   }
   FS.refreshNav = () => renderNav(FS.currentRoute);
@@ -49,6 +51,7 @@
     let m = match(segs);
     if (!m) { location.replace('#/'); return; }
     const u = Auth.user();
+    if (u && FS.jeTrcanje && FS.jeTrcanje(u) && !['trcanje', 'prijava'].includes(m.name)) { location.replace('#/trcanje'); return; }   /* klijent „samo trčanje“ vidi samo trčanje */
     if (m.role) {
       if (!u) { toast('Prijavi se za nastavak.'); location.replace('#/prijava'); return; }
       if (u.role !== m.role) { location.replace(u.role === 'trener' ? '#/trener' : '#/moj'); return; }
@@ -60,7 +63,14 @@
     const main = $('#view');
     const page = document.createElement('div');
     main.replaceChildren(page);
-    try { FS.views[m.name](page, m.params, q); }
+    try {
+      FS.views[m.name](page, m.params, q);
+      if (m.name === 'trcanje' && u && FS.jeTrcanje && FS.jeTrcanje(u)) {   /* banner s rokom pristupa za klijentice „samo trčanje“ */
+        const r = FS.pristupRec(u.id) || {}, dd = FS.danaDoIsteka(u), b = document.createElement('div');
+        b.innerHTML = h`<div class="card cream"><b>Tvoj pristup: plan trčanja</b><div class="small">${r.istice ? 'Pristup traje do ' + FS.fmtDate(r.istice) + (dd != null && dd >= 0 ? ' (još ' + (dd + 1) + ' dana).' : '.') : 'Pristup traje dok traje plan.'} Za pitanja ili produženje javi mi se na Instagramu @almedina.zajko.</div></div>`.s;
+        main.prepend(b.firstElementChild);
+      }
+    }
     catch (e) {
       console.error(e);
       page.innerHTML = h`<div class="card alert"><h3>Došlo je do greške</h3><p class="muted">Pokušaj ponovo ili se vrati na početnu.</p><a class="btn block" href="#/">Početna</a></div>`.s;
