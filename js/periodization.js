@@ -37,6 +37,12 @@
     return { tip: (p && p.per && p.per.tip) || (ind ? 'linearna' : 'nema'), deload: parseInt(p && p.per && p.per.deload, 10) || (ind ? 4 : 0) };
   };
 
+  /* trenerica je za program (ili za ovu klijenticu) izabrala periodizaciju/deload: opterećene vježbe tada prate sedmice i kad su zadane kao „fiksne“ */
+  FS.perExplicit = (p) => {
+    const cu = FS.perKlijent || (FS.Auth && FS.Auth.user && FS.Auth.user());
+    return !!(p && ((p.per && (p.per.tip !== 'nema' || parseInt(p.per.deload, 10) > 0)) || (cu && cu.role !== 'trener' && cu.perOver && cu.perOver[p.id])));
+  };
+
   /* prijedlog težine za sljedeći trening prema zadnjem odrađenom (dvostruka progresija):
      sve serije do gornje granice ponavljanja → + korak; ispod donje granice → ista težina; deload sedmica → ≈ 90 % */
   FS.predlogKg = (uid, x, week, prog) => {
@@ -94,7 +100,7 @@
     }
     if (x.id === 'zidsjed') return { s: x.s, r: hasTimeUnit(x.r) ? x.r : '30 s', pct: null, tag: '', ...ov };   /* wall sit: štoperica u sekundama, ne ponavljanja */
     /* „fix“ zamrzava vježbu samo kad je kardio/cirkuit; opterećena vježba s upisanom pauzom u individualnom programu prati periodizaciju i deload */
-    if (x.fix && !(p.tip === 'individualni' && isLoaded(x.id) && !hasTimeUnit(x.r))) return { s: x.s, r: x.r, pct: null, tag: '', ...ov };   /* cirkuiti i kardio: serije i trajanje se ne mijenjaju po sedmici */
+    if (x.fix && !((p.tip === 'individualni' || FS.perExplicit(p)) && isLoaded(x.id) && !hasTimeUnit(x.r))) return { s: x.s, r: x.r, pct: null, tag: '', ...ov };   /* cirkuiti i kardio: serije i trajanje se ne mijenjaju po sedmici */
     const wi = FS.weekInfo(p, week), loaded = isLoaded(x.id);
     let s = x.s, r = x.r, pct = null, tag = '';
     if (wi.deload) {
