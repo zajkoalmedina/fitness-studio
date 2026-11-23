@@ -116,9 +116,9 @@
   function sourceDay(pid, d, f, w) {
     if (pid === 'dijastaza') { const fz = FS.DIJASTAZA.faze[+f]; const dd = fz && (fz.dani[+d || 0] || fz.dani[0]); return fz ? { naziv: fz.naziv + (fz.dani.length > 1 ? ' · ' + dd.naziv : ''), vj: dd.vj } : null; }
     const pr = Store.program(pid); if (!pr || !pr.dani[+d]) return null;
-    const wk = Math.min(pr.sedmica || 1, Math.max(1, parseInt(w, 10) || 1)); return FS.weekDays(pr, wk)[+d];
+    const wk = Math.min(pr.sedmica || 1, Math.max(1, parseInt(w, 10) || 1)); const dn = FS.weekDays(pr, wk)[+d]; if (dn) dn.w = wk; return dn;
   }
-  const srcSig = (src) => src ? src.vj.map((x) => [x.id, x.s, x.r, x.pct, x.p, x.fix, x.pfix, x.ss, x.kgw, x.tag].join(':')).join('|') : '';
+  const srcSig = (src) => src ? src.vj.map((x) => [x.id, x.s, x.r, x.pct, x.p, x.fix, x.pfix, x.ss, x.kgw, x.tag].join(':')).join('|') + '#' + (src.w || '') : '';
   function buildDraft(u, q) {
     const d = { uid: u.id, start: Date.now(), programId: null, dan: '', vjezbe: [], rpe: '', biljeska: '' };
     const src = q.p ? sourceDay(q.p, q.d, q.f, q.w || FS.currentWeek(u, Store.program(q.p))) : null;
@@ -192,7 +192,7 @@
         const want = d.sig ? srcSig(src) : src.vj.map((x) => x.id).join('|');
         if (cur !== want) { // trenerica je u međuvremenu promijenila ovaj dan: osvježi vježbe, sačuvaj već upisano
           const old = d.vjezbe, nd = buildDraft(u, q), used = new Set();
-          nd.vjezbe.forEach((v) => { const i = old.findIndex((o, k) => !o.extra && !used.has(k) && o.id === v.id); if (i >= 0) { used.add(i); const o = old[i]; v.serije.forEach((s2, si) => { if (o.serije[si]) { s2.kg = o.serije[si].kg; s2.rep = o.serije[si].rep; s2.ok = o.serije[si].ok; } }); } });
+          nd.vjezbe.forEach((v) => { const i = old.findIndex((o, k) => !o.extra && !used.has(k) && o.id === v.id); if (i >= 0) { used.add(i); const o = old[i]; v.serije.forEach((s2, si) => { if (o.serije[si] && (o.serije[si].ok || +o.serije[si].rep > 0)) { s2.kg = o.serije[si].kg; s2.rep = o.serije[si].rep; s2.ok = o.serije[si].ok; } }); } });
           old.forEach((o) => { if (o.extra) nd.vjezbe.push(o); });
           nd.start = d.start; nd.rpe = d.rpe; nd.biljeska = d.biljeska; d = nd; Store.draft.set(d); toast('Trening je ažuriran: trenerica je promijenila vježbe.');
         }
