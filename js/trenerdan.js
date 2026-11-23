@@ -29,6 +29,11 @@
     let week = Math.min(parseInt(P.sedmica, 10) || 1, Math.max(1, parseInt(q.w, 10) || (kl ? FS.weekZaDatum(kl, P, FS.today()) : 1)));
     const wLogs = (w) => { if (!kl) return []; const a = dd(FS.progStart(kl, P)); a.setDate(a.getDate() + 7 * (w - 1)); const b = new Date(a); b.setDate(b.getDate() + 6); const iso = (x) => x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0'); const lo = iso(a), hi = iso(b); return S0().logsOf(kl.id).filter((l) => l.programId === P.id && l.datum >= lo && l.datum <= hi); };
     let di = Math.max(0, Math.min(P.dani.length - 1, parseInt(q.d, 10) || 0));
+    if (kl && q.d == null) {   /* bez zadanog dana: otvori današnji trening iz rasporeda, a ako ga nema, prvi neodrađeni dan ove sedmice */
+      const te = (S.db.raspored || []).find((e) => e.userId === kl.id && e.datum === FS.today() && e.tip === 'dan' && e.programId === P.id);
+      if (te && P.dani[te.dan]) di = te.dan;
+      else { const pl = FS.weekPlan(P, week), done = wLogs(week).map((l) => l.dan), nx = pl.find((z) => !done.includes(P.dani[z.i].naziv)); di = nx ? nx.i : (pl.length ? pl[pl.length - 1].i : 0); }
+    }
     let dirty = false;
     const pz = (s) => (s >= 60 && s % 60 === 0 ? s / 60 + ' min' : s + ' s');
 
