@@ -85,7 +85,7 @@
   const SHORT = new Set(['Core', 'Mobilnost', 'Disanje']);
   FS.pauza = (x) => {
     if (x == null) return 0;
-    if (x.fix && x.p != null) return x.p;          // tačno zadana pauza
+    if ((x.fix || x.pfix) && x.p != null) return x.p;          // tačno zadana pauza
     if (x.p === 0) return 0;                       // superserija ili kontinuirano
     if (x.p != null && x.p <= 20) return x.p;      // HIIT intervali (npr. 15 s)
     const r = String(x.r || '');

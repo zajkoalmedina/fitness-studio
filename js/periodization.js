@@ -17,7 +17,7 @@
     valovita: 'Unutar sedmice se smjenjuju teški dan (manje ponavljanja, veća težina), srednji dan i lagani dan (više ponavljanja, manja težina).'
   };
   FS.DELOAD_OPC = [['0', 'Bez deloada'], ['3', 'Svake 3. sedmice'], ['4', 'Svake 4. sedmice'], ['5', 'Svake 5. sedmice'], ['6', 'Svake 6. sedmice']];
-  FS.DELOAD_OPIS = 'Deload je lakša sedmica: serije se prepolove, težina ostaje blizu (oko 90 %), a ponavljanja ostaju lagana s rezervom od najmanje 4. Cilj je oporavak, a ne napredak.';
+  FS.DELOAD_OPIS = 'Deload je lakša sedmica: serije se prepolove, težina pada na oko 90 %, ponavljanja su za 2 manja, s rezervom od najmanje 4. Cilj je oporavak, a ne napredak.';
 
   const NOLOAD = new Set(['sklekzid', 'sklek', 'sidelift', 'cucanj', 'frogpump', 'bridge']);
   const SKIP_GR = new Set(['Core', 'Disanje', 'Mobilnost', 'Kardio']);
@@ -93,12 +93,13 @@
       ov = { id: x.id, n: x.n, p: x.p };
     }
     if (x.id === 'zidsjed') return { s: x.s, r: hasTimeUnit(x.r) ? x.r : '30 s', pct: null, tag: '', ...ov };   /* wall sit: štoperica u sekundama, ne ponavljanja */
-    if (x.fix) return { s: x.s, r: x.r, pct: null, tag: '', ...ov };   /* cirkuiti i kardio: serije i trajanje se ne mijenjaju po sedmici */
+    /* „fix“ zamrzava vježbu samo kad je kardio/cirkuit; opterećena vježba s upisanom pauzom u individualnom programu prati periodizaciju i deload */
+    if (x.fix && !(p.tip === 'individualni' && isLoaded(x.id) && !hasTimeUnit(x.r))) return { s: x.s, r: x.r, pct: null, tag: '', ...ov };   /* cirkuiti i kardio: serije i trajanje se ne mijenjaju po sedmici */
     const wi = FS.weekInfo(p, week), loaded = isLoaded(x.id);
     let s = x.s, r = x.r, pct = null, tag = '';
     if (wi.deload) {
       s = Math.max(1, Math.ceil(x.s * (wi.setsMult || 0.5)));
-      if (loaded) pct = wi.loadPct;
+      if (loaded) { pct = wi.loadPct; if (!hasTimeUnit(r)) r = shiftReps(r, -2, 5); }   /* deload: manje serija, ≈ 90 % težine i 2 ponavljanja manje */
     } else if (wi.tip === 'valovita') {
       const k = dayIdx % 3;
       const mode = [{ n: 'teški', shift: -3, pct: 8 }, { n: 'srednji', shift: 0, pct: 0 }, { n: 'lagani', shift: 3, pct: -8 }][k];

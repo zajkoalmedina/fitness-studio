@@ -118,7 +118,7 @@
     const pr = Store.program(pid); if (!pr || !pr.dani[+d]) return null;
     const wk = Math.min(pr.sedmica || 1, Math.max(1, parseInt(w, 10) || 1)); return FS.weekDays(pr, wk)[+d];
   }
-  const srcSig = (src) => src ? src.vj.map((x) => [x.id, x.s, x.r, x.pct, x.p, x.fix, x.ss, x.kgw, x.tag].join(':')).join('|') : '';
+  const srcSig = (src) => src ? src.vj.map((x) => [x.id, x.s, x.r, x.pct, x.p, x.fix, x.pfix, x.ss, x.kgw, x.tag].join(':')).join('|') : '';
   function buildDraft(u, q) {
     const d = { uid: u.id, start: Date.now(), programId: null, dan: '', vjezbe: [], rpe: '', biljeska: '' };
     const src = q.p ? sourceDay(q.p, q.d, q.f, q.w || FS.currentWeek(u, Store.program(q.p))) : null;
