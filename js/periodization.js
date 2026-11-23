@@ -162,6 +162,7 @@
     if (!u || !p) return 1;
     u.pstart = u.pstart || {};
     if (!u.pstart[p.id]) { u.pstart[p.id] = FS.today(); try { FS.Store.save(); } catch (e) { /* ignoriši */ } }
+    if (FS.weekZaDatum) return FS.weekZaDatum(u, p, FS.today());   /* jedinstveno pravilo: sedmica ide po datumu, i kad trening nije urađen */
     const a = FS.parse(u.pstart[p.id]), b = FS.parse(FS.today());
     const days = Math.max(0, Math.round((b - a) / 86400000));
     return Math.min(parseInt(p.sedmica, 10) || 1, Math.floor(days / 7) + 1);
