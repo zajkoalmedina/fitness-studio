@@ -63,6 +63,7 @@
         <a class="tile" href="#/programi">${icon('list')}<b>Programi</b><small>Vodič za ishranu i trčanje</small></a>
         <a class="tile" href="#/alati">${icon('calc')}<b>BMI i kalorije</b><small>Brzi kalkulatori</small></a>
         <a class="tile" href="#/ishrana">${icon('flame')}<b>Ishrana</b><small>Vodič, recepti, primjer dana</small></a>
+        <a class="tile" href="#/blog">${icon('list')}<b>Blog</b><small>Savjeti za trening i oporavak</small></a>
         <a class="tile" href="#/prica">${icon('heart')}<b>Moja priča</b><small>Kron, operacije, povratak</small></a>
         ${FS.Auth.user() ? h`<a class="tile" href="#/dijastaza">${icon('heart')}<b>Dijastaza</b><small>Siguran kućni program</small></a>` : ''}
         ${(() => { const u = FS.Auth.user(); return u && u.role === 'trener' ? h`<a class="tile" href="#/zagrijavanje">${icon('flame')}<b>Zagrijavanje</b><small>Samo za tebe</small></a><a class="tile" href="#/hipertrofija">${icon('dumbbell')}<b>Hipertrofija</b><small>Vodič, samo za tebe</small></a><a class="tile" href="#/kondsablon">${icon('flame')}<b>Kondicijski šabloni</b><small>EMOM, AMRAP, piramida</small></a>` : ''; })()}<a class="tile" href="#/trcanje">${icon('flame')}<b>Trčanje</b><small>Planovi 5 km i 10 km</small></a>
