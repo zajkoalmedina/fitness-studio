@@ -17,7 +17,7 @@
       ],
       u: 'Gluteus je dio plana, ne cijeli plan.',
       cta: 'Želiš plan za cijelo tijelo? Javi mi se.' },
-    { id: 'tegovi-i-zene', naslov: '"Postat ću glomazna": zašto se većina žena nema čega bojati', oznaka: 'Mitovi', min: 3, slika: B + 'sunset.jpg', poz: '50% 30%',
+    { id: 'tegovi-i-zene', naslov: '„Postat ću glomazna“: zašto se većina žena nema čega bojati', oznaka: 'Mitovi', min: 3, slika: B + 'sunset.jpg', poz: '50% 30%',
       uvod: 'Da su mišići tako brzi, svi bismo ih dobili preko vikenda. Evo kako stvarno ide.',
       d: [
         ['Mišići ne rastu preko noći', 'Izgradnja mišića je spor proces. Traje mjesecima i godinama, uz redovan trening i dovoljno hrane. Žene u pravilu imaju manje testosterona, pa ide još sporije.'],
@@ -28,7 +28,7 @@
       u: 'Mišići rastu polako, a ti odlučuješ u kom smjeru idemo.',
       cta: 'Nisi sigurna odakle početi? Napiši mi.' },
     { id: 'salo-na-jednom-mjestu', naslov: 'Trbušnjaci neće istopiti stomak (žao mi je)', oznaka: 'Mitovi', min: 2, slika: B + 'sunset2.jpg', poz: '50% 18%',
-      uvod: 'Tijelo ne prima narudžbe tipa: "Salo samo sa stomaka, hvala."',
+      uvod: 'Tijelo ne prima narudžbe tipa: „Salo samo sa stomaka, hvala.“',
       d: [
         ['Tijelo bira samo', 'Kad troši energiju iz masnih zaliha, tijelo ne pita s kojeg dijela želiš da krene. Vježba za stomak jača mišiće stomaka, ali ne briše salo baš s tog mjesta.'],
         ['Šta zaista pomaže', 'Cijeli plan: trening snage, kretanje preko dana, dovoljno sna i uravnotežena ishrana. Nije glamurozno, ali je pouzdano.'],
@@ -64,7 +64,7 @@
         ['Prvo razgovor', 'Prije prvog čučnja pričamo: šta želiš, koliko puta sedmično možeš trenirati, imaš li bolove ili povrede iz prošlosti i kako izgleda tvoj dan.'],
         ['Zagrijavanje i tehnika', 'Počinjemo laganim zagrijavanjem, pa učimo osnovne pokrete s malom težinom. Tehnika je važnija od kilograma.'],
         ['Tvoj tempo', 'Ne moraš sve odmah znati ni moći. Kreće se od onoga što ti odgovara, a opterećenje raste postepeno.'],
-        ['Poslije treninga', 'Normalno je da osjetiš mišiće sutradan. Pij vodu, lijepo se naspavaj i javi mi kako ti je bilo. Silazak niz stepenice možda bude avantura.']
+        ['Poslije treninga', 'Normalno je da osjetiš mišiće sutradan. Pij vodu, lijepo se naspavaj i javi mi kako ti je bilo. Silazak niz stepenice može biti prava avantura.']
       ],
       u: 'Dovoljno je da dođeš. Ostalo radimo zajedno.',
       cta: 'Želiš prvi trening? Javi mi se, pa dogovaramo termin.' },
@@ -73,7 +73,7 @@
       d: [
         ['Šta je deload', 'Sedmica u kojoj se smanji opterećenje: manje serija, malo lakša težina i nešto manje ponavljanja. Pokreti ostaju isti.'],
         ['Zašto ga radimo', 'Tijelo napreduje u oporavku, a ne samo na treningu. Nakon nekoliko sedmica rada, lakša sedmica daje mišićima, zglobovima i glavi priliku da odahnu.'],
-        ['Kako da ga odradiš', 'Drži se onoga što piše u planu. Ne dodaj težinu "jer možeš". Fokus je na lijepom izvođenju.'],
+        ['Kako da ga odradiš', 'Drži se onoga što piše u planu. Ne dodaj težinu „jer možeš“. Fokus je na lijepom izvođenju.'],
         ['I poslije toga', 'Sljedeće sedmice nastavljamo dalje. Aplikacija sama pokazuje koja je sedmica deload.']
       ],
       u: 'Odmor je dio treninga, a ne njegova suprotnost.',
@@ -81,7 +81,7 @@
     { id: 'trcanje-pocetak', naslov: 'Trčanje za početnice: cilj je stići do kraja ulice', oznaka: 'Trčanje', min: 3, slika: B + 'trk.jpg', poz: '75% 40%',
       uvod: 'Za trčanje ne treba biti sportista. Treba strpljenje i plan koji kreće polako.',
       d: [
-        ['Mješavina hodanja i trčanja', 'Izmjenjuj kratko lagano trčanje i hodanje, npr. 1 minuta trčanja, 2 minute hodanja. Postepeno produžavaj trčanje.'],
+        ['Mješavina hodanja i trčanja', 'Izmjenjuj kratko lagano trčanje i hodanje, npr. 1 minut trčanja, 2 minute hodanja. Postepeno produžavaj trčanje.'],
         ['Tempo za razgovor', 'Trči tako da možeš izgovoriti rečenicu bez gušenja. Početnici najčešće trče prebrzo, kao da ih juri autobus.'],
         ['Obuća i teren', 'Udobne patike su važnije od skupe opreme. Ravnije staze su dobar izbor za početak.'],
         ['Snaga pomaže', 'Dva kratka treninga snage sedmično pomažu stabilnosti u koljenima i kukovima.'],
