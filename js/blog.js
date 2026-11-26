@@ -6,57 +6,59 @@
   const B = 'images/blog/';
 
   FS.BLOG = [
-    { id: 'nije-samo-gluteus', naslov: 'Dan nogu svaki dan? Trening je više od gluteusa', oznaka: 'Mitovi', min: 3, datum: '2026-11-26', slika: B + 'leda.jpg', poz: '50% 35%',
+    { id: 'nije-samo-gluteus', naslov: 'Dan nogu svaki dan? Trening je više od gluteusa', oznaka: 'Mitovi', min: 3, slika: B + 'leda.jpg', poz: '50% 35%',
       uvod: 'Instagram bi rekao da tijelo ima samo donju polovinu. Tvoja leđa se ne slažu.',
       d: [
         ['Algoritam voli gluteus', 'Na mrežama se najviše guraju trening nogu i gluteusa. Lijepo izgleda u kadru, ali tijelo ne radi u dijelovima, nego kao cjelina.'],
-        ['Leđa rade za tebe 16 sati dnevno', 'Leđa, ramena i trup te drže uspravnom dok sjediš za računarom, nosiš torbu ili podižeš kesu iz marketa. Niko ih ne hvali, a stalno rade. Zaslužuju svoj dio plana.'],
-        ['Kako izgleda dobar plan', 'Potisci i povlačenja, noge i gornji dio tijela, plus trup. Gluteus ostaje u planu, samo dijeli prostor s ostalima.'],
-        ['Mala provjera', 'Ako zadnjih mjesec dana nisi dotakla veslanje, zgibove ili neku vježbu za leđa, vrijeme je da se upoznate.']
+        ['Leđa rade cijeli dan', 'Leđa, ramena i trup te drže uspravnom dok sjediš za računarom, nosiš torbu ili podižeš kesu iz marketa. Niko ih ne hvali, a stalno rade. Zaslužuju svoj dio plana.'],
+        ['Kako izgleda dobar plan', 'U svoje programe stavljam potiske i povlačenja, noge i gornji dio tijela, plus trup. Gluteus ostaje u planu, samo dijeli prostor s ostalima.'],
+        ['Tri vježbe za početak', 'Ako ti leđa još nisu na rasporedu, počni s Lat Pulldown, Seated Cable Row i Face Pull. Lagana težina, spor pokret i osjećaj rada između lopatica.'],
+        ['Mala provjera', 'Ako zadnjih mjesec dana nisi dotakla veslanje ili neku vježbu za leđa, vrijeme je da se upoznate.']
       ],
       u: 'Gluteus je dio plana, ne cijeli plan.',
       cta: 'Želiš plan za cijelo tijelo? Javi mi se.' },
-    { id: 'tegovi-i-zene', naslov: '"Postat ću glomazna": zašto se većina žena nema čega bojati', oznaka: 'Mitovi', min: 3, datum: '2026-11-25', slika: B + 'sunset.jpg', poz: '50% 30%',
+    { id: 'tegovi-i-zene', naslov: '"Postat ću glomazna": zašto se većina žena nema čega bojati', oznaka: 'Mitovi', min: 3, slika: B + 'sunset.jpg', poz: '50% 30%',
       uvod: 'Da su mišići tako brzi, svi bismo ih dobili preko vikenda. Evo kako stvarno ide.',
       d: [
         ['Mišići ne rastu preko noći', 'Izgradnja mišića je spor proces. Traje mjesecima i godinama, uz redovan trening i dovoljno hrane. Žene u pravilu imaju manje testosterona, pa ide još sporije.'],
         ['Šta tegovi zaista rade', 'Trening snage često donosi čvršće tijelo, bolje držanje i više energije u svakodnevnim stvarima. Rezultati su različiti od osobe do osobe.'],
-        ['Počni pametno', 'Kreni s težinom s kojom možeš lijepo izvesti pokret, pa postepeno dodaj. Tehnika ide prije kilograma, a ego ostavi kod garderobe.'],
-        ['Ti biraš oblik', 'Plan se uvijek može prilagoditi tvom cilju. Ako ti se nešto ne sviđa, mijenjamo ga, a niko neće biti iznenađen jednog jutra.']
+        ['Počni pametno', 'Kreni s težinom s kojom možeš lijepo izvesti pokret, pa postepeno dodaj. Kod mene tehnika uvijek ide prije kilograma.'],
+        ['Ti biraš smjer', 'Plan se uvijek može prilagoditi tvom cilju. Ako ti se nešto ne sviđa, zajedno ga mijenjamo.']
       ],
       u: 'Mišići rastu polako, a ti odlučuješ u kom smjeru idemo.',
       cta: 'Nisi sigurna odakle početi? Napiši mi.' },
-    { id: 'salo-na-jednom-mjestu', naslov: 'Trbušnjaci neće istopiti stomak (žao mi je)', oznaka: 'Mitovi', min: 2, datum: '2026-11-24', slika: B + 'sunset2.jpg', poz: '50% 18%',
+    { id: 'salo-na-jednom-mjestu', naslov: 'Trbušnjaci neće istopiti stomak (žao mi je)', oznaka: 'Mitovi', min: 2, slika: B + 'sunset2.jpg', poz: '50% 18%',
       uvod: 'Tijelo ne prima narudžbe tipa: "Salo samo sa stomaka, hvala."',
       d: [
         ['Tijelo bira samo', 'Kad troši energiju iz masnih zaliha, tijelo ne pita s kojeg dijela želiš da krene. Vježba za stomak jača mišiće stomaka, ali ne briše salo baš s tog mjesta.'],
         ['Šta zaista pomaže', 'Cijeli plan: trening snage, kretanje preko dana, dovoljno sna i uravnotežena ishrana. Nije glamurozno, ali je pouzdano.'],
         ['Trbušnjaci ipak imaju smisla', 'Jak trup pomaže držanju i stabilnosti. To je druga priča od gubitka masti, ali je jednako korisna.'],
-        ['Mjeri pametno', 'Obim struka i kukova te slike kroz vrijeme često kažu više od vage. U aplikaciji možeš unositi mjerenja.']
+        ['Mjeri pametno', 'Obim struka i kukova te slike kroz vrijeme često kažu više od vage. U aplikaciji možeš unositi mjerenja i vidjeti promjene kroz sedmice.']
       ],
       u: 'Cijelo tijelo, cijeli plan, malo strpljenja.',
       cta: 'Želiš plan prilagođen sebi? Javi se.' },
-    { id: 'progresivno-opterecenje', naslov: 'Isti trening, ista težina, isti rezultat. Iznenađenje!', oznaka: 'Trening', min: 3, datum: '2026-11-23', slika: B + 'coach.jpg', poz: '55% 45%',
+    { id: 'progresivno-opterecenje', naslov: 'Isti trening, ista težina, isti rezultat. Iznenađenje!', oznaka: 'Trening', min: 3, slika: B + 'coach.jpg', poz: '55% 45%',
       uvod: 'Ako već mjesecima dižeš istu težinu, tijelo je odavno naučilo gradivo.',
       d: [
         ['Šta je progresivno opterećenje', 'Tijelu povremeno damo malo veći izazov: nešto više kilograma, ponavljanja ili serija. Tako napredak ne stoji.'],
         ['Jednostavno pravilo', 'Kad lijepo odradiš sve serije do gornje granice ponavljanja, povećaj težinu. U aplikaciji dobijaš prijedlog težine na osnovu prošlog treninga.'],
         ['Ne mora svaki dan biti rekord', 'Ima dana kad je teg težak samo zato što je ponedjeljak. Tada ostani na istoj težini i drži tehniku.'],
-        ['Lakša sedmica je dio plana', 'Povremeno planiramo deload da se tijelo oporavi i nastavi dalje.']
+        ['Lakša sedmica je dio plana', 'Povremeno planiram deload da se tijelo oporavi i nastavi dalje.']
       ],
       u: 'Malo više, malo po malo, uz dobru tehniku.',
       cta: 'Želiš da pratim tvoj napredak? Javi se.' },
-    { id: 'proteini', naslov: 'Proteini: nisu čarolija, ali jesu bitni', oznaka: 'Ishrana', min: 3, datum: '2026-11-22', slika: 'images/recepti/r01.jpg', poz: '50% 50%',
+    { id: 'proteini', naslov: 'Proteini: nisu čarolija, ali jesu bitni', oznaka: 'Ishrana', min: 3, slika: 'images/recepti/r01.jpg', poz: '50% 50%',
       uvod: 'Prašak nije obavezan. Piletina se neće uvrijediti.',
       d: [
         ['Okvirna količina', 'Za osobe koje treniraju snagu često se navodi oko 1,2 do 2 grama proteina po kilogramu tjelesne težine dnevno. Tačna količina zavisi od osobe.'],
         ['Iz čega ih unositi', 'Meso, riba, jaja, mliječni proizvodi, mahunarke. Prašak je samo praktična dopuna, ne uslov.'],
+        ['Primjer dana', 'Doručak: jaja ili grčki jogurt. Ručak: piletina, riba ili mahunarke s povrćem. Užina: skyr ili sir. Večera: tuna, jaja ili grah. Nije recept, samo ideja kako proteini mogu biti u svakom obroku.'],
         ['Rasporedi preko dana', 'Lakše je dodati izvor proteina u svaki obrok nego sve pojesti uveče i nadati se najboljem.'],
         ['Kad je potreban oprez', 'Ako imaš zdravstvenih problema, prije promjene ishrane posavjetuj se s ljekarom ili nutricionistom.']
       ],
       u: 'Redovni obroci s proteinima su važniji od najskupljeg praška.',
       cta: 'Kalkulator kalorija i recepte nađi u aplikaciji. Pitanja? Piši mi.' },
-    { id: 'prvi-trening', naslov: 'Prvi trening: nema ispita i niko ne ocjenjuje', oznaka: 'Trening', min: 2, datum: '2026-11-21', slika: B + 'teretana.jpg', poz: '50% 30%',
+    { id: 'prvi-trening', naslov: 'Prvi trening: nema ispita i niko ne ocjenjuje', oznaka: 'Trening', min: 2, slika: B + 'teretana.jpg', poz: '50% 30%',
       uvod: 'Prvi dolazak u teretanu je najteži dio. Evo šta te čeka, da dođeš bez treme.',
       d: [
         ['Prvo razgovor', 'Prije prvog čučnja pričamo: šta želiš, koliko puta sedmično možeš trenirati, imaš li bolove ili povrede iz prošlosti i kako izgleda tvoj dan.'],
@@ -66,7 +68,7 @@
       ],
       u: 'Dovoljno je da dođeš. Ostalo radimo zajedno.',
       cta: 'Želiš prvi trening? Javi mi se, pa dogovaramo termin.' },
-    { id: 'deload', naslov: 'Lakša sedmica nije lijenost, nego strategija', oznaka: 'Oporavak', min: 2, datum: '2026-11-20', slika: B + 'studio.jpg', poz: '50% 4%',
+    { id: 'deload', naslov: 'Lakša sedmica nije lijenost, nego strategija', oznaka: 'Oporavak', min: 2, slika: B + 'studio.jpg', poz: '50% 4%',
       uvod: 'Ako je jedna sedmica lakša od prethodnih, plan nije pogriješio. To se zove deload.',
       d: [
         ['Šta je deload', 'Sedmica u kojoj se smanji opterećenje: manje serija, malo lakša težina i nešto manje ponavljanja. Pokreti ostaju isti.'],
@@ -76,7 +78,7 @@
       ],
       u: 'Odmor je dio treninga, a ne njegova suprotnost.',
       cta: 'Pitanja o svom planu? Napiši mi.' },
-    { id: 'trcanje-pocetak', naslov: 'Trčanje za početnice: cilj je stići do kraja ulice', oznaka: 'Trčanje', min: 3, datum: '2026-11-19', slika: B + 'trk.jpg', poz: '75% 40%',
+    { id: 'trcanje-pocetak', naslov: 'Trčanje za početnice: cilj je stići do kraja ulice', oznaka: 'Trčanje', min: 3, slika: B + 'trk.jpg', poz: '75% 40%',
       uvod: 'Za trčanje ne treba biti sportista. Treba strpljenje i plan koji kreće polako.',
       d: [
         ['Mješavina hodanja i trčanja', 'Izmjenjuj kratko lagano trčanje i hodanje, npr. 1 minuta trčanja, 2 minute hodanja. Postepeno produžavaj trčanje.'],
@@ -90,8 +92,8 @@
   ];
 
 
-  const fmt = (iso) => iso.split('-').reverse().join('.') + '.';
-  const IMG = 'width:100%;height:210px;object-fit:cover;border-radius:14px 14px 0 0;display:block';
+
+    const IMG = 'width:100%;height:210px;object-fit:cover;border-radius:14px 14px 0 0;display:block';
 
   V.blog = (el, p, q) => {
     const cats = ['Sve'].concat([...new Set(FS.BLOG.map((b) => b.oznaka))]), c = q && q.c && cats.includes(q.c) ? q.c : 'Sve';
@@ -102,7 +104,7 @@
       <div class="row wrap mb" style="gap:6px">${cats.map((k) => h`<a class="btn sm ${k === c ? 'primary' : ''}" href="#/blog?c=${k}">${k}</a>`)}</div>
       ${list.map((b) => h`<a class="card" href="#/blog/${b.id}" style="display:block;text-decoration:none;color:inherit;padding:0;overflow:hidden">
         <img src="${b.slika}" alt="" loading="lazy" style="${IMG};object-position:${b.poz}">
-        <div style="padding:12px 16px 16px"><div class="row between"><span class="badge">${b.oznaka}</span><small class="muted">${b.min} min · ${fmt(b.datum)}</small></div>
+        <div style="padding:12px 16px 16px"><div class="row between"><span class="badge">${b.oznaka}</span><small class="muted">${b.min} min čitanja</small></div>
         <h3 style="margin:8px 0 4px">${b.naslov}</h3><p class="muted" style="margin:0">${b.uvod}</p></div></a>`)}
       <p class="small muted center mt">Opšte informacije, ne zamjena za savjet ljekara.</p>`;
   };
@@ -117,6 +119,7 @@
       <p class="muted">${b.uvod}</p>
       ${b.d.map((s) => h`<div class="card"><h3>${s[0]}</h3><p style="margin:0">${s[1]}</p></div>`)}
       <div class="card flat"><small class="muted">UKRATKO</small><p style="margin:4px 0 0"><b>${b.u}</b></p></div>
+      <div class="card flat center"><p style="margin:0"><b>Almedina</b><br><span class="muted">certificirana fitness trenerica</span></p><a class="btn sm mt-s" href="https://instagram.com/almedina.zajko" target="_blank" rel="noopener">@almedina.zajko</a></div>
       <div class="card flat center"><p>${b.cta}</p><button class="btn primary" data-act="lead">Pošalji upit</button></div>
       <a class="btn block mt-s" href="#/blog">← Svi članci</a>
       <p class="small muted center mt">Opšte informacije, ne zamjena za savjet ljekara.</p>`;
