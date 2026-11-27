@@ -9,7 +9,7 @@
   FS.kond = (id) => {
     const b = base(id); if (b) return b;
     const p = (Store.db.programi || []).find((x) => x.id === id && x.kond);
-    return p ? Object.assign({ nivo: 'srednji', oprema: '', savjet: '' }, p.kond, { id: p.id, naziv: p.naziv, opis: p.opis || p.kond.opis || '' }) : null;
+    return p ? Object.assign({ nivo: 'srednji', oprema: '', savjet: '' }, p.kond, { id: p.id, naziv: p.naziv, opis: p.opis || p.kond.opis || '', samoTrener: p.tip === 'kond' }) : null;
   };
 
   /* klijentica koja otvori dodijeljeni program dobija tajmer */
@@ -18,6 +18,14 @@
     const pr = Store.program(p.id);
     if (pr && pr.kond && pr.tip === 'individualni') { location.replace('#/kond/' + pr.id); return; }
     return pv(el, p, q);
+  };
+
+  /* isto vrijedi za unos treninga: dodijeljeni kondicijski trening uvijek otvara tajmer s vježbama */
+  const tn = V.trening_novi;
+  V.trening_novi = (el, p, q) => {
+    const pr = q && q.p ? Store.program(q.p) : null;
+    if (pr && pr.kond) { location.replace('#/kond/' + pr.id); return; }
+    return tn(el, p, q);
   };
 
   const TIPOVI = [['EMOM', 'EMOM (svake minute)'], ['AMRAP', 'AMRAP (što više krugova)'], ['TABATA', 'Tabata'], ['INTERVALI', 'Intervali / kružni'], ['CHIPPER', 'Chipper (na vrijeme)'], ['PIRAMIDA', 'Piramida']];
@@ -112,7 +120,7 @@
       },
       'click:assign': (b) => {
         const sel = el.querySelector('[data-sel="' + b.dataset.id + '"]'), u = sel && Store.user(sel.value), g = (FS.KOND || []).find((x) => x.gotov && x.id === b.dataset.id),
-          src = g ? (() => { const k = JSON.parse(JSON.stringify(g)); const nm = k.naziv, op = k.opis; delete k.id; delete k.gotov; delete k.naziv; return { naziv: nm, opis: op, nivo: k.nivo, sedmica: 1, dana: 1, tip: 'kond', dani: [{ naziv: nm, vj: [] }], kond: k }; })() : Store.program(b.dataset.id);
+          src = g ? (() => { const k = JSON.parse(JSON.stringify(g)); const nm = k.naziv, op = k.opis; delete k.id; delete k.gotov; delete k.samoTrener; delete k.naziv; return { naziv: nm, opis: op, nivo: k.nivo, sedmica: 1, dana: 1, tip: 'kond', dani: [{ naziv: nm, vj: [] }], kond: k }; })() : Store.program(b.dataset.id);
         if (!u || !src) { toast('Izaberi klijenticu.'); return; }
         const cp = JSON.parse(JSON.stringify(src)); delete cp.samoTrener; cp.id = 'ind_' + uid(); cp.tip = 'individualni'; cp.vlasnik = u.id; cp.uShopu = false; cp.cijena = 0;
         Store.db.programi.push(cp); u.programi = u.programi || []; u.programi.push(cp.id); (u.dodijeljeno = u.dodijeljeno || []).push(cp.id); (u.pstart = u.pstart || {})[cp.id] = today();
