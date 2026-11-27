@@ -70,6 +70,10 @@
       const klij = (Store.db.users || []).filter((x) => x.role === 'klijentica');
       el.innerHTML = h`<a class="small" href="#/trener?tab=programi">← Programi</a><div class="eyebrow">Kondicija</div><h1>Kondicijski šabloni</h1>
         <p class="muted">Izaberi vrstu, izmijeni primjer, sačuvaj i dodijeli klijentici. Ona dobija tajmer koji je vodi kroz trening.</p>
+        <h2>Gotovi treninzi</h2>
+        ${(FS.KOND || []).filter((g) => g.gotov).map((g) => h`<div class="card"><div class="row between"><div><b>${g.naziv}</b><div class="small muted">${g.tip}</div></div><a class="btn sm" href="#/kond/${g.id}">Pregled</a></div>
+          <div class="row mt-s"><select data-sel="${g.id}"><option value="">Klijentica…</option>${klij.map((c) => h`<option value="${c.id}">${c.ime}</option>`)}</select><button class="btn sm primary" data-act="assign" data-id="${g.id}">Dodijeli</button><button class="btn sm" data-act="moj" data-id="${g.id}">U moje šablone (za izmjene)</button></div></div>`)}
+        <h2>Novi šablon</h2>
         <div class="card"><form data-act="save" novalidate>
           <label class="field"><span>Vrsta treninga</span><select name="tip" data-act="tip">${opts(TIPOVI, t)}</select></label>
           <label class="field"><span>Naziv</span><input name="naziv" value="${v.naziv || ''}" maxlength="80"></label>
@@ -83,9 +87,6 @@
           <p class="err" id="kerr"></p>
           <button class="btn primary block" type="submit">${ed ? 'Sačuvaj izmjene' : 'Sačuvaj šablon'}</button>
           ${ed ? h`<a class="btn block mt-s" href="#/kondsablon">Novi šablon</a>` : ''}</form></div>
-        <h2>Gotovi treninzi</h2>
-        ${(FS.KOND || []).filter((g) => g.gotov).map((g) => h`<div class="card"><div class="row between"><div><b>${g.naziv}</b><div class="small muted">${g.tip}</div></div><a class="btn sm" href="#/kond/${g.id}">Pregled</a></div>
-          <div class="row mt-s"><select data-sel="${g.id}"><option value="">Klijentica…</option>${klij.map((c) => h`<option value="${c.id}">${c.ime}</option>`)}</select><button class="btn sm primary" data-act="assign" data-id="${g.id}">Dodijeli</button><button class="btn sm" data-act="moj" data-id="${g.id}">U moje šablone (za izmjene)</button></div></div>`)}
         <h2>Sačuvani šabloni</h2>
         ${sabloni().length ? sabloni().map((s) => h`<div class="card"><div class="row between"><div><b>${s.naziv}</b><div class="small muted">${s.kond.tip}</div></div><div><a class="btn sm" href="#/kond/${s.id}">Pregled</a> <a class="btn sm" href="#/kondsablon?id=${s.id}">Uredi</a> <button class="btn sm" data-act="del" data-id="${s.id}">Obriši</button></div></div>
           <div class="row mt-s"><select data-sel="${s.id}"><option value="">Klijentica…</option>${klij.map((c) => h`<option value="${c.id}">${c.ime}</option>`)}</select><button class="btn sm primary" data-act="assign" data-id="${s.id}">Dodijeli</button></div></div>`) : h`<div class="empty">Još nema sačuvanih šablona.</div>`}`;
