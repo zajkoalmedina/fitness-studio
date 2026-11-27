@@ -38,7 +38,14 @@
   function build(d) {
     const L = lines(d.lista), tip = d.tip, k = { tip, nivo: d.nivo || 'srednji', oprema: String(d.oprema || '').slice(0, 80), savjet: String(d.savjet || '').slice(0, 300), opis: String(d.opis || '').slice(0, 300), formLista: String(d.lista || ''), formNiz: String(d.niz || '') };
     if (!L.length) return { err: 'Dodaj bar jednu vježbu.' };
-    if (tip === 'EMOM') { k.min = n(d.min, 2, 60, 16); k.min_lista = L.map((x) => [x[0], x[1] || '']); }
+    if (tip === 'EMOM') {
+      if (L.some((x) => /^#\s*\d+/.test(x[0]))) {
+        let br = 1, out = [], cur = [];
+        const flush = () => { for (let i = 0; i < br; i++) out = out.concat(cur); cur = []; };
+        L.forEach((x) => { const m = /^#\s*(\d+)/.exec(x[0]); if (m) { flush(); br = Math.max(1, Math.min(20, +m[1])); } else cur.push([x[0], x[1] || '']); });
+        flush(); k.min_lista = out; k.min = Math.min(120, out.length); k.min_lista = out.slice(0, k.min);
+      } else { k.min = n(d.min, 2, 60, 16); k.min_lista = L.map((x) => [x[0], x[1] || '']); }
+    }
     else if (tip === 'AMRAP') { k.min = n(d.min, 2, 60, 12); k.lista = L.map((x) => [x[0], x[1] || '']); }
     else if (tip === 'CHIPPER') { k.lista = L.map((x) => [x[0], x[1] || '']); }
     else if (tip === 'TABATA' || tip === 'INTERVALI') { k.stanice = L.map((x) => x[0]); k.rad = n(d.rad, 5, 300, 30); k.odmor = n(d.odmor, 3, 300, 15); k.krugova = n(d.krugova, 1, 20, 4); }
@@ -69,7 +76,7 @@
           ${t === 'EMOM' || t === 'AMRAP' ? h`<label class="field"><span>Trajanje (minuta)</span><input name="min" type="number" value="${v.min || ''}"></label>` : ''}
           ${t === 'TABATA' || t === 'INTERVALI' ? h`<div class="grid2"><label class="field"><span>Rad (s)</span><input name="rad" type="number" value="${v.rad || ''}"></label><label class="field"><span>Odmor (s)</span><input name="odmor" type="number" value="${v.odmor || ''}"></label></div><label class="field"><span>Broj krugova</span><input name="krugova" type="number" value="${v.krugova || ''}"></label>` : ''}
           ${t === 'PIRAMIDA' ? h`<label class="field"><span>Niz ponavljanja ili metara</span><input name="niz" value="${v.niz || ''}" placeholder="10,8,6,4,2"></label>` : ''}
-          <label class="field"><span>${t === 'TABATA' || t === 'INTERVALI' ? 'Stanice (jedna po redu)' : t === 'PIRAMIDA' ? 'Vježbe (jedna po redu; opciono: naziv | drugi niz)' : 'Vježbe (naziv | ponavljanja)'}</span><textarea name="lista" rows="7">${v.lista || ''}</textarea></label>
+          <label class="field"><span>${t === 'TABATA' || t === 'INTERVALI' ? 'Stanice (jedna po redu)' : t === 'PIRAMIDA' ? 'Vježbe (jedna po redu; opciono: naziv | drugi niz)' : (t === 'EMOM' ? 'Vježbe (naziv | ponavljanja). Red "# 5" počinje blok koji se ponavlja 5 puta' : 'Vježbe (naziv | ponavljanja)')}</span><textarea name="lista" rows="7">${v.lista || ''}</textarea></label>
           <label class="field"><span>Opis</span><input name="opis" value="${v.opis || ''}" maxlength="300"></label>
           <div class="grid2"><label class="field"><span>Nivo</span><select name="nivo">${opts(['početni', 'srednji', 'napredni'], v.nivo || 'srednji')}</select></label><label class="field"><span>Oprema</span><input name="oprema" value="${v.oprema || ''}" maxlength="80"></label></div>
           <label class="field"><span>Savjet za klijenticu</span><input name="savjet" value="${v.savjet || ''}" maxlength="300"></label>
@@ -78,7 +85,7 @@
           ${ed ? h`<a class="btn block mt-s" href="#/kondsablon">Novi šablon</a>` : ''}</form></div>
         <h2>Gotovi treninzi</h2>
         ${(FS.KOND || []).filter((g) => g.gotov).map((g) => h`<div class="card"><div class="row between"><div><b>${g.naziv}</b><div class="small muted">${g.tip}</div></div><a class="btn sm" href="#/kond/${g.id}">Pregled</a></div>
-          <div class="row mt-s"><select data-sel="${g.id}"><option value="">Klijentica…</option>${klij.map((c) => h`<option value="${c.id}">${c.ime}</option>`)}</select><button class="btn sm primary" data-act="assign" data-id="${g.id}">Dodijeli</button></div></div>`)}
+          <div class="row mt-s"><select data-sel="${g.id}"><option value="">Klijentica…</option>${klij.map((c) => h`<option value="${c.id}">${c.ime}</option>`)}</select><button class="btn sm primary" data-act="assign" data-id="${g.id}">Dodijeli</button><button class="btn sm" data-act="moj" data-id="${g.id}">U moje šablone (za izmjene)</button></div></div>`)}
         <h2>Sačuvani šabloni</h2>
         ${sabloni().length ? sabloni().map((s) => h`<div class="card"><div class="row between"><div><b>${s.naziv}</b><div class="small muted">${s.kond.tip}</div></div><div><a class="btn sm" href="#/kond/${s.id}">Pregled</a> <a class="btn sm" href="#/kondsablon?id=${s.id}">Uredi</a> <button class="btn sm" data-act="del" data-id="${s.id}">Obriši</button></div></div>
           <div class="row mt-s"><select data-sel="${s.id}"><option value="">Klijentica…</option>${klij.map((c) => h`<option value="${c.id}">${c.ime}</option>`)}</select><button class="btn sm primary" data-act="assign" data-id="${s.id}">Dodijeli</button></div></div>`) : h`<div class="empty">Još nema sačuvanih šablona.</div>`}`;
@@ -96,6 +103,12 @@
         Store.save(); toast('Šablon sačuvan.'); ed = null; tipSel = d.tip; location.hash = '#/kondsablon'; draw(Object.assign({}, PRIMJERI[tipSel]));
       },
       'click:del': async (b) => { if (!await confirmSheet({ title: 'Obrisati šablon?', text: 'Treninzi koje su klijentice već dobile ostaju kod njih.', ok: 'Obriši', danger: true })) return; Store.db.programi = Store.db.programi.filter((x) => x.id !== b.dataset.id); Store.save(); draw(); },
+      'click:moj': (b) => {
+        const g = (FS.KOND || []).find((x) => x.gotov && x.id === b.dataset.id); if (!g) return;
+        const k = JSON.parse(JSON.stringify(g)); delete k.id; delete k.gotov; delete k.samoTrener; delete k.naziv;
+        Store.db.programi.push({ id: 'kt_' + uid(), naziv: g.naziv, opis: g.opis, nivo: g.nivo, sedmica: 1, dana: 1, cijena: 0, tip: 'kond', uShopu: false, samoTrener: true, dani: [{ naziv: g.naziv, vj: [] }], kond: k });
+        Store.save(); toast('Dodano u sačuvane šablone. Klikni Uredi da mijenjaš vježbe.'); draw();
+      },
       'click:assign': (b) => {
         const sel = el.querySelector('[data-sel="' + b.dataset.id + '"]'), u = sel && Store.user(sel.value), g = (FS.KOND || []).find((x) => x.gotov && x.id === b.dataset.id),
           src = g ? (() => { const k = JSON.parse(JSON.stringify(g)); const nm = k.naziv, op = k.opis; delete k.id; delete k.gotov; delete k.naziv; return { naziv: nm, opis: op, nivo: k.nivo, sedmica: 1, dana: 1, tip: 'kond', dani: [{ naziv: nm, vj: [] }], kond: k }; })() : Store.program(b.dataset.id);
