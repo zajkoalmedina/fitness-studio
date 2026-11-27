@@ -649,7 +649,7 @@
     const hero = el.querySelector('section');
     if (vc && hero) hero.insertAdjacentHTML('afterend', vc.s);
     anchor.insertAdjacentHTML('beforebegin', sec.s);
-    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 215</p>');
+    el.insertAdjacentHTML('beforeend', '<p class="small center muted" style="margin-top:18px">Verzija 216</p>');
   };
 
   /* Kalkulatori: veza na suplemente */

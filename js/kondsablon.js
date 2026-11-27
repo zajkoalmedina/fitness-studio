@@ -76,6 +76,9 @@
           <p class="err" id="kerr"></p>
           <button class="btn primary block" type="submit">${ed ? 'Sačuvaj izmjene' : 'Sačuvaj šablon'}</button>
           ${ed ? h`<a class="btn block mt-s" href="#/kondsablon">Novi šablon</a>` : ''}</form></div>
+        <h2>Gotovi treninzi</h2>
+        ${(FS.KOND || []).filter((g) => g.gotov).map((g) => h`<div class="card"><div class="row between"><div><b>${g.naziv}</b><div class="small muted">${g.tip}</div></div><a class="btn sm" href="#/kond/${g.id}">Pregled</a></div>
+          <div class="row mt-s"><select data-sel="${g.id}"><option value="">Klijentica…</option>${klij.map((c) => h`<option value="${c.id}">${c.ime}</option>`)}</select><button class="btn sm primary" data-act="assign" data-id="${g.id}">Dodijeli</button></div></div>`)}
         <h2>Sačuvani šabloni</h2>
         ${sabloni().length ? sabloni().map((s) => h`<div class="card"><div class="row between"><div><b>${s.naziv}</b><div class="small muted">${s.kond.tip}</div></div><div><a class="btn sm" href="#/kond/${s.id}">Pregled</a> <a class="btn sm" href="#/kondsablon?id=${s.id}">Uredi</a> <button class="btn sm" data-act="del" data-id="${s.id}">Obriši</button></div></div>
           <div class="row mt-s"><select data-sel="${s.id}"><option value="">Klijentica…</option>${klij.map((c) => h`<option value="${c.id}">${c.ime}</option>`)}</select><button class="btn sm primary" data-act="assign" data-id="${s.id}">Dodijeli</button></div></div>`) : h`<div class="empty">Još nema sačuvanih šablona.</div>`}`;
@@ -94,7 +97,8 @@
       },
       'click:del': async (b) => { if (!await confirmSheet({ title: 'Obrisati šablon?', text: 'Treninzi koje su klijentice već dobile ostaju kod njih.', ok: 'Obriši', danger: true })) return; Store.db.programi = Store.db.programi.filter((x) => x.id !== b.dataset.id); Store.save(); draw(); },
       'click:assign': (b) => {
-        const sel = el.querySelector('[data-sel="' + b.dataset.id + '"]'), u = sel && Store.user(sel.value), src = Store.program(b.dataset.id);
+        const sel = el.querySelector('[data-sel="' + b.dataset.id + '"]'), u = sel && Store.user(sel.value), g = (FS.KOND || []).find((x) => x.gotov && x.id === b.dataset.id),
+          src = g ? (() => { const k = JSON.parse(JSON.stringify(g)); const nm = k.naziv, op = k.opis; delete k.id; delete k.gotov; delete k.naziv; return { naziv: nm, opis: op, nivo: k.nivo, sedmica: 1, dana: 1, tip: 'kond', dani: [{ naziv: nm, vj: [] }], kond: k }; })() : Store.program(b.dataset.id);
         if (!u || !src) { toast('Izaberi klijenticu.'); return; }
         const cp = JSON.parse(JSON.stringify(src)); delete cp.samoTrener; cp.id = 'ind_' + uid(); cp.tip = 'individualni'; cp.vlasnik = u.id; cp.uShopu = false; cp.cijena = 0;
         Store.db.programi.push(cp); u.programi = u.programi || []; u.programi.push(cp.id); (u.dodijeljeno = u.dodijeljeno || []).push(cp.id); (u.pstart = u.pstart || {})[cp.id] = today();

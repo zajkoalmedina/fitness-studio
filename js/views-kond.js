@@ -67,6 +67,16 @@
     KR('krug-8-gornji', 'Kružni 8 stanica · gornji dio i trup', 40, 20, 3, 'početni', 'Bučice, guma', 'Osam stanica, 3 kruga, 40 s rada i 20 s prelaza. Oko 24 minute.',
       ['Sklek', 'Veslanje s gumom', 'Potisak za ramena bučicama', 'Face pull s gumom', 'Biceps s bučicama', 'Triceps iza glave', 'Planka s dodirom ramena', 'Superman'], 'Balans potiska i povlačenja: 3 potiska i 3 povlačenja, uz trup.')
   );
+  FS.KOND.push(
+    { id: 'emom-25-teretana', gotov: true, samoTrener: true, naziv: 'EMOM 25 · 5 vježbi × 5 krugova', tip: 'EMOM', min: 25, nivo: 'srednji', oprema: 'Kutija za skok, kabl ili bučica, bučica, klupa, swiss lopta',
+      opis: 'Svake minute jedna vježba, ostatak minute je odmor. Pet vježbi, pet krugova. Redoslijed naizmjenično opterećuje noge i gornji dio tijela.',
+      min_lista: [['Box jump (skok na kutiju)', '5'], ['Gorilla row', '6 + 6'], ['Goblet čučanj', '10'], ['Incline sklek', '10'], ['Swiss ball hamstring curl', '10']],
+      savjet: 'Box jump radi svježe: spusti se korakom, ne skokom. Ako ne stigneš završiti set za 40 sekundi, smanji težinu ili ponavljanja.' },
+    { id: 'krug-4-povlacenje', gotov: true, samoTrener: true, naziv: 'Kružni 4 × 4 · povlačenje, ruke i trup', tip: 'INTERVALI', rad: 40, odmor: 20, krugova: 4, nivo: 'srednji', oprema: 'Smith sprava, klupa, bučice',
+      opis: 'Četiri stanice, 4 kruga, 40 s rada i 20 s prelaza. Odmor 60 do 90 s između krugova. Oko 20 minuta, nastavak poslije EMOM-a.',
+      stanice: ['Inverted row na Smith spravi (10 do 12)', 'Dips na klupi ili asistirani (8 do 12)', 'Biceps pregib (10 do 12)', 'Leg raise (12 do 15)'],
+      savjet: 'Povlačenje i potisak se smjenjuju da se ruke odmore. Leg raise radi sporo, bez zamaha.' }
+  );
   FS.kond = (id) => FS.KOND.find((k) => k.id === id);
   const jeTrener = () => { const u = FS.Auth.user(); return !!u && u.role === 'trener'; };
   const vid = () => FS.KOND.filter((k) => !k.samoTrener || jeTrener());
