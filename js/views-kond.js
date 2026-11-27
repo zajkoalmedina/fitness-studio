@@ -68,13 +68,15 @@
       ['Sklek', 'Veslanje s gumom', 'Potisak za ramena bučicama', 'Face pull s gumom', 'Biceps s bučicama', 'Triceps iza glave', 'Planka s dodirom ramena', 'Superman'], 'Balans potiska i povlačenja: 3 potiska i 3 povlačenja, uz trup.')
   );
   const BL1 = [['Box Jump', '5'], ['Gorilla Row', '6 + 6'], ['Goblet Squat', '10'], ['Incline Push Up', '10'], ['Swiss Ball Hamstring Curl', '10']];
-  const BL2 = [['Smith Machine Inverted Row', '10–12'], ['Dips (klupa ili asistirani)', '8–12'], ['Biceps Curl', '10–12'], ['Leg Raise', '12–15']];
+  const BL2 = [['Smith Machine Inverted Row', '10–12'], ['Dips (klupa ili asistirani)', '8–12'], ['Biceps Curl', '10–12']];
+  const BL3 = [['Leg Raise', '12–15']];
   const rep = (b, n) => { let o = []; for (let i = 0; i < n; i++) o = o.concat(b); return o; };
+  const tx = (b) => b.map((x) => x.join(' | ')).join('\n');
   FS.KOND.push(
-    { id: 'emom-41-kombinovani', gotov: true, samoTrener: true, naziv: 'EMOM 41 · 5 × 5 vježbi + 4 × 4 vježbe', tip: 'EMOM', min: 41, nivo: 'srednji', oprema: 'Box, Smith sprava, klupa, bučice, Swiss lopta',
-      opis: 'Svake minute jedna vježba, ostatak minute je odmor. Prvi dio: 5 vježbi, 5 krugova (25 min). Drugi dio: 4 vježbe, 4 kruga (16 min).',
-      min_lista: rep(BL1, 5).concat(rep(BL2, 4)),
-      formLista: '# 5\n' + BL1.map((x) => x.join(' | ')).join('\n') + '\n# 4\n' + BL2.map((x) => x.join(' | ')).join('\n'),
+    { id: 'emom-kombinovani', gotov: true, samoTrener: true, naziv: 'EMOM 1 + EMOM 2 + Leg Raise (s pauzama)', tip: 'EMOM', min: 47, nivo: 'srednji', oprema: 'Box, Smith sprava, klupa, bučice, Swiss lopta',
+      opis: 'Tri odvojena dijela s pauzom između. EMOM 1: 5 vježbi × 5 krugova (25 min). Pauza 3 min. EMOM 2: Smith Inverted Row, Dips, Biceps Curl × 4 kruga (12 min). Pauza 2 min. Leg Raise odvojeno, 4 minute.',
+      min_lista: rep(BL1, 5).concat([['Pauza', '3 min']], rep(BL2, 4), [['Pauza', '2 min']], rep(BL3, 4)),
+      formLista: '# 5\n' + tx(BL1) + '\n# 1\nPauza | 3 min\n# 4\n' + tx(BL2) + '\n# 1\nPauza | 2 min\n# 4\n' + tx(BL3),
       savjet: 'Box Jump radi svježe i spuštaj se korakom. Ako ne stigneš završiti set za 40 sekundi, smanji težinu ili ponavljanja.' }
   );
   FS.kond = (id) => FS.KOND.find((k) => k.id === id);
@@ -85,7 +87,17 @@
   function segments(k) {
     const S = [];
     if (k.tip === 'EMOM') {
-      const n = k.min_lista.length;
+      const n = k.min_lista.length, jePauza = (x) => /^pauza/i.test(x[0]);
+      if (k.min_lista.some(jePauza)) {
+        /* lista se prolazi jednom; red "Pauza | 3 min" ubacuje odmor */
+        const rad = k.min_lista.filter((x) => !jePauza(x)), tot = rad.length; let m = 0;
+        k.min_lista.forEach((x, i) => {
+          if (jePauza(x)) { const mm = /(\d+)\s*(min|s)/i.exec(x[1] || ''), sec = mm ? (/min/i.test(mm[2]) ? +mm[1] * 60 : +mm[1]) : 120; const nx = k.min_lista.slice(i + 1).find((y) => !jePauza(y));
+            S.push({ dur: sec, kind: 'odmor', title: 'Pauza', sub: 'Odmori, pa sljedeći dio' + (nx ? ': ' + nx[0] : ''), tag: 'Pauza između dijelova', next: nx ? nx[0] + ' (' + nx[1] + ')' : '' }); return; }
+          const nx = k.min_lista.slice(i + 1).find((y) => !jePauza(y));
+          S.push({ dur: 60, kind: 'rad', title: x[0], sub: x[1] + ' · čim završiš, odmori do kraja minute', tag: `Minuta ${++m} od ${tot}`, next: nx ? nx[0] + ' (' + nx[1] + ')' : '' });
+        });
+      } else
       for (let m = 0; m < k.min; m++) { const [nm, r] = k.min_lista[m % n]; S.push({ dur: 60, kind: 'rad', title: nm, sub: r + ' · čim završiš, odmori do kraja minute', tag: `Minuta ${m + 1} od ${k.min}`, next: m < k.min - 1 ? k.min_lista[(m + 1) % n][0] + ' (' + k.min_lista[(m + 1) % n][1] + ')' : '' }); }
     } else if (k.tip === 'INTERVALI') {
       for (let r = 0; r < k.krugova; r++) k.stanice.forEach((st, i) => {

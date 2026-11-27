@@ -51,7 +51,7 @@
         let br = 1, out = [], cur = [];
         const flush = () => { for (let i = 0; i < br; i++) out = out.concat(cur); cur = []; };
         L.forEach((x) => { const m = /^#\s*(\d+)/.exec(x[0]); if (m) { flush(); br = Math.max(1, Math.min(20, +m[1])); } else cur.push([x[0], x[1] || '']); });
-        flush(); k.min_lista = out; k.min = Math.min(120, out.length); k.min_lista = out.slice(0, k.min);
+        flush(); k.min_lista = out.slice(0, 150); k.min = Math.ceil(k.min_lista.reduce((t, x) => { const m = /^pauza/i.test(x[0]) ? /(\d+)\s*(min|s)/i.exec(x[1] || '') : null; return t + (m ? (/min/i.test(m[2]) ? +m[1] : +m[1] / 60) : /^pauza/i.test(x[0]) ? 2 : 1); }, 0));
       } else { k.min = n(d.min, 2, 60, 16); k.min_lista = L.map((x) => [x[0], x[1] || '']); }
     }
     else if (tip === 'AMRAP') { k.min = n(d.min, 2, 60, 12); k.lista = L.map((x) => [x[0], x[1] || '']); }
